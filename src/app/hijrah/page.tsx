@@ -134,7 +134,7 @@ export default function HijrahPage() {
 
   // ─── Render ───────────────────────────────────────────────────
   return (
-    <main className="flex flex-col min-h-screen px-6 pt-12 pb-32 gap-6 relative overflow-hidden">
+    <main className="flex flex-col min-h-screen px-6 pt-12 pb-32 gap-6 relative overflow-hidden max-w-7xl mx-auto w-full">
 
       {/* Header */}
       <header className="flex flex-col gap-2 relative z-10">
@@ -159,9 +159,9 @@ export default function HijrahPage() {
           ))}
         </div>
       ) : (
-        <>
+        <div className="flex flex-col md:grid md:grid-cols-2 md:gap-8 w-full relative z-10">
           {/* Pohon Iman Visualization */}
-          <section className="relative z-10 mt-2">
+          <section className="relative mt-2">
             <PohonIman progress={overallProgress} />
 
             {/* Level label gamifikasi */}
@@ -251,7 +251,7 @@ export default function HijrahPage() {
               })}
             </div>
           </section>
-        </>
+        </div>
       )}
 
       {/* Celebration overlay */}

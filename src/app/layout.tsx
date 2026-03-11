@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit, Amiri } from "next/font/google";
 import "./globals.css";
-import { BottomNav } from "@/components/layout/BottomNav";
+import { ClientBottomNav } from "@/components/layout/ClientBottomNav";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -27,11 +27,11 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body
-        className={`${outfit.variable} ${amiri.variable} antialiased max-w-md mx-auto relative shadow-2xl min-h-screen bg-muted/20`}
+        className={`${outfit.variable} ${amiri.variable} antialiased max-w-7xl mx-auto relative shadow-2xl min-h-screen bg-muted/20`}
       >
-        <div className="bg-background min-h-screen pb-20">
+        <div className="bg-background min-h-screen pb-20 w-full relative">
           {children}
-          <BottomNav />
+          <ClientBottomNav />
         </div>
       </body>
     </html>

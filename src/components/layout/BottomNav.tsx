@@ -20,7 +20,7 @@ export function BottomNav() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-safe">
-      <div className="w-full max-w-md bg-background/80 backdrop-blur-xl border-t border-border/50 px-6 py-3 flex justify-between items-center rounded-t-3xl shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.05)]">
+      <div className="w-full max-w-7xl bg-background/80 backdrop-blur-xl border-t border-border/50 px-6 py-3 flex justify-between items-center md:rounded-t-3xl shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.05)]">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
           

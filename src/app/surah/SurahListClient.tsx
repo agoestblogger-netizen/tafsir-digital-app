@@ -26,8 +26,8 @@ export function SurahListClient({ initialChapters }: SurahListClientProps) {
   });
 
   return (
-    <main className="flex flex-col min-h-screen bg-page-warm pb-24">
-      <header className="flex flex-col gap-2">
+    <main className="flex flex-col min-h-screen bg-page-warm pb-24 max-w-7xl mx-auto w-full px-6">
+      <header className="flex flex-col gap-2 pt-6">
         <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-secondary text-primary mb-2 shadow-sm">
           <Compass className="w-6 h-6" />
         </div>
@@ -51,7 +51,7 @@ export function SurahListClient({ initialChapters }: SurahListClientProps) {
         />
       </div>
 
-      <div className="flex flex-col gap-4 mt-6 relative z-10 w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6 relative z-10 w-full">
         {filteredChapters.length > 0 ? (
           filteredChapters.map((chapter) => (
             <SurahCard 

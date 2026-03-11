@@ -162,7 +162,7 @@ export default function Home() {
       </section>
 
       {/* 2. INTERACTIVE SECTION */}
-      <section className="px-6 flex flex-col gap-8 flex-1 mt-6 relative z-10">
+      <section className="px-6 flex flex-col md:grid md:grid-cols-2 md:gap-x-12 gap-8 flex-1 mt-6 relative z-10 max-w-7xl mx-auto w-full">
 
         {/* Header / Sapaan Menenangkan */}
         <motion.header
@@ -227,6 +227,9 @@ export default function Home() {
             </button>
           </form>
         </motion.div>
+        
+        {/* Right side wrap for loading, errors, results, and feelings on Desktop */}
+        <div className="flex flex-col gap-8">
 
         {/* ⏳ Loading Skeleton */}
         <AnimatePresence>
@@ -309,6 +312,7 @@ export default function Home() {
         >
           <FeelingFilter onSelectFeeling={handleFeelingSelect} />
         </motion.div>
+        </div>
 
 
       </section>

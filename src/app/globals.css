@@ -1,26 +1,278 @@
 @import "tailwindcss";
+@import "./tajweed.css";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #FBFAF8;
+  /* Bone White */
+  --foreground: #374151;
+  /* Dark Gray */
+  --card: #ffffff;
+  --card-foreground: #374151;
+  --popover: #ffffff;
+  --popover-foreground: #374151;
+  --primary: #4A5D4E;
+  /* Deep Sage Green for heavy bg */
+  --primary-foreground: #ffffff;
+  --secondary: #EBF3E8;
+  /* Light Sage */
+  --secondary-foreground: #4B5563;
+  --muted: #F3F4F6;
+  --muted-foreground: #6B7280;
+  --accent: #E5E7EB;
+  --accent-foreground: #111827;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #E5E7EB;
+  --input: #E5E7EB;
+  --ring: #4A5D4E;
+  --gold: #A68A56;
+  /* Antique Gold */
+  --gold-light: #C5A880;
+  --gold-foreground: #ffffff;
+  --radius: 1rem;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-gold-foreground: var(--gold-foreground);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body,
+  .bg-page-warm {
+    /* Base background is Bone White with subtle warm golden gradient fading down */
+    background-color: var(--background);
+    background-image: linear-gradient(180deg, rgba(197, 168, 128, 0.12) 0%, rgba(251, 250, 248, 1) 35vh);
+    background-attachment: fixed;
+    color: var(--foreground);
+    font-family: var(--font-outfit), sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Typography Utils */
+.font-arabic {
+  font-family: var(--font-amiri), serif;
+  line-height: normal;
+}
+
+/* Base utility overrides for content readability and luxury */
+.card-premium {
+  background-color: rgba(251, 250, 248, 0.85);
+  /* Bone White with slightly transparent core */
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(166, 138, 86, 0.4);
+  /* Muted Gold Border */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+.gold-divider {
+  border-color: rgba(166, 138, 86, 0.3);
+  /* Muted Gold Divider */
+}
+
+.bg-geometric-heavy {
+  background-color: var(--primary);
+  /* Intricate intersecting Islamic rosette pattern */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23A68A56' stroke-width='1.5' stroke-opacity='0.5'%3E%3Cpath d='M40 0v80M0 40h80'/%3E%3Ccircle cx='40' cy='40' r='28'/%3E%3Ccircle cx='0' cy='0' r='28'/%3E%3Ccircle cx='80' cy='0' r='28'/%3E%3Ccircle cx='0' cy='80' r='28'/%3E%3Ccircle cx='80' cy='80' r='28'/%3E%3Cpath d='M20 20l40 40M20 60L60 20'/%3E%3Cpath d='M40 12l28 28-28 28-28-28z' stroke-opacity='0.3'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+.emboss-texture {
+  box-shadow: inset 0px 4px 10px rgba(0, 0, 0, 0.5), inset 0px -2px 5px rgba(255, 255, 255, 0.1), 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+.gold-border-thick {
+  border: 4px solid var(--gold);
+  outline: 2px solid var(--primary);
+  outline-offset: -8px;
+  box-shadow: inset 0 0 0 10px var(--gold-light), inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+/* New Classic Islamic Cartouche Emblem */
+.emblem-cartouche {
+  border: 4px solid var(--gold);
+  border-radius: 120px 20px 120px 20px;
+  background-color: rgba(74, 93, 78, 0.6);
+  /* Deep Sage transparent */
+  backdrop-filter: blur(8px);
+  box-shadow:
+    inset 0 0 0 3px var(--gold-light),
+    inset 0 0 20px rgba(166, 138, 86, 0.4),
+    0 20px 40px rgba(0, 0, 0, 0.7);
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Inner frame for the cartouche */
+.emblem-cartouche::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px dashed var(--gold-light);
+  border-radius: 104px 12px 104px 12px;
+  pointer-events: none;
+}
+
+/* Gold Text Emboss Effect */
+.text-gold-glow {
+  color: #FFF2D8;
+  /* Creamy Light Gold */
+  text-shadow:
+    0px 1px 1px rgba(255, 255, 255, 0.5),
+    0px -1px 1px rgba(0, 0, 0, 0.8),
+    0px 0px 15px rgba(197, 168, 128, 0.8);
+}
+
+.gold-shimmer {
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(197, 168, 128, 0.5) 50%,
+      transparent 100%);
+  background-size: 200% 100%;
+  animation: gold-sweep 5s ease-in-out infinite;
+}
+
+@keyframes gold-sweep {
+  0% {
+    transform: translateX(-100%) skew(-15deg);
+  }
+
+  100% {
+    transform: translateX(200%) skew(-15deg);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+/* ============================================================
+   QURAN.COM TAJWEED COLOR OVERRIDES
+   Parent .tajweed selector agar tidak tertimpa Tailwind reset.
+   !important wajib karena Tailwind base & utility bisa override.
+   ============================================================ */
+.tajweed .madda_normal {
+  color: #537FE7 !important;
+}
+
+.tajweed .madda_permissible {
+  color: #2DB67E !important;
+}
+
+.tajweed .madda_necessory,
+.tajweed .madda_necessary {
+  color: #E74646 !important;
+}
+
+.tajweed .madda_obligatory {
+  color: #C0392B !important;
+}
+
+.tajweed .qalaqah,
+.tajweed .qalqalah {
+  color: #DD58D6 !important;
+}
+
+.tajweed .ikhafa,
+.tajweed .ikhfa {
+  color: #27AE60 !important;
+}
+
+.tajweed .ikhafa_shafawi,
+.tajweed .ikhfa_shafawi,
+.tajweed .ikhafa_sufawi {
+  color: #1ABC9C !important;
+}
+
+.tajweed .idgham_without_ghunnah {
+  color: #A6D0DD !important;
+}
+
+.tajweed .idgham_with_ghunnah {
+  color: #FF7B54 !important;
+}
+
+.tajweed .idgham_mutajanisayn,
+.tajweed .idgham_mutajanisain {
+  color: #7FBCD2 !important;
+}
+
+.tajweed .idgham_mutaqaribayn,
+.tajweed .idgham_mutaqaribain {
+  color: #5BA4CF !important;
+}
+
+.tajweed .idgham_shafawi {
+  color: #FF7B54 !important;
+}
+
+.tajweed .ghunnah {
+  color: #F5A623 !important;
+}
+
+.tajweed .iqlab {
+  color: #9B59B6 !important;
+}
+
+.tajweed .ham_wasl,
+.tajweed .hamza_wasl {
+  color: #95A5A6 !important;
+}
+
+.tajweed .silent {
+  color: #BDC3C7 !important;
+}
+
+.tajweed .lam_shamsiyah {
+  color: #E67E22 !important;
+}
+
+.tajweed .ra {
+  color: #D35400 !important;
+}
+
+.tajweed .idzhar,
+.tajweed .idzhar_shafawi {
+  color: #16A085 !important;
 }

@@ -1,0 +1,193 @@
+/* ============================================================
+   Tajweed Color Coding — Proof of Concept (Surah Al-Fatihah)
+   Class names match Quran.com API output (word_fields=text_uthmani_tajweed)
+   Using !important to override Tailwind base/reset styles.
+   ============================================================ */
+
+/* ─── Base: tajweed word wrapper ─────────────────────────── */
+.tajweed-word {
+    display: inline;
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 2px 4px;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+    line-height: 2.4;
+}
+
+.tajweed-word:hover {
+    background-color: rgba(166, 138, 86, 0.15) !important;
+    transform: translateY(-1px);
+}
+
+.tajweed-word:active {
+    transform: scale(0.96) translateY(0);
+    background-color: rgba(166, 138, 86, 0.25) !important;
+}
+
+/* Pulse animation on active/playing word */
+.tajweed-word.playing {
+    background-color: rgba(255, 215, 0, 0.28) !important;
+    animation: tajweed-pulse 0.5s ease-out;
+}
+
+@keyframes tajweed-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.6);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 215, 0, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
+    }
+}
+
+/* ============================================================
+   KAIDAH TAJWID — Warna sesuai class dari API Quran.com
+   Gunakan !important agar tidak di-override Tailwind/global CSS
+   ============================================================ */
+
+/* ─── Mad (Pemanjangan huruf) ─────────────────────────────── */
+.madda_normal {
+    color: #2563EB !important;
+}
+
+/* Biru Royal */
+.madda_permissible {
+    color: #059669 !important;
+}
+
+/* Hijau Zamrud */
+.madda_necessory {
+    color: #DC2626 !important;
+}
+
+/* Merah Tegas */
+.madda_obligatory {
+    color: #991B1B !important;
+}
+
+/* Merah Tua */
+
+/* ─── Ghunnah & Idgham ────────────────────────────────────── */
+.ghunnah {
+    color: #D97706 !important;
+}
+
+/* Oranye Keemasan */
+.idgham_with_ghunnah {
+    color: #EA580C !important;
+}
+
+/* Oranye Tua */
+.idgham_without_ghunnah {
+    color: #0284C7 !important;
+}
+
+/* Biru Langit */
+.idgham_mutajanisain {
+    color: #0369A1 !important;
+}
+
+/* Biru Medium */
+.idgham_mutaqaribain {
+    color: #1D4ED8 !important;
+}
+
+/* Biru Gelap */
+
+/* ─── Ikhfa ───────────────────────────────────────────────── */
+.ikhafa {
+    color: #16A34A !important;
+}
+
+/* Hijau Segar */
+.ikhafa_shafawi {
+    color: #0D9488 !important;
+}
+
+/* Hijau Tosca */
+
+/* ─── Iqlab ───────────────────────────────────────────────── */
+.iqlab {
+    color: #7C3AED !important;
+}
+
+/* Ungu */
+
+/* ─── Qalqalah (memantul) ────────────────────────────────── */
+.qalaqah {
+    color: #C026D3 !important;
+}
+
+/* Magenta */
+
+/* ─── Lam & Ra Khusus ────────────────────────────────────── */
+.lam_shamsiyah {
+    color: #B45309 !important;
+}
+
+/* Coklat Oranye */
+.ra {
+    color: #92400E !important;
+}
+
+/* Coklat Tua */
+
+/* ─── Hamzah & Silent ────────────────────────────────────── */
+.hamza_wasl {
+    color: #6B7280 !important;
+}
+
+/* Abu Biru */
+.ham_wasl {
+    color: #6B7280 !important;
+}
+
+/* Abu Biru (alias dari API) */
+.silent {
+    color: #9CA3AF !important;
+}
+
+/* Abu Muda */
+
+/* ─── Idzhar ─────────────────────────────────────────────── */
+.idzhar {
+    color: #0F766E !important;
+}
+
+/* Teal */
+.idzhar_shafawi {
+    color: #0E7490 !important;
+}
+
+/* Teal Gelap */
+
+/* ─── Badge Tajwid di header ayat ────────────────────────── */
+.tajweed-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 99px;
+    background: linear-gradient(135deg, #2563EB 0%, #C026D3 100%);
+    color: #fff !important;
+    opacity: 0.92;
+    white-space: nowrap;
+}
+
+/* ─── Hint text di bawah teks tajwid ────────────────────── */
+.tajweed-hint {
+    font-size: 0.65rem;
+    color: rgba(55, 65, 81, 0.45);
+    text-align: center;
+    margin-top: 8px;
+    font-style: italic;
+    direction: ltr;
+}

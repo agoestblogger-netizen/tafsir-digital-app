@@ -307,7 +307,7 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
           <AnimatePresence>
             {showTafsir && tafsirData && (() => {
               const availableLenses = LENS_CONFIG.filter(
-                (lens) => !!tafsirData[lens.field]
+                (lens) => tafsirData[lens.field] && String(tafsirData[lens.field]).trim() !== "" && String(tafsirData[lens.field]).trim().toLowerCase() !== "null"
               );
               const hasAnyPerspective = availableLenses.length > 0;
               const effectiveLens = availableLenses.find(l => l.key === activeLens)
@@ -324,7 +324,7 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
                   className="mt-4 flex flex-col gap-4 overflow-hidden"
                 >
                   {/* Section 1: Tafsir Kemenag (ALWAYS SHOWN) */}
-                  {tafsirData.tafsir_kemenag && (
+                  {tafsirData.tafsir_kemenag && String(tafsirData.tafsir_kemenag).trim() !== "" && String(tafsirData.tafsir_kemenag).trim().toLowerCase() !== "null" && (
                     <div className="rounded-2xl bg-teal-50/60 border border-teal-100/80 p-4">
                       <div className="flex items-center gap-2 mb-2">
                         <BookOpen className="w-4 h-4 text-teal-600" />
@@ -337,7 +337,7 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
                   )}
 
                   {/* Section 2: Asbabun Nuzul (only if exists) */}
-                  {tafsirData.asbabun_nuzul && (
+                  {tafsirData.asbabun_nuzul && String(tafsirData.asbabun_nuzul).trim() !== "" && String(tafsirData.asbabun_nuzul).trim().toLowerCase() !== "null" && (
                     <div className="rounded-2xl bg-amber-50/60 border border-amber-100/80 p-4">
                       <div className="flex items-center gap-2 mb-2">
                         <ScrollText className="w-4 h-4 text-amber-600" />
@@ -389,7 +389,7 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
                   )}
 
                   {/* Section 4: Hadits Penguat */}
-                  {tafsirData.hadith && (
+                  {tafsirData.hadith && String(tafsirData.hadith).trim() !== "" && String(tafsirData.hadith).trim().toLowerCase() !== "null" && (
                     <div className="rounded-2xl bg-emerald-50/60 border border-emerald-100/80 p-4">
                       <div className="flex items-center gap-2 mb-2">
                         <ScrollText className="w-4 h-4 text-emerald-600" />

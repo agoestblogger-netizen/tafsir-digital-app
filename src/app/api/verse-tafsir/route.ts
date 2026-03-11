@@ -120,7 +120,7 @@ function buildSystemPrompt(surahNumber: number, verseNumber: number, kemenagTafs
     ``,
     `{`,
     `  "tafsir_kemenag": "Ringkasan 2-3 paragraf padat dari teks Kemenag di atas",`,
-    `  "asbabun_nuzul": "Riwayat asbabun nuzul jika disebutkan Kemenag — atau null",`,
+    `  "asbabun_nuzul": "Jika asbabun nuzul tidak ditemukan, KEMBALIKAN STRING KOSONG \\"\\" ATAU NILAI null. Dilarang keras mengembalikan kalimat penjelasan atau teks placeholder apa pun.",`,
     `  "perspektif_sains": "Fakta ilmiah SPESIFIK (nama, tahun, detail teknis) inline Kemenag — atau null",`,
     `  "perspektif_psikologi": "Analisis jiwa berbasis ulama Islam (nama+kitab) inline Kemenag — atau null",`,
     `  "perspektif_sosial": "Analisis sosial berbasis ulama Islam (nama+kitab) inline Kemenag — atau null",`,

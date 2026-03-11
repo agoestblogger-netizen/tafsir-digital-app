@@ -337,7 +337,11 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
                   )}
 
                   {/* Section 2: Asbabun Nuzul (only if exists) */}
-                  {tafsirData.asbabun_nuzul && String(tafsirData.asbabun_nuzul).trim() !== "" && String(tafsirData.asbabun_nuzul).trim().toLowerCase() !== "null" && (
+                  {tafsirData.asbabun_nuzul && 
+                   String(tafsirData.asbabun_nuzul).trim() !== "" && 
+                   String(tafsirData.asbabun_nuzul).trim().toLowerCase() !== "null" && 
+                   !String(tafsirData.asbabun_nuzul).toLowerCase().includes("riwayat asbabun nuzul jika disebutkan kemenag") && 
+                   !String(tafsirData.asbabun_nuzul).toLowerCase().includes("jika asbabun nuzul tidak ditemukan") && (
                     <div className="rounded-2xl bg-amber-50/60 border border-amber-100/80 p-4">
                       <div className="flex items-center gap-2 mb-2">
                         <ScrollText className="w-4 h-4 text-amber-600" />

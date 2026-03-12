@@ -15,8 +15,8 @@ const amiri = Amiri({
 });
 
 export const metadata: Metadata = {
-  title: "Quranic Life-Hacking",
-  description: "Mentor saku menggabungkan Al-Qur'an, sains, psikologi, dan pelacakan kebiasaan.",
+  title: "Tafsir Digital",
+  description: "Aplikasi panduan spiritual dan tafsir Al-Qur'an eksklusif dari PT Sinergi Adhi Inovasi Digital.",
 };
 
 export default function RootLayout({

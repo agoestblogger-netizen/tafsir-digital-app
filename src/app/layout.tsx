@@ -17,6 +17,7 @@ const amiri = Amiri({
 export const metadata: Metadata = {
   title: "Tafsir Digital",
   description: "Aplikasi panduan spiritual dan tafsir Al-Qur'an eksklusif dari PT Sinergi Adhi Inovasi Digital.",
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({

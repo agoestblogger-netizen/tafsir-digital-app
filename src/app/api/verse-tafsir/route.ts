@@ -132,7 +132,7 @@ function buildSystemPrompt(surahNumber: number, verseNumber: number, kemenagTafs
     `  "perspektif_sains": "Fakta ilmiah SPESIFIK (nama, tahun, detail teknis) inline Kemenag — atau null",`,
     `  "perspektif_psikologi": "Analisis jiwa berbasis ulama Islam (nama+kitab) inline Kemenag — atau null",`,
     `  "perspektif_sosial": "Analisis sosial berbasis ulama Islam (nama+kitab) inline Kemenag — atau null",`,
-    `  "hadith": "1 hadits shahih yang menguatkan tema Kemenag + nama perawi + kitab hadits",`,
+    `  "hadith": "1 hadits shahih yang menguatkan tema Kemenag. PENTING UNTUK HADITS: Dilarang keras menggunakan kalimat pengantar atau basa-basi (seperti \\"Hadits yang mendukung tema ini adalah...\\" atau \\"Berikut adalah haditsnya:\\"). Langsung berikan kutipan isi terjemahan haditsnya saja, diakhiri dengan perawinya di dalam kurung. Contoh format mutlak: \\"Isi terjemahan hadits.\\" (HR. Bukhari dan Muslim).",`,
     `  "todo_list": ["Aksi konkret 1 bersumber dari tema Kemenag", "Aksi konkret 2"]`,
     `}`,
     ``,

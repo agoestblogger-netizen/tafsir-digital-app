@@ -58,13 +58,34 @@ export default function HijrahPage() {
         // 2. Ambil / buat progress hari ini
         const progressRes = await fetch(`/api/hijrah-progress?user_id=${uid}`);
         const progressData = await progressRes.json();
-        const day = progressData.current_day ?? 1;
-        setCurrentDay(day);
+        let day = progressData.current_day ?? 1;
 
         // 3. Ambil tasks yang sudah selesai hari ini
-        const tasksRes = await fetch(`/api/hijrah-tasks?user_id=${uid}&day=${day}`);
-        const tasksData = await tasksRes.json();
-        const ids: string[] = tasksData.completed_task_ids ?? [];
+        let tasksRes = await fetch(`/api/hijrah-tasks?user_id=${uid}&day=${day}`);
+        let tasksData = await tasksRes.json();
+        let ids: string[] = tasksData.completed_task_ids ?? [];
+
+        // 4. Cek Auto-advance hari
+        let missionsForDay = hijrahMissions[day] || [];
+        // Selama misi ada && semua terselesaikan && belum tamat, naikkan currentDay
+        while (missionsForDay.length > 0 && ids.length >= missionsForDay.length && day < TOTAL_DAYS) {
+          day += 1;
+          
+          // Update ke database permanen
+          await fetch("/api/hijrah-progress", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ user_id: uid, current_day: day }),
+          });
+
+          // Fetch state hari yang baru
+          tasksRes = await fetch(`/api/hijrah-tasks?user_id=${uid}&day=${day}`);
+          tasksData = await tasksRes.json();
+          ids = tasksData.completed_task_ids ?? [];
+          missionsForDay = hijrahMissions[day] || [];
+        }
+
+        setCurrentDay(day);
         setCompletedIds(new Set(ids));
       } catch (err) {
         console.error("[HijrahPage] Init error:", err);

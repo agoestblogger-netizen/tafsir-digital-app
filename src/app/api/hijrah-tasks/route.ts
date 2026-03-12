@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/hijrah-tasks?user_id=<uuid>&day=N
 // Return: { completed_task_ids: number[] }
 export async function GET(request: NextRequest) {

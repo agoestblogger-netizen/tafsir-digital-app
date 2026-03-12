@@ -10,11 +10,19 @@ import { motion, AnimatePresence } from "framer-motion";
 const TOTAL_DAYS = 21;
 
 import { hijrahMissions } from "@/lib/data/hijrah-missions";
+import { createClient } from "@/lib/supabase/client";
 
 // ─── Helpers ──────────────────────────────────────────────────────
 
 /** Baca device user_id dari localStorage, atau buat via /api/hijrah-auth */
 async function getOrCreateUserId(): Promise<string> {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user?.id) {
+    // Selalu prioritaskan user Supabase asli
+    return user.id;
+  }
+
   if (typeof window === "undefined") return "";
   const stored = localStorage.getItem("hijrah_user_id");
   if (stored) return stored;
@@ -56,12 +64,12 @@ export default function HijrahPage() {
         if (!uid) throw new Error("Gagal mendapatkan user_id");
 
         // 2. Ambil / buat progress hari ini
-        const progressRes = await fetch(`/api/hijrah-progress?user_id=${uid}`);
+        const progressRes = await fetch(`/api/hijrah-progress?user_id=${uid}`, { cache: "no-store" });
         const progressData = await progressRes.json();
         let day = progressData.current_day ?? 1;
 
         // 3. Ambil tasks yang sudah selesai hari ini
-        let tasksRes = await fetch(`/api/hijrah-tasks?user_id=${uid}&day=${day}`);
+        let tasksRes = await fetch(`/api/hijrah-tasks?user_id=${uid}&day=${day}`, { cache: "no-store" });
         let tasksData = await tasksRes.json();
         let ids: string[] = tasksData.completed_task_ids ?? [];
 
@@ -79,7 +87,7 @@ export default function HijrahPage() {
           });
 
           // Fetch state hari yang baru
-          tasksRes = await fetch(`/api/hijrah-tasks?user_id=${uid}&day=${day}`);
+          tasksRes = await fetch(`/api/hijrah-tasks?user_id=${uid}&day=${day}`, { cache: "no-store" });
           tasksData = await tasksRes.json();
           ids = tasksData.completed_task_ids ?? [];
           missionsForDay = hijrahMissions[day] || [];

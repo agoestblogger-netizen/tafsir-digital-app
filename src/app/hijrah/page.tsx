@@ -5,6 +5,7 @@ import { Leaf, CheckCircle2, Loader2 } from "lucide-react";
 import { PohonIman } from "@/components/specific/PohonIman";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 // ─── Konstanta ────────────────────────────────────────────────────
 const TOTAL_DAYS = 21;
@@ -48,6 +49,7 @@ function getPlantLevel(progress: number): { emoji: string; label: string } {
 
 // ─── Page Component ───────────────────────────────────────────────
 export default function HijrahPage() {
+  const router = useRouter();
   const [userId, setUserId] = React.useState<string>("");
   const [currentDay, setCurrentDay] = React.useState<number>(1);
   const [completedIds, setCompletedIds] = React.useState<Set<string>>(new Set());
@@ -116,46 +118,50 @@ export default function HijrahPage() {
   const allDone = currentMissions.length > 0 && completedToday === currentMissions.length;
   const plantLevel = getPlantLevel(overallProgress);
 
-  // ─── Toggle Task (optimistic update + Supabase sync) ─────────
-  const handleToggleTask = async (taskId: string, _taskText: string) => {
+  // ─── Toggle Task (NO Optimistic UI, Pure Supabase Truth) ─────────
+  const handleToggleTask = async (taskId: string) => {
     if (!userId || savingId !== null) return;
 
     const isCurrentlyDone = completedIds.has(taskId);
     setSavingId(taskId);
 
-    // Optimistic update
-    setCompletedIds(prev => {
-      const next = new Set(prev);
-      if (isCurrentlyDone) next.delete(taskId);
-      else next.add(taskId);
-      return next;
-    });
-
     try {
+      let response;
       if (isCurrentlyDone) {
         // Batalkan centang
-        await fetch("/api/hijrah-tasks", {
+        response = await fetch("/api/hijrah-tasks", {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ user_id: userId, day_number: currentDay, task_id: taskId }),
         });
       } else {
         // Tandai selesai
-        await fetch("/api/hijrah-tasks", {
+        response = await fetch("/api/hijrah-tasks", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ user_id: userId, day_number: currentDay, task_id: taskId }),
         });
       }
-    } catch (err) {
-      // Rollback jika gagal
-      console.error("[HijrahPage] Toggle error:", err);
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || "Gagal update task");
+      }
+
+      // Revalidate UI from server!
+      router.refresh();
+
+      // Update state local *hanya* jika fetch valid
       setCompletedIds(prev => {
         const next = new Set(prev);
-        if (isCurrentlyDone) next.add(taskId);
-        else next.delete(taskId);
+        if (isCurrentlyDone) next.delete(taskId);
+        else next.add(taskId);
         return next;
       });
+
+    } catch (err) {
+      console.error("[HijrahPage] Toggle error:", err);
+      alert("Gagal menyimpan progres. Silakan coba lagi.");
     } finally {
       setSavingId(null);
     }
@@ -255,7 +261,7 @@ export default function HijrahPage() {
                   <motion.button
                     key={task.id}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => handleToggleTask(task.id, task.title)}
+                    onClick={() => handleToggleTask(task.id)}
                     disabled={isSaving}
                     className={`flex items-center gap-3 p-4 card-premium rounded-2xl cursor-pointer transition-all group hover:border-gold/60 text-left w-full disabled:opacity-70 ${isDone ? "border-primary bg-primary/5" : ""
                       }`}

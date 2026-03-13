@@ -117,7 +117,7 @@ export function TajweedLegend() {
                         <div className="mt-2 p-4 rounded-2xl border border-gold/20 bg-white/70 backdrop-blur-sm shadow-sm">
                             {/* Header */}
                             <p className="text-xs text-foreground/45 mb-3 font-medium tracking-wide uppercase">
-                                Kamus Warna Al-Qur'an (Rasm Uthmani Tajweed)
+                                Kamus Warna Al-Qur&apos;an (Rasm Uthmani Tajweed)
                             </p>
 
                             {/* Grid kamus warna */}

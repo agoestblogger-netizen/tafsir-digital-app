@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
 import { ChevronLeft, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
@@ -46,7 +45,7 @@ export function DetailSurahHeader({ surah }: DetailSurahHeaderProps) {
         <div className="card-premium p-6 rounded-3xl relative overflow-hidden w-full text-left flex flex-col gap-4">
           <div className="absolute top-0 right-0 w-32 h-32 bg-gold/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
           <p className="text-foreground/80 leading-relaxed text-sm relative z-10 font-medium">
-            "{surah.pitch}"
+            &quot;{surah.pitch}&quot;
           </p>
           {surah.resume && (
             <>

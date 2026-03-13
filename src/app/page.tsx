@@ -150,7 +150,7 @@ export default function Home() {
               <div className="flex items-center gap-3 w-full justify-center">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent to-gold/60 max-w-16"></div>
                 <p className="text-xs md:text-sm tracking-[0.2em] font-medium text-gold/90 uppercase pt-1">
-                  Tafsir Al-Qur'an Digital
+                  Tafsir Al-Qur&apos;an Digital
                 </p>
                 <div className="h-px flex-1 bg-gradient-to-r from-gold/60 to-transparent max-w-16"></div>
               </div>

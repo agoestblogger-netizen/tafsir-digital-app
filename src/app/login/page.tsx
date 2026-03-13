@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { Loader2, Lock, Mail, AlertCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 export default function LoginPage() {
   const [email, setEmail] = React.useState("");

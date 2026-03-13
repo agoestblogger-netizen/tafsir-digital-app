@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
         }
 
         const supabase = getSupabaseAdmin();
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from("hijrah_tasks")
             .upsert(
                 {
@@ -53,15 +53,16 @@ export async function POST(request: NextRequest) {
                     completed_at: new Date().toISOString(),
                 },
                 { onConflict: "user_id,day_number,task_id" }
-            );
+            )
+            .select();
 
         if (error) {
-            console.error("[HijrahTasks] Upsert error:", error);
+            console.error("[HijrahTasks CRITICAL] Upsert error full details:", JSON.stringify(error, null, 2));
             return NextResponse.json({ error: error.message }, { status: 500 });
         }
 
-        console.log(`[HijrahTasks] ✅ Task ${task_id} done — Day ${day_number}`);
-        return NextResponse.json({ success: true });
+        console.log(`[HijrahTasks] ✅ Task ${task_id} done — Day ${day_number}. Data returned:`, data);
+        return NextResponse.json({ success: true, data });
     } catch (err) {
         return NextResponse.json({ error: String(err) }, { status: 500 });
     }
@@ -76,20 +77,21 @@ export async function DELETE(request: NextRequest) {
         }
 
         const supabase = getSupabaseAdmin();
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from("hijrah_tasks")
             .update({ is_completed: false })
             .eq("user_id", user_id)
             .eq("day_number", Number(day_number))
-            .eq("task_id", String(task_id));
+            .eq("task_id", String(task_id))
+            .select();
 
         if (error) {
-            console.error("[HijrahTasks] Cancel error:", error);
+            console.error("[HijrahTasks CRITICAL] Cancel error full details:", JSON.stringify(error, null, 2));
             return NextResponse.json({ error: error.message }, { status: 500 });
         }
 
-        console.log(`[HijrahTasks] ✅ Task ${task_id} dibatalkan — Day ${day_number}`);
-        return NextResponse.json({ success: true });
+        console.log(`[HijrahTasks] ✅ Task ${task_id} dibatalkan — Day ${day_number}. Data cancelled:`, data);
+        return NextResponse.json({ success: true, data });
     } catch (err) {
         return NextResponse.json({ error: String(err) }, { status: 500 });
     }

@@ -305,6 +305,24 @@ Pastikan JSON valid. Bahasa: Indonesia.`;
       } else {
         console.log("[Encyclopedia Detail] ✅ Article cached:", topicTitle);
       }
+    } else {
+      const insertPayload = {
+        title: topicTitle,
+        full_article: JSON.stringify(article),
+        category: "Keajaiban Harian",
+        surah_reference: surahRef || article.surah_reference || null,
+        teaser: article.modern_discovery ? article.modern_discovery.substring(0, 100) + "..." : null,
+      };
+
+      const { error: insertError } = await supabase
+        .from("encyclopedia_articles")
+        .insert(insertPayload);
+        
+      if (insertError) {
+        console.error("[Encyclopedia Detail] DB insert error:", insertError);
+      } else {
+        console.log("[Encyclopedia Detail] ✅ New Article inserted and cached:", topicTitle);
+      }
     }
 
     return NextResponse.json(article);

@@ -4,8 +4,9 @@ import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   PlayCircle, PauseCircle, Sparkles, Loader2,
-  ScrollText, BookOpen, Lightbulb, ChevronDown
+  ScrollText, BookOpen, Lightbulb, ChevronDown, Atom, ArrowRight
 } from "lucide-react";
+import Link from "next/link";
 import { Verse, VerseWord } from "@/lib/api/quran";
 import { useAudioState } from "@/lib/audioStore";
 
@@ -20,6 +21,12 @@ interface VerseTafsirData {
   perspektif_sosial: string | null;
   hadith: string | null;
   todo_list: string[];
+}
+
+interface PenemuMuslimRef {
+  id: string;
+  nama_ilmuwan: string;
+  bidang_ilmu: string;
 }
 
 const LENS_CONFIG: { key: LensKey; field: keyof VerseTafsirData; label: string; emoji: string; color: string; activeColor: string }[] = [
@@ -45,6 +52,9 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
   const [tafsirError, setTafsirError] = React.useState<string | null>(null);
   const [showTafsir, setShowTafsir] = React.useState(false);
   const [activeLens, setActiveLens] = React.useState<LensKey>('psikologi');
+
+  // Penemu Muslim State
+  const [penemuData, setPenemuData] = React.useState<PenemuMuslimRef | null>(null);
 
   // Cleanup on unmount
   React.useEffect(() => {
@@ -146,10 +156,20 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
         }),
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Gagal menganalisis ayat.");
+      // Fetch cross-reference Penemu Muslim
+      const fetchPenemu = fetch(`/api/penemu-muslim?surah=${verse.verse_key.split(":")[0]}&ayat=${verseNumber}`)
+        .then(r => r.json())
+        .then(d => {
+          if (d.data && d.data.length > 0) {
+            setPenemuData(d.data[0]);
+          }
+        })
+        .catch(err => console.error("Gagal fetch penemu:", err));
 
-      setTafsirData(data as VerseTafsirData);
+      const [resData] = await Promise.all([res.json(), fetchPenemu]);
+      if (!res.ok) throw new Error(resData.error || "Gagal menganalisis ayat.");
+
+      setTafsirData(resData as VerseTafsirData);
       setShowTafsir(true);
     } catch (err) {
       setTafsirError(err instanceof Error ? err.message : "Terjadi kesalahan.");
@@ -407,6 +427,41 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
                 </motion.div>
               );
             })()}
+          </AnimatePresence>
+
+          {/* ─── Penemu Muslim Cross-Reference ───────────────────── */}
+          <AnimatePresence>
+            {showTafsir && penemuData && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+                className="mt-4 card-premium border-gold/50 bg-gold/5 p-5 rounded-2xl relative overflow-hidden group"
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gold/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                
+                <div className="flex items-start gap-3 relative z-10">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm mt-0.5">
+                    <Atom className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-xs font-bold text-gold tracking-wider uppercase flex items-center gap-1.5 mb-1">
+                      <Lightbulb className="w-3.5 h-3.5" /> Khazanah Sains Islam
+                    </h4>
+                    <p className="text-sm text-foreground/90 leading-relaxed mb-3">
+                      Ayat ini menginspirasi <strong>{penemuData.nama_ilmuwan}</strong> dalam bidang <strong>{penemuData.bidang_ilmu}</strong>.
+                    </p>
+                    <Link
+                      href={`/ensiklopedia/penemu/${penemuData.id}`}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-gold transition-colors"
+                    >
+                      Baca Kisah Ilmuwan <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              </motion.div>
+            )}
           </AnimatePresence>
         </div>
       </div>

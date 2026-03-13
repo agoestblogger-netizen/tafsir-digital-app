@@ -4,8 +4,10 @@ import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Telescope, Landmark, Dna, Waves, Brain, Scroll,
-  Sparkles, BookOpenCheck, ArrowLeft, Quote, ChevronRight, Loader2
+  Sparkles, BookOpenCheck, ArrowLeft, Quote, ChevronRight, Loader2,
+  Atom
 } from "lucide-react";
+import Link from "next/link";
 
 // ─── Types ──────────────────────────────────────────────────────
 interface EncyclopediaEntry {
@@ -32,6 +34,7 @@ const CATEGORIES = [
   { key: "biologi", apiKey: "Biologi & Embriologi Manusia", label: "Biologi Manusia", emoji: "🧬", icon: Dna, gradient: "from-emerald-500 to-teal-600", bg: "bg-emerald-50", border: "border-emerald-100", text: "text-emerald-700", headerGradient: "from-emerald-600 via-teal-600 to-cyan-700" },
   { key: "geografi", apiKey: "Geografi & Oseanografi", label: "Geografi & Alam", emoji: "🌊", icon: Waves, gradient: "from-cyan-500 to-blue-600", bg: "bg-cyan-50", border: "border-cyan-100", text: "text-cyan-700", headerGradient: "from-cyan-600 via-blue-600 to-indigo-700" },
   { key: "sejarah", apiKey: "Sejarah Kaum Lampau", label: "Sejarah Kaum Lampau", emoji: "🏛️", icon: Landmark, gradient: "from-amber-500 to-orange-600", bg: "bg-amber-50", border: "border-amber-100", text: "text-amber-700", headerGradient: "from-amber-600 via-orange-600 to-red-700" },
+  { key: "penemu", href: "/ensiklopedia/penemu", apiKey: "Penemu Muslim", label: "Tokoh Islam yang Mengubah Dunia", emoji: "💡", icon: Atom, gradient: "from-gold to-amber-600", bg: "bg-amber-50/50", border: "border-gold/30", text: "text-amber-700", headerGradient: "from-gold via-amber-500 to-orange-600" },
   { key: "psikologi", apiKey: "Psikologi Kognitif & Neurosains", label: "Psikologi Kognitif", emoji: "🧠", icon: Brain, gradient: "from-rose-500 to-pink-600", bg: "bg-rose-50", border: "border-rose-100", text: "text-rose-700", headerGradient: "from-rose-600 via-pink-600 to-fuchsia-700" },
 ];
 
@@ -114,6 +117,7 @@ export default function EncyclopediaPage() {
 
   const handleCategoryClick = async (cat: CategoryType) => {
     setSelectedCategory(cat);
+
     setViewState("topicList");
     setIsLoadingList(true);
     setListError(null);
@@ -173,6 +177,10 @@ export default function EncyclopediaPage() {
   };
 
   const goBackToTopicList = () => {
+    if (topicList.length === 0) {
+      goBackToCategories();
+      return;
+    }
     setViewState("topicList");
     setEntry(null);
     setArticleError(null);
@@ -183,13 +191,11 @@ export default function EncyclopediaPage() {
       {/* Abstract Background */}
       <div className="absolute top-[-10%] left-[-10%] w-[120%] h-[40vh] bg-gradient-to-br from-primary/5 via-gold/5 to-transparent rounded-[100%] blur-3xl -z-10 pointer-events-none" />
 
-      {/* Header */}
-      <header className="px-6 pt-12 pb-6 sticky top-0 bg-background/80 backdrop-blur-md z-20 border-b gold-divider shadow-sm">
-        <div className="flex items-center gap-3 mb-1">
+      <header className="px-6 pt-12 pb-6 sticky top-0 bg-background/90 backdrop-blur-xl z-20 border-b gold-divider shadow-sm">
+        <div className="flex items-center gap-3">
           <BookOpenCheck className="w-7 h-7 text-gold" />
           <h1 className="text-2xl font-bold tracking-tight">Ensiklopedia Semesta</h1>
         </div>
-        <p className="text-muted-foreground text-sm">Korelasi menakjubkan antara Al-Qur'an dan sains modern.</p>
       </header>
 
       {/* ─── Screen Views ─────────────────────────────────────── */}
@@ -249,25 +255,36 @@ export default function EncyclopediaPage() {
                 Jelajahi Kategori
               </h3>
               <div className="grid grid-cols-2 gap-3">
-                {CATEGORIES.map((cat, i) => (
-                  <motion.button
-                    key={cat.key}
-                    onClick={() => handleCategoryClick(cat)}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.08 + i * 0.05 }}
-                    whileTap={{ scale: 0.96 }}
-                    className={`relative flex flex-col items-start gap-2.5 p-4 rounded-2xl ${cat.bg} ${cat.border} border text-left shadow-sm hover:shadow-md transition-all group overflow-hidden`}
-                  >
-                    <div className="absolute top-0 right-0 w-20 h-20 rounded-full bg-white/30 blur-2xl -mr-8 -mt-8 pointer-events-none" />
-                    <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${cat.gradient} text-white flex items-center justify-center shadow-sm`}>
-                      <cat.icon className="w-5 h-5" />
-                    </div>
-                    <span className={`text-sm font-semibold ${cat.text}`}>
-                      {cat.emoji} {cat.label}
-                    </span>
-                  </motion.button>
-                ))}
+                {CATEGORIES.map((cat, i) => {
+                  const CategoryCard = (
+                    <motion.div
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.08 + i * 0.05 }}
+                      whileHover={{ scale: 0.98 }}
+                      whileTap={{ scale: 0.96 }}
+                      className={`relative flex flex-col items-start gap-2.5 p-4 rounded-2xl ${cat.bg} ${cat.border} border text-left shadow-sm hover:shadow-md transition-all group overflow-hidden w-full h-full`}
+                    >
+                      <div className="absolute top-0 right-0 w-20 h-20 rounded-full bg-white/30 blur-2xl -mr-8 -mt-8 pointer-events-none" />
+                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${cat.gradient} text-white flex items-center justify-center shadow-sm`}>
+                        <cat.icon className="w-5 h-5" />
+                      </div>
+                      <span className={`text-sm font-semibold ${cat.text}`}>
+                        {cat.emoji} {cat.label}
+                      </span>
+                    </motion.div>
+                  );
+
+                  return "href" in cat && cat.href ? (
+                    <Link href={cat.href} key={cat.key} className="w-full h-full block">
+                      {CategoryCard}
+                    </Link>
+                  ) : (
+                    <button key={cat.key} onClick={() => handleCategoryClick(cat)} className="text-left w-full h-full">
+                      {CategoryCard}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </motion.div>
@@ -374,7 +391,7 @@ export default function EncyclopediaPage() {
                 onClick={goBackToTopicList}
                 className="inline-flex items-center gap-1.5 text-white/70 hover:text-white text-sm transition-colors"
               >
-                <ArrowLeft className="w-4 h-4" /> Kembali ke Daftar Topik
+                <ArrowLeft className="w-4 h-4" /> {topicList.length === 0 ? "Kembali ke Beranda" : "Kembali ke Daftar Topik"}
               </button>
             </div>
 
@@ -469,7 +486,7 @@ export default function EncyclopediaPage() {
                     <div className="flex items-center gap-2 mb-3">
                       <Scroll className={`w-4 h-4 ${selectedCategory.text}`} />
                       <h3 className={`text-xs font-bold ${selectedCategory.text} tracking-wider uppercase`}>
-                        Korelasi Al-Qur'an
+                        Korelasi Al-Qur&apos;an
                       </h3>
                     </div>
                     <div className="text-sm text-foreground/80 leading-relaxed whitespace-pre-line">
@@ -494,7 +511,10 @@ export default function EncyclopediaPage() {
             </div>
           </motion.div>
         )}
+
+        {/* Remove Legacy Tab Penemu Muslim */}
       </AnimatePresence>
+
     </main>
   );
 }

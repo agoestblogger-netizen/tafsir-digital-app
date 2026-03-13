@@ -167,9 +167,11 @@ export async function getVersesByChapter(chapterId: number | string): Promise<Ve
     const data = await res.json();
     totalPages = data.pagination?.total_pages || 1;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const mapped = data.verses.map((v: any) => ({
       ...v,
       audio: v.audio ? { ...v.audio, url: `${AUDIO_BASE_URL}${v.audio.url}` } : undefined,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       words: v.words ? v.words.map((w: any) => ({
         ...w,
         audio_url: w.audio_url ? `${AUDIO_BASE_URL}${w.audio_url}` : null

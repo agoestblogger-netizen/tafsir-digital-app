@@ -35,7 +35,7 @@ export function SurahListClient({ initialChapters }: SurahListClientProps) {
           Peta Surah
         </h1>
         <p className="text-muted-foreground leading-relaxed">
-          Eksplorasi peta kebijakan Al-Qur'an. 114 Surah, 114 panduan hidup.
+          Eksplorasi peta kebijakan Al-Qur&apos;an. 114 Surah, 114 panduan hidup.
         </p>
       </header>
 

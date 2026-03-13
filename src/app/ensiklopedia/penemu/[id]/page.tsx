@@ -29,7 +29,7 @@ interface PenemuMuslim {
 }
 
 // ─── Page Component ─────────────────────────────────────────────
-export default function PenemuDetailPage({ params }: { params: Promise<{ id: string }> | { id: string } }) {
+export default function PenemuDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const [data, setData] = React.useState<PenemuMuslim | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);

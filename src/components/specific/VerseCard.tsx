@@ -327,7 +327,14 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
           <AnimatePresence>
             {showTafsir && tafsirData && (() => {
               const availableLenses = LENS_CONFIG.filter(
-                (lens) => tafsirData[lens.field] && String(tafsirData[lens.field]).trim() !== "" && String(tafsirData[lens.field]).trim().toLowerCase() !== "null"
+                (lens) => {
+                  const val = String(tafsirData[lens.field] || "").trim();
+                  return val !== "" && 
+                         val.toLowerCase() !== "null" && 
+                         val !== "undefined" &&
+                         !val.toLowerCase().includes("fakta ilmiah spesifik") &&
+                         !val.toLowerCase().includes("atau null");
+                }
               );
               const hasAnyPerspective = availableLenses.length > 0;
               const effectiveLens = availableLenses.find(l => l.key === activeLens)

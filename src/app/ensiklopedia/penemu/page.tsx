@@ -31,7 +31,7 @@ export default function PenemuListPage() {
       try {
         const res = await fetch("/api/penemu-muslim");
         const json = await res.json();
-        if (!res.ok) throw new Error(json.error || "Gagal memuat data tokoh Islam yang mengubah dunia.");
+        if (!res.ok) throw new Error(json.error || "Gagal memuat data Jejak Al-Qur'an di Alam Semesta.");
         
         const fetchedData: PenemuMuslim[] = json.data;
         setData(fetchedData);
@@ -41,13 +41,24 @@ export default function PenemuListPage() {
         
         fetchedData.forEach((item) => {
           if (item.bidang_ilmu) {
-            item.bidang_ilmu.split(",").forEach((cat) => {
-              const trimmed = cat.trim();
-              if (trimmed) {
-                if (!grouped[trimmed]) {
-                  grouped[trimmed] = [];
+            // Bersihkan string dari tanda kurung
+            const text = item.bidang_ilmu.replace(/\(.*?\)/g, "").trim();
+            
+            // Pecah kata hubung (dan, koma, &)
+            const categories = text.split(/\s*(?:dan|,|&)\s*/i);
+
+            categories.forEach((rawCat) => {
+              let mainCat = rawCat.trim();
+              if (mainCat) {
+                // Standarisasi kata kunci (Normalisasi)
+                if (mainCat.toLowerCase().startsWith("arkeologi")) {
+                  mainCat = "Arkeologi";
                 }
-                grouped[trimmed].push(item);
+
+                if (!grouped[mainCat]) {
+                  grouped[mainCat] = [];
+                }
+                grouped[mainCat].push(item);
               }
             });
           }
@@ -76,7 +87,7 @@ export default function PenemuListPage() {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <BookOpenCheck className="w-7 h-7 text-gold" />
-          <h1 className="text-2xl font-bold tracking-tight text-balance">Tokoh Islam yang Mengubah Dunia</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-balance">Jejak Al-Qur&apos;an di Alam Semesta</h1>
         </div>
       </header>
 
@@ -134,6 +145,12 @@ export default function PenemuListPage() {
                             const safeId = penemu?.id || penemu?.No || penemu?.no || penemu?.ID;
                             if (!safeId) return null;
                             
+                            // Regex to extract status like "Zahi Hawass (Muslim)"
+                            const match = penemu.nama_ilmuwan.match(/^(.*?)\s*\((.*?)\)$/);
+                            const cleanName = match ? match[1].trim() : penemu.nama_ilmuwan;
+                            const status = match ? match[2].trim() : null;
+                            const isMuslim = status?.toLowerCase() === "muslim";
+                            
                             return (
                               <Link
                                 href={`/ensiklopedia/penemu/${safeId}`}
@@ -142,15 +159,24 @@ export default function PenemuListPage() {
                               >
                                 <div className="absolute top-0 right-0 w-16 h-16 bg-gold/10 rounded-full blur-xl -mr-6 -mt-6 pointer-events-none transition-transform group-hover:scale-150 duration-500" />
                                 
-                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center shadow-sm relative z-10">
+                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center shadow-sm relative z-10 shrink-0">
                                   <Atom className="w-5 h-5" />
                                 </div>
                                 
-                                <div className="mt-1 w-full relative z-10">
+                                <div className="mt-1 w-full relative z-10 flex flex-col items-start">
                                   <h3 className="text-sm font-bold text-foreground leading-tight group-hover:text-gold transition-colors line-clamp-2">
-                                    {penemu.nama_ilmuwan}
+                                    {cleanName}
                                   </h3>
-                                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mt-1 truncate">
+                                  
+                                  {status && (
+                                    <span className={`mt-1.5 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded-md border ${
+                                      isMuslim ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-50 text-slate-600 border-slate-200"
+                                    }`}>
+                                      {status}
+                                    </span>
+                                  )}
+                                  
+                                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mt-1.5 truncate w-full">
                                     {penemu.bidang_ilmu}
                                   </p>
                                 </div>
@@ -167,7 +193,7 @@ export default function PenemuListPage() {
           </div>
         ) : (
           <div className="text-center py-20 bg-card border border-border rounded-3xl">
-            <p className="text-muted-foreground text-sm font-medium">Belum ada data tokoh Islam yang mengubah dunia.</p>
+            <p className="text-muted-foreground text-sm font-medium">Belum ada data Jejak Al-Qur&apos;an di Alam Semesta.</p>
           </div>
         )}
       </div>

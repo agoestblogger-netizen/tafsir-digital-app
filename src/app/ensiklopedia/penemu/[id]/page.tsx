@@ -17,8 +17,8 @@ interface PenemuMuslim {
   bidang_ilmu: string;
   profil_singkat: string;
   kontribusi_ilmiah: string;
-  nomor_surat: number | null;
-  nomor_ayat: number | null;
+  nomor_surat: string | number | null;
+  nomor_ayat: string | number | null;
   ayat_quran: string | null;
   tafsir_ibnu_katsir: string | null;
   tafsir_al_qurthubi: string | null;
@@ -28,13 +28,46 @@ interface PenemuMuslim {
   created_at: string;
 }
 
+// ─── Helper Functions ───────────────────────────────────────────
+function parseQuranReferences(surahInput: string | number, ayatInput: string | number): { surah: number; ayat: number }[] {
+  const surahs = String(surahInput).split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+  const ayahsRaw = String(ayatInput).split(',').map(s => s.trim());
+  
+  const ayahs: number[] = [];
+  for (const a of ayahsRaw) {
+    if (a.includes('-')) {
+      const parts = a.split('-');
+      const start = parseInt(parts[0]);
+      const end = parseInt(parts[1]);
+      if (!isNaN(start) && !isNaN(end) && start <= end) {
+        for (let i = start; i <= end; i++) ayahs.push(i);
+      }
+    } else {
+      const n = parseInt(a);
+      if (!isNaN(n)) ayahs.push(n);
+    }
+  }
+
+  const pairs: { surah: number; ayat: number }[] = [];
+  if (surahs.length === 1) {
+    ayahs.forEach(a => pairs.push({ surah: surahs[0], ayat: a }));
+  } else {
+    // If multiple surahs, try to pair index by index, fallback to last surah seen
+    ayahs.forEach((a, idx) => {
+      const s = surahs[idx] !== undefined ? surahs[idx] : surahs[surahs.length - 1];
+      pairs.push({ surah: s, ayat: a });
+    });
+  }
+  return pairs;
+}
+
 // ─── Page Component ─────────────────────────────────────────────
 export default function PenemuDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const [data, setData] = React.useState<PenemuMuslim | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
-  const [quranData, setQuranData] = React.useState<{arabic: string; latin: string; translation: string; surahName?: string} | null>(null);
+  const [quranDataList, setQuranDataList] = React.useState<{arabic: string; latin: string; translation: string; surahName?: string; surahNum: number; ayatNum: number}[]>([]);
 
   React.useEffect(() => {
     async function fetchData() {
@@ -79,26 +112,38 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
   }, [params]);
 
   React.useEffect(() => {
-    async function fetchArabicVerse() {
+    async function fetchArabicVerses() {
       if (data?.nomor_surat && data?.nomor_ayat) {
         try {
-          const res = await fetch(`https://api.alquran.cloud/v1/ayah/${data.nomor_surat}:${data.nomor_ayat}/editions/quran-uthmani,en.transliteration,id.indonesian`);
-          const json = await res.json();
-          if (json.code === 200 && Array.isArray(json.data) && json.data.length >= 3) {
-            setQuranData({
-              arabic: json.data[0].text,
-              latin: json.data[1].text,
-              translation: json.data[2].text,
-              surahName: json.data[0].surah?.englishName
-            });
-          }
+          const pairs = parseQuranReferences(data.nomor_surat, data.nomor_ayat);
+          
+          const fetchPromises = pairs.map(async (pair) => {
+            const res = await fetch(`https://api.alquran.cloud/v1/ayah/${pair.surah}:${pair.ayat}/editions/quran-uthmani,en.transliteration,id.indonesian`);
+            const json = await res.json();
+            if (json.code === 200 && Array.isArray(json.data) && json.data.length >= 3) {
+              return {
+                arabic: json.data[0].text,
+                latin: json.data[1].text,
+                translation: json.data[2].text,
+                surahName: json.data[0].surah?.englishName,
+                surahNum: pair.surah,
+                ayatNum: pair.ayat
+              };
+            }
+            return null;
+          });
+          
+          const results = await Promise.all(fetchPromises);
+          // Type cast safely
+          const validResults = results.filter((r): r is NonNullable<typeof r> => r !== null);
+          setQuranDataList(validResults);
         } catch (err) {
-          console.error("Failed to fetch dynamic Quran data:", err);
+          console.error("Failed to fetch dynamic Quran multi verses data:", err);
           // Fallback quietly
         }
       }
     }
-    fetchArabicVerse();
+    fetchArabicVerses();
   }, [data?.nomor_surat, data?.nomor_ayat]);
 
   if (isLoading) {
@@ -142,7 +187,7 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
           onClick={() => router.back()}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 border border-border/50 shadow-sm text-sm font-semibold text-foreground/80 hover:bg-white transition-all"
         >
-          <ArrowLeft className="w-4 h-4" /> Tokoh Islam yang Mengubah Dunia
+          <ArrowLeft className="w-4 h-4" /> Jejak Al-Qur&apos;an di Alam Semesta
         </button>
       </nav>
 
@@ -154,20 +199,41 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
           transition={{ duration: 0.5 }}
           className="flex flex-col gap-4"
         >
-          {/* Badge */}
-          <div className="inline-flex max-w-max items-center gap-1.5 px-3 py-1 rounded-full bg-gold/10 border border-gold/20 text-gold text-xs font-bold uppercase tracking-widest">
-            <Atom className="w-3.5 h-3.5" />
-            {data.bidang_ilmu}
-          </div>
+          {(() => {
+            const match = data.nama_ilmuwan.match(/^(.*?)\s*\((.*?)\)$/);
+            const cleanName = match ? match[1].trim() : data.nama_ilmuwan;
+            const status = match ? match[2].trim() : null;
+            const isMuslim = status?.toLowerCase() === "muslim";
 
-          <div>
-            <h1 className="text-4xl sm:text-5xl font-extrabold text-foreground leading-[1.15] mb-2 tracking-tight">
-              {data.nama_ilmuwan}
-            </h1>
-            <p className="text-xl text-muted-foreground font-medium italic">
-              {data.julukan}
-            </p>
-          </div>
+            return (
+              <>
+                {/* Badge Kategori & Status */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="inline-flex max-w-max items-center gap-1.5 px-3 py-1 rounded-full bg-gold/10 border border-gold/20 text-gold text-xs font-bold uppercase tracking-widest">
+                    <Atom className="w-3.5 h-3.5" />
+                    {data.bidang_ilmu}
+                  </div>
+                  
+                  {status && (
+                    <div className={`inline-flex max-w-max items-center px-3 py-1 rounded-full border text-xs font-bold uppercase tracking-widest ${
+                      isMuslim ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-50 text-slate-600 border-slate-200"
+                    }`}>
+                      {status}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <h1 className="text-4xl sm:text-5xl font-extrabold text-foreground leading-[1.15] mb-2 tracking-tight">
+                    {cleanName}
+                  </h1>
+                  <p className="text-xl text-muted-foreground font-medium italic">
+                    {data.julukan}
+                  </p>
+                </div>
+              </>
+            );
+          })()}
 
           <div className="flex flex-wrap gap-3 mt-2">
             {data.tahun_hidup && (
@@ -222,41 +288,67 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
               <h2 className="text-lg font-bold text-foreground tracking-tight">Cahaya Al-Qur&apos;an</h2>
             </div>
             
-            <div className="card-premium p-6 sm:p-8 rounded-[2rem] relative overflow-hidden">
+            <div className="card-premium p-6 sm:p-8 rounded-[2rem] relative overflow-hidden flex flex-col gap-10">
               <div className="absolute top-0 left-0 w-40 h-40 bg-gold/10 rounded-full blur-3xl -ml-20 -mt-20 pointer-events-none" />
               
-              <div className="flex flex-col items-end justify-between mb-8 relative z-10 gap-2">
-                 <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-gold/10 text-gold text-xs font-bold tracking-widest uppercase self-start mb-2">
-                   {quranData?.surahName ? `QS. ${quranData.surahName} : ${data.nomor_ayat}` : `Surah ${data.nomor_surat} : ${data.nomor_ayat}`}
-                 </span>
-              </div>
+              {quranDataList.length > 0 ? (
+                // Successfully parsed rendering multi-verses
+                quranDataList.map((quran, idx) => (
+                  <div key={`${quran.surahNum}-${quran.ayatNum}`} className="relative z-10 flex flex-col">
+                    <div className="flex flex-col items-end justify-between mb-8 gap-2">
+                       <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-gold/10 text-gold text-xs font-bold tracking-widest uppercase self-start mb-2">
+                         {quran.surahName ? `QS. ${quran.surahName} : ${quran.ayatNum}` : `Surah ${quran.surahNum} : ${quran.ayatNum}`}
+                       </span>
+                    </div>
 
-              <p 
-                dir="rtl"
-                className="font-arabic text-3xl sm:text-4xl leading-[2.2] sm:leading-[2.4] text-right text-foreground mb-4 relative z-10 drop-shadow-sm"
-              >
-                {quranData?.arabic || "Memuat lafaz..."}
-              </p>
+                    <p 
+                      dir="rtl"
+                      className="font-arabic text-3xl sm:text-4xl leading-[2.2] sm:leading-[2.4] text-right text-foreground mb-4 drop-shadow-sm"
+                    >
+                      {quran.arabic}
+                    </p>
 
-              {quranData?.latin && (
-                <p className="text-base sm:text-lg text-muted-foreground/80 italic text-left mb-8 relative z-10 font-medium">
-                  {quranData.latin}
-                </p>
+                    <p className="text-base sm:text-lg text-muted-foreground/80 italic text-left mb-6 font-medium">
+                      {quran.latin}
+                    </p>
+                    
+                    <div className="relative pl-5 border-l-2 border-gold/40 flex flex-col gap-3">
+                      <Quote className="w-5 h-5 text-gold/30 absolute -left-3 -top-2 bg-background p-0.5 rounded-full" />
+                      <p className="text-base sm:text-lg text-foreground/90 leading-relaxed text-justify font-medium">
+                        {quran.translation}
+                      </p>
+                    </div>
+                    
+                    {idx < quranDataList.length - 1 && (
+                      <hr className="mt-10 border-border/50" />
+                    )}
+                  </div>
+                ))
+              ) : (
+                // Fallback rendering
+                <div className="relative z-10">
+                  <div className="flex flex-col items-end justify-between mb-8 gap-2">
+                     <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-gold/10 text-gold text-xs font-bold tracking-widest uppercase self-start mb-2">
+                       Surah {data.nomor_surat} : {data.nomor_ayat}
+                     </span>
+                  </div>
+
+                  <p 
+                    dir="rtl"
+                    className="font-arabic text-3xl sm:text-4xl leading-[2.2] sm:leading-[2.4] text-right text-foreground mb-4 drop-shadow-sm"
+                  >
+                    Memuat lafaz...
+                  </p>
+                  
+                  <div className="relative pl-5 border-l-2 border-gold/40 flex flex-col gap-3 mt-6">
+                    <Quote className="w-5 h-5 text-gold/30 absolute -left-3 -top-2 bg-background p-0.5 rounded-full" />
+                    
+                    <p className="text-base sm:text-lg text-foreground/90 leading-relaxed text-justify font-medium">
+                      {data.ayat_quran || "Terjadi kesalahan memuat terjemahan."}
+                    </p>
+                  </div>
+                </div>
               )}
-              
-              <div className="relative pl-5 border-l-2 border-gold/40 z-10 flex flex-col gap-3">
-                <Quote className="w-5 h-5 text-gold/30 absolute -left-3 -top-2 bg-background p-0.5 rounded-full" />
-                
-                {quranData?.translation ? (
-                  <p className="text-base sm:text-lg text-foreground/90 leading-relaxed text-justify font-medium">
-                    {quranData.translation}
-                  </p>
-                ) : data.ayat_quran ? (
-                  <p className="text-base sm:text-lg text-foreground/90 leading-relaxed text-justify font-medium">
-                    {data.ayat_quran}
-                  </p>
-                ) : null}
-              </div>
             </div>
           </motion.section>
         )}

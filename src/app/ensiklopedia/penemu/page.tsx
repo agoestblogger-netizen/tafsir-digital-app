@@ -2,10 +2,10 @@
 
 import * as React from "react";
 import { motion } from "framer-motion";
-import { Atom, ArrowLeft, Loader2, BookOpenCheck, ChevronDown } from "lucide-react";
+import { Atom, ArrowLeft, Loader2, BookOpenCheck, ChevronDown, Search } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface PenemuMuslim {
   id: string;
@@ -13,18 +13,38 @@ interface PenemuMuslim {
   julukan: string;
   bidang_ilmu: string;
   profil_singkat: string;
+  refleksi_ilmiah?: string;
   No?: string | number;
   no?: string | number;
   ID?: string | number;
 }
 
-export default function PenemuListPage() {
+function PenemuListContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [data, setData] = React.useState<PenemuMuslim[] | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   
-  const [groupedData, setGroupedData] = React.useState<Record<string, PenemuMuslim[]>>({});
-  const [expandedCategory, setExpandedCategory] = React.useState<string | null>(null);
+  const initialCategory = searchParams.get("kategori");
+  const [expandedCategory, setExpandedCategory] = React.useState<string | null>(initialCategory);
+  const [globalSearchQuery, setGlobalSearchQuery] = React.useState('');
+
+  const toggleCategory = (category: string) => {
+    // Prevent toggling if global search is active and explicitly forces open
+    if (globalSearchQuery.trim() !== '') return;
+
+    const isExpanded = expandedCategory === category;
+    const newCategory = isExpanded ? null : category;
+    setExpandedCategory(newCategory);
+    
+    const params = new URLSearchParams(searchParams.toString());
+    if (newCategory) {
+      params.set("kategori", newCategory);
+    } else {
+      params.delete("kategori");
+    }
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
 
   React.useEffect(() => {
     async function fetchData() {
@@ -64,11 +84,9 @@ export default function PenemuListPage() {
           }
         });
         
-        setGroupedData(grouped);
-        
-        // Auto-expand the first alphabetically sorted category
+        // Auto-expand the first alphabetically sorted category if no category is in URL
         const sortedKeys = Object.keys(grouped).sort();
-        if (sortedKeys.length > 0) {
+        if (sortedKeys.length > 0 && !searchParams.get("kategori")) {
           setExpandedCategory(sortedKeys[0]);
         }
       } catch (err) {
@@ -93,6 +111,21 @@ export default function PenemuListPage() {
 
       {/* Content */}
       <div className="px-6 py-6 flex flex-col gap-6">
+        
+        {/* Global Search Interface */}
+        <div className="relative z-10">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-muted-foreground" />
+          </div>
+          <input
+            type="text"
+            value={globalSearchQuery}
+            onChange={(e) => setGlobalSearchQuery(e.target.value)}
+            placeholder="Cari tokoh atau topik (misal: Fir'aun)..."
+            className="w-full pl-12 pr-4 py-3.5 border-2 border-border/50 rounded-2xl bg-card shadow-sm text-base focus:outline-none focus:border-gold/50 focus:ring-4 focus:ring-gold/10 transition-all font-medium placeholder:text-muted-foreground/60"
+          />
+        </div>
+
         {/* Safe Render Pattern */}
         {error ? (
           <div className="text-center py-20 flex flex-col items-center gap-3 bg-red-50/50 rounded-3xl border border-red-100">
@@ -108,16 +141,55 @@ export default function PenemuListPage() {
               Membuka lembaran sejarah...
             </p>
           </div>
-        ) : Object.keys(groupedData).length > 0 ? (
-          <div className="flex flex-col gap-4">
-            {Object.keys(groupedData).sort().map((category) => {
-              const items = groupedData[category];
-              const isExpanded = expandedCategory === category;
+        ) : (() => {
+          // Perform global filtering matching names, titles, descriptions, and science reflections
+          const query = globalSearchQuery.toLowerCase().trim();
+          const filteredData = data.filter(penemu => {
+            if (!query) return true;
+            const matchName = penemu.nama_ilmuwan?.toLowerCase().includes(query);
+            const matchTitle = penemu.julukan?.toLowerCase().includes(query);
+            const matchProfile = penemu.profil_singkat?.toLowerCase().includes(query);
+            const matchRefleksi = penemu.refleksi_ilmiah?.toLowerCase().includes(query);
+            return matchName || matchTitle || matchProfile || matchRefleksi;
+          });
+
+          // Group the filtered data
+          const currentGrouped: Record<string, PenemuMuslim[]> = {};
+          filteredData.forEach((item) => {
+            if (item.bidang_ilmu) {
+              const text = item.bidang_ilmu.replace(/\(.*?\)/g, "").trim();
+              const categories = text.split(/\s*(?:dan|,|&)\s*/i);
+
+              categories.forEach((rawCat) => {
+                let mainCat = rawCat.trim();
+                if (mainCat) {
+                  if (mainCat.toLowerCase().startsWith("arkeologi")) mainCat = "Arkeologi";
+                  if (!currentGrouped[mainCat]) currentGrouped[mainCat] = [];
+                  currentGrouped[mainCat].push(item);
+                }
+              });
+            }
+          });
+
+          if (Object.keys(currentGrouped).length === 0) {
+            return (
+              <div className="text-center py-20 bg-card border border-border rounded-3xl">
+                <p className="text-muted-foreground text-sm font-medium">Pencarian tidak ditemukan.</p>
+              </div>
+            );
+          }
+
+          return (
+            <div className="flex flex-col gap-4">
+              {Object.keys(currentGrouped).sort().map((category) => {
+                const items = currentGrouped[category];
+                // Force open if user is currently searching
+                const isExpanded = query !== '' || expandedCategory === category;
               
               return (
                 <div key={category} className="flex flex-col bg-card border border-border rounded-[2rem] shadow-sm overflow-hidden">
                   <button
-                    onClick={() => setExpandedCategory(isExpanded ? null : category)}
+                    onClick={() => toggleCategory(category)}
                     className="w-full flex items-center justify-between p-5 text-left transition-colors hover:bg-muted/30 focus:outline-none"
                   >
                     <div className="flex items-center gap-3">
@@ -164,7 +236,7 @@ export default function PenemuListPage() {
                                 </div>
                                 
                                 <div className="mt-1 w-full relative z-10 flex flex-col items-start">
-                                  <h3 className="text-sm font-bold text-foreground leading-tight group-hover:text-gold transition-colors line-clamp-2">
+                                  <h3 className="text-base md:text-lg font-semibold text-foreground leading-tight group-hover:text-gold transition-colors line-clamp-1">
                                     {cleanName}
                                   </h3>
                                   
@@ -176,8 +248,8 @@ export default function PenemuListPage() {
                                     </span>
                                   )}
                                   
-                                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mt-1.5 truncate w-full">
-                                    {penemu.bidang_ilmu}
+                                  <p className="text-sm text-gray-600 line-clamp-2 mt-1.5 w-full">
+                                    {penemu.julukan || penemu.bidang_ilmu}
                                   </p>
                                 </div>
                               </Link>
@@ -189,14 +261,23 @@ export default function PenemuListPage() {
                   </AnimatePresence>
                 </div>
               );
-            })}
-          </div>
-        ) : (
-          <div className="text-center py-20 bg-card border border-border rounded-3xl">
-            <p className="text-muted-foreground text-sm font-medium">Belum ada data Jejak Al-Qur&apos;an di Alam Semesta.</p>
-          </div>
-        )}
+              })}
+            </div>
+          );
+        })()}
       </div>
     </main>
+  );
+}
+
+export default function PenemuListPage() {
+  return (
+    <React.Suspense fallback={
+      <div className="min-h-screen bg-page-warm flex items-center justify-center">
+        <Loader2 className="w-10 h-10 text-gold animate-spin" />
+      </div>
+    }>
+      <PenemuListContent />
+    </React.Suspense>
   );
 }

@@ -4,13 +4,14 @@ import { getSupabaseAdmin } from "@/lib/supabase";
 import OpenAI from "openai";
 
 const SYSTEM_INSTRUCTION = [
-  "Kamu adalah asisten Ensiklopedia Al-Qur'an.",
-  "Ubah teks mentah menjadi format Markdown.",
-  "PISAHKAN secara tegas antara bahasan sains dan hikmah spiritual.",
+  "Kamu adalah asisten Ensiklopedia Al-Qur'an dan edukator berwawasan luas.",
+  "Tugasmu: Ubah teks mentah peninggalan ilmuwan ini menjadi format Markdown bertutur/storytelling modern yang mengalir.",
+  "PISAHKAN secara mutlak antara bahasan sains/fakta sejarah (Refleksi) dan renungan spiritual transendental (Renungan).",
+  "PENTING: Tanamkan hyperlink cerdas (Markdown Link) `[Istilah Asli](Wikipedia)` pada minimal 3 hingga 5 istilah akademis kunci, teori, atau lokasi sejarah (misal: '[Gravitasi](Wikipedia)') agar bisa dipanggil oleh kamus inline di aplikasi UI pengguna. Utamakan kata kunci sains.",
   "OUTPUT HARUS JSON STRICT dengan dua properti persis seperti format berikut:",
   "{",
-  "  \"refleksi_md\": \"Bahas murni sains/sejarah/fenomena dalam format markdown yang menarik dan mengalir.\",",
-  "  \"renungan_md\": \"Bahas murni hikmah/spiritual dalam format markdown.\"",
+  "  \"refleksi_md\": \"Bahas murni sains/sejarah/fenomena secara dinamis dan padat (WAJIB mengandung markdown smart link).\",",
+  "  \"renungan_md\": \"Bahas murni hikmah/spiritual dalam format narasi merenung (WAJIB mengandung markdown smart link).\"",
   "}"
 ].join("\n");
 

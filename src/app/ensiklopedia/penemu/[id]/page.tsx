@@ -3,7 +3,7 @@
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft, Atom, Sparkles, BookOpen, Quote, ChevronDown, Award, Globe, Hourglass, Scroll, FileText
+  ArrowLeft, Atom, Sparkles, BookOpen, Quote, ChevronDown, Award, Globe, Hourglass, Scroll, FileText, X
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
@@ -73,6 +73,57 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
   const [quranDataList, setQuranDataList] = React.useState<{arabic: string; latin: string; translation: string; surahName?: string; surahNum: number; ayatNum: number}[]>([]);
   const [isGeneratingStory, setIsGeneratingStory] = React.useState(false);
   const [localStory, setLocalStory] = React.useState<{ refleksi_md: string, renungan_md: string } | null>(null);
+
+  // Wikipedia Drawer & Modal States
+  const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
+  const [wikiTokohData, setWikiTokohData] = React.useState<{ title?: string; extract?: string; description?: string; thumbnail?: { source: string }; content_urls?: { desktop?: { page: string } } } | null>(null);
+  const [isWikiTokohLoading, setIsWikiTokohLoading] = React.useState(false);
+
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [wikiTermData, setWikiTermData] = React.useState<{ title?: string; extract?: string; description?: string; thumbnail?: { source: string }; content_urls?: { desktop?: { page: string } } } | null>(null);
+  const [isWikiTermLoading, setIsWikiTermLoading] = React.useState(false);
+
+  // Wikipedia Fetch Function
+  const fetchWikipediaData = async (keyword: string, type: 'tokoh' | 'term') => {
+    try {
+      if (type === 'tokoh') {
+        setIsWikiTokohLoading(true);
+        setIsDrawerOpen(true);
+      } else {
+        setIsWikiTermLoading(true);
+        setIsModalOpen(true);
+      }
+
+      // Safe encode to handle spaces and special chars
+      const encodedKeyword = encodeURIComponent(keyword);
+      // Remove text inside parenthesis for better Wiki matching (e.g. "Abbas Ibn Firnas (Muslim)" -> "Abbas Ibn Firnas")
+      const cleanKeywordQuery = encodeURIComponent(keyword.replace(/\s*\(.*?\)\s*/g, ''));
+
+      const res = await fetch(`https://id.wikipedia.org/api/rest_v1/page/summary/${cleanKeywordQuery}`);
+      
+      let data = null;
+      if (res.ok) {
+        data = await res.json();
+      } else if (res.status === 404 && cleanKeywordQuery !== encodedKeyword) {
+          // Fallback if the first query failed, try raw string
+          const fallbackRes = await fetch(`https://id.wikipedia.org/api/rest_v1/page/summary/${encodedKeyword}`);
+          if (fallbackRes.ok) data = await fallbackRes.json();
+      }
+
+      if (type === 'tokoh') {
+        setWikiTokohData(data);
+      } else {
+        setWikiTermData(data);
+      }
+    } catch (err) {
+      console.error("Gagal mengambil data dari Wikipedia", err);
+      if (type === 'tokoh') setWikiTokohData(null);
+      else setWikiTermData(null);
+    } finally {
+      if (type === 'tokoh') setIsWikiTokohLoading(false);
+      else setIsWikiTermLoading(false);
+    }
+  };
 
   React.useEffect(() => {
     async function fetchData() {
@@ -273,10 +324,13 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
                 </div>
 
                 <div>
-                  <h1 className="text-base font-bold text-foreground mb-2">
+                  <h1 
+                    onClick={() => fetchWikipediaData(cleanName, 'tokoh')}
+                    className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight mb-1 hover:text-emerald-600 cursor-pointer transition-colors"
+                  >
                     {cleanName}
                   </h1>
-                  <p className="text-base text-gray-600 italic">
+                  <p className="text-lg md:text-xl text-gray-600 italic mb-6">
                     {data.julukan}
                   </p>
                 </div>
@@ -414,8 +468,27 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
                     
                     {/* Storytelling logic for Refleksi */}
                     {data.refleksi_kosmetik || localStory?.refleksi_md ? (
-                      <div className="prose prose-emerald max-w-none text-gray-800 leading-relaxed text-base md:text-lg">
-                        <ReactMarkdown>{localStory?.refleksi_md || data.refleksi_kosmetik || ""}</ReactMarkdown>
+                      <div className="prose prose-emerald max-w-none text-gray-800 leading-relaxed text-base md:text-lg hover-prose-a:text-emerald-700">
+                        <ReactMarkdown
+                          components={{
+                            a: ({ node, ...props }) => {
+                              // If it's a Wikipedia auto-link from AI, intercept it
+                              return (
+                                <a 
+                                  {...props} 
+                                  className="text-emerald-600 hover:text-emerald-800 cursor-pointer underline decoration-emerald-300 decoration-2 underline-offset-2 transition-colors"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    const keyword = props.children?.toString() || props.href || "";
+                                    if (keyword) fetchWikipediaData(keyword, 'term');
+                                  }}
+                                >
+                                  {props.children}
+                                </a>
+                              );
+                            }
+                          }}
+                        >{localStory?.refleksi_md || data.refleksi_kosmetik || ""}</ReactMarkdown>
                       </div>
                     ) : (
                       <div className="flex flex-col gap-4 py-4 px-6 bg-slate-50/50 rounded-2xl border border-dashed border-gray-200">
@@ -446,7 +519,25 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
                     {/* Storytelling logic for Renungan */}
                     {data.renungan_kosmetik || localStory?.renungan_md ? (
                       <div className="prose prose-emerald max-w-none text-gray-800 leading-relaxed italic border-l-2 border-emerald-100 pl-5 text-base md:text-lg">
-                        <ReactMarkdown>{localStory?.renungan_md || data.renungan_kosmetik || ""}</ReactMarkdown>
+                        <ReactMarkdown
+                          components={{
+                            a: ({ node, ...props }) => {
+                              return (
+                                <a 
+                                  {...props} 
+                                  className="text-emerald-600 hover:text-emerald-800 cursor-pointer font-semibold underline decoration-emerald-300 decoration-2 underline-offset-2 transition-colors not-italic"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    const keyword = props.children?.toString() || props.href || "";
+                                    if (keyword) fetchWikipediaData(keyword, 'term');
+                                  }}
+                                >
+                                  {props.children}
+                                </a>
+                              );
+                            }
+                          }}
+                        >{localStory?.renungan_md || data.renungan_kosmetik || ""}</ReactMarkdown>
                       </div>
                     ) : (
                       <div className="flex flex-col gap-4 py-4 px-6 bg-slate-50/50 rounded-2xl border border-dashed border-gray-200">
@@ -472,6 +563,163 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
           </motion.section>
         )}
       </div>
+
+      {/* ─── Wikipedia Drawer Panel (Tokoh) ─── */}
+      <AnimatePresence>
+        {isDrawerOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsDrawerOpen(false)}
+              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+            />
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed top-0 right-0 h-full w-full md:w-96 bg-white shadow-2xl z-50 overflow-y-auto"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                    <Globe className="w-5 h-5 text-gray-400" /> Wikipedia
+                  </h3>
+                  <button 
+                    onClick={() => setIsDrawerOpen(false)}
+                    className="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {isWikiTokohLoading ? (
+                  <div className="flex flex-col gap-4 animate-pulse">
+                    <div className="w-full h-48 bg-gray-200 rounded-xl" />
+                    <div className="h-6 bg-gray-200 rounded w-3/4" />
+                    <div className="h-4 bg-gray-200 rounded w-full mt-2" />
+                    <div className="h-4 bg-gray-200 rounded w-full" />
+                    <div className="h-4 bg-gray-200 rounded w-5/6" />
+                  </div>
+                ) : wikiTokohData?.extract ? (
+                  <div className="flex flex-col gap-6">
+                    {wikiTokohData.thumbnail?.source && (
+                      <div className="w-full overflow-hidden rounded-xl border border-gray-100 shadow-sm">
+                        <img 
+                          src={wikiTokohData.thumbnail.source} 
+                          alt={wikiTokohData.title}
+                          className="w-full h-auto object-cover max-h-64"
+                        />
+                      </div>
+                    )}
+                    <div>
+                      <h4 className="text-xl font-bold text-gray-900 mb-1">{wikiTokohData.title}</h4>
+                      {wikiTokohData.description && (
+                        <p className="text-sm text-gray-500 italic mb-4">{wikiTokohData.description}</p>
+                      )}
+                      <p className="text-base text-gray-700 leading-relaxed text-justify">
+                        {wikiTokohData.extract}
+                      </p>
+                    </div>
+                    <a 
+                      href={wikiTokohData.content_urls?.desktop?.page || `https://id.wikipedia.org/wiki/${wikiTokohData.title}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 w-full py-3 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-colors mt-4"
+                    >
+                      Baca Selengkapnya
+                    </a>
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100">
+                      <Globe className="w-8 h-8 text-gray-300" />
+                    </div>
+                    <p className="text-gray-500 font-medium">Artikel Wikipedia tidak ditemukan.</p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* ─── Wikipedia Inline Modal (Terms) ─── */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 p-4"
+            onClick={() => setIsModalOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 10 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden"
+            >
+              <div className="bg-emerald-800 px-6 py-4 flex items-center justify-between">
+                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 opacity-80" /> Ensiklopedia Mini
+                </h3>
+                <button 
+                  onClick={() => setIsModalOpen(false)}
+                  className="text-emerald-200 hover:text-white transition-colors p-1"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <div className="p-6 max-h-[70vh] overflow-y-auto">
+                {isWikiTermLoading ? (
+                  <div className="flex flex-col gap-3 animate-pulse">
+                    <div className="h-6 bg-gray-200 rounded w-1/2 mb-2" />
+                    <div className="h-4 bg-gray-200 rounded w-full" />
+                    <div className="h-4 bg-gray-200 rounded w-full" />
+                    <div className="h-4 bg-gray-200 rounded w-3/4" />
+                  </div>
+                ) : wikiTermData?.extract ? (
+                  <div className="flex flex-col gap-4">
+                    {wikiTermData.thumbnail?.source && (
+                      <div className="w-full bg-slate-50 rounded-xl overflow-hidden border border-gray-100 flex justify-center py-4 mb-2">
+                        <img 
+                          src={wikiTermData.thumbnail.source} 
+                          alt={wikiTermData.title}
+                          className="h-32 w-auto object-contain mix-blend-multiply"
+                        />
+                      </div>
+                    )}
+                    <h4 className="text-xl font-bold text-gray-900 border-b border-gray-100 pb-3">{wikiTermData.title}</h4>
+                    <p className="text-base text-gray-700 leading-relaxed">
+                      {wikiTermData.extract}
+                    </p>
+                    <div className="pt-4 mt-2">
+                      <a 
+                        href={wikiTermData.content_urls?.desktop?.page || `https://id.wikipedia.org/wiki/${wikiTermData.title}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-emerald-600 hover:text-emerald-700 font-medium inline-flex items-center gap-1 text-sm bg-emerald-50 px-3 py-1.5 rounded-md"
+                      >
+                        Lihat Sumber di Wikipedia
+                      </a>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500 font-medium">Definisi tidak dapat ditemukan.</p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </main>
   );
 }

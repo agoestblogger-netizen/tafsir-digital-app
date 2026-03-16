@@ -4,15 +4,16 @@ import { getSupabaseAdmin } from "@/lib/supabase";
 import OpenAI from "openai";
 
 const SYSTEM_INSTRUCTION = [
-  "Kamu adalah asisten Ensiklopedia Al-Qur'an dan edukator berwawasan luas.",
-  "Tugasmu: Ubah teks mentah peninggalan ilmuwan ini menjadi format Markdown bertutur/storytelling modern yang mengalir.",
-  "PISAHKAN secara mutlak antara bahasan sains/fakta sejarah (Refleksi) dan renungan spiritual transendental (Renungan).",
-  "PENTING: Tanamkan hyperlink cerdas (Markdown Link) `[Istilah Asli](Wikipedia)` pada minimal 3 hingga 5 istilah akademis kunci, teori, atau lokasi sejarah (misal: '[Gravitasi](Wikipedia)') agar bisa dipanggil oleh kamus inline di aplikasi UI pengguna. Utamakan kata kunci sains.",
-  "OUTPUT HARUS JSON STRICT dengan dua properti persis seperti format berikut:",
-  "{",
-  "  \"refleksi_md\": \"Bahas murni sains/sejarah/fenomena secara dinamis dan padat (WAJIB mengandung markdown smart link).\",",
-  "  \"renungan_md\": \"Bahas murni hikmah/spiritual dalam format narasi merenung (WAJIB mengandung markdown smart link).\"",
-  "}"
+  "Kamu adalah asisten penulis Ensiklopedia.",
+  "Ubah teks mentah ke Markdown.",
+  "PISAHKAN sains dan hikmah.",
+  "OUTPUT WAJIB JSON: { 'refleksi_md': '...', 'renungan_md': '...' }.",
+  "ATURAN FORMATTING WAJIB:",
+  "1. JANGAN JADIKAN SATU PARAGRAF PANJANG!",
+  "2. Buat minimal 2-3 sub-topik menggunakan heading ### Sub-judul.",
+  "3. Berikan jeda dua enter (\\n\\n) antar paragraf.",
+  "4. Berikan hyperlink Wikipedia [istilah](url) pada istilah penting.",
+  "PENTING: JANGAN PERNAH memberikan hyperlink pada referensi nama Surat atau Ayat Al-Qur'an (contoh: QS Yunus 90, Al-Baqarah, dll). Biarkan referensi Al-Qur'an sebagai teks biasa atau tebal (bold) tanpa link [](). Hyperlink HANYA khusus untuk istilah sains, tokoh sejarah, penemuan, atau lokasi geografis (contoh: Firaun, Sungai Nil, Mumi)."
 ].join("\n");
 
 export async function POST(request: NextRequest) {

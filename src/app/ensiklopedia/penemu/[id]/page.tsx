@@ -3,7 +3,7 @@
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft, Atom, Sparkles, BookOpen, Quote, ChevronDown, Award, Globe, Hourglass, Scroll, FileText, X
+  ArrowLeft, Atom, Sparkles, BookOpen, Quote, ChevronDown, Award, Globe, Hourglass, Scroll, FileText, X, ExternalLink
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
@@ -82,6 +82,7 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [wikiTermData, setWikiTermData] = React.useState<{ title?: string; extract?: string; description?: string; thumbnail?: { source: string }; content_urls?: { desktop?: { page: string } } } | null>(null);
   const [isWikiTermLoading, setIsWikiTermLoading] = React.useState(false);
+  const [currentWikiTerm, setCurrentWikiTerm] = React.useState("");
 
   // Wikipedia Fetch Function
   const fetchWikipediaData = async (keyword: string, type: 'tokoh' | 'term') => {
@@ -90,6 +91,7 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
         setIsWikiTokohLoading(true);
         setIsDrawerOpen(true);
       } else {
+        setCurrentWikiTerm(keyword);
         setIsWikiTermLoading(true);
         setIsModalOpen(true);
       }
@@ -468,7 +470,7 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
                     
                     {/* Storytelling logic for Refleksi */}
                     {data.refleksi_kosmetik || localStory?.refleksi_md ? (
-                      <div className="prose prose-emerald max-w-none text-gray-800 leading-relaxed text-base md:text-lg hover-prose-a:text-emerald-700">
+                      <div className="prose prose-emerald max-w-none text-gray-800 text-base md:text-lg hover-prose-a:text-emerald-700 prose-p:leading-loose prose-p:mb-6 prose-headings:text-emerald-800 prose-headings:font-bold prose-headings:mt-8 prose-headings:mb-4 prose-a:text-blue-600 prose-a:font-semibold prose-a:no-underline hover:prose-a:underline">
                         <ReactMarkdown
                           components={{
                             a: ({ node, ...props }) => {
@@ -518,7 +520,7 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
                     
                     {/* Storytelling logic for Renungan */}
                     {data.renungan_kosmetik || localStory?.renungan_md ? (
-                      <div className="prose prose-emerald max-w-none text-gray-800 leading-relaxed italic border-l-2 border-emerald-100 pl-5 text-base md:text-lg">
+                      <div className="prose prose-emerald max-w-none text-gray-800 italic border-l-2 border-emerald-100 pl-5 text-base md:text-lg hover-prose-a:text-emerald-700 prose-p:leading-loose prose-p:mb-6 prose-headings:text-emerald-800 prose-headings:font-bold prose-headings:mt-8 prose-headings:mb-4 prose-a:text-blue-600 prose-a:font-semibold prose-a:no-underline hover:prose-a:underline">
                         <ReactMarkdown
                           components={{
                             a: ({ node, ...props }) => {
@@ -710,8 +712,22 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500 font-medium">Definisi tidak dapat ditemukan.</p>
+                  <div className="text-center py-8 flex flex-col items-center gap-4">
+                    <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center border border-red-100 mb-2">
+                       <BookOpen className="w-8 h-8 text-red-300" />
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-bold text-gray-900 mb-1">Data Tidak Ditemukan</h4>
+                      <p className="text-gray-500 font-medium">Penjelasan Wikipedia untuk istilah ini belum tersedia.</p>
+                    </div>
+                    <a 
+                      href={`https://www.google.com/search?q=${encodeURIComponent(currentWikiTerm)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 mt-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors"
+                    >
+                      <ExternalLink className="w-4 h-4" /> Cari di Google
+                    </a>
                   </div>
                 )}
               </div>

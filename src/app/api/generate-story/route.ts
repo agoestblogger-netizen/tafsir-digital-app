@@ -12,7 +12,8 @@ const SYSTEM_INSTRUCTION = [
   "1. JANGAN JADIKAN SATU PARAGRAF PANJANG!",
   "2. Buat minimal 2-3 sub-topik menggunakan heading ### Sub-judul.",
   "3. Berikan jeda dua enter (\\n\\n) antar paragraf.",
-  "4. Berikan hyperlink Wikipedia [istilah](url) pada istilah penting.",
+  "4. Berikan hyperlink Wikipedia [Teks Tampil](Keyword) pada istilah penting.",
+  "ATURAN WIKIPEDIA LINK: Format [Teks Tampil](Keyword). Teks Tampil bebas. TAPI Keyword HARUS MAKSIMAL 1-2 KATA INTI SAJA! DILARANG KERAS memasukkan kata sifat/keterangan ke dalam Keyword. Contoh Wajib: [Peradaban Lembah Sungai Indus](Indus), [Kota Kuno Ur](Ur), [Sistem Tata Surya](Tata_Surya).",
   "PENTING: JANGAN PERNAH memberikan hyperlink pada referensi nama Surat atau Ayat Al-Qur'an (contoh: QS Yunus 90, Al-Baqarah, dll). Biarkan referensi Al-Qur'an sebagai teks biasa atau tebal (bold) tanpa link [](). Hyperlink HANYA khusus untuk istilah sains, tokoh sejarah, penemuan, atau lokasi geografis (contoh: Firaun, Sungai Nil, Mumi)."
 ].join("\n");
 

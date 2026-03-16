@@ -74,6 +74,9 @@ function PenemuListContent() {
                 if (mainCat.toLowerCase().startsWith("arkeologi")) {
                   mainCat = "Arkeologi";
                 }
+                if (mainCat.toLowerCase().startsWith("sejarah")) {
+                  mainCat = "Sejarah";
+                }
 
                 if (!grouped[mainCat]) {
                   grouped[mainCat] = [];
@@ -164,6 +167,7 @@ function PenemuListContent() {
                 let mainCat = rawCat.trim();
                 if (mainCat) {
                   if (mainCat.toLowerCase().startsWith("arkeologi")) mainCat = "Arkeologi";
+                  if (mainCat.toLowerCase().startsWith("sejarah")) mainCat = "Sejarah";
                   if (!currentGrouped[mainCat]) currentGrouped[mainCat] = [];
                   currentGrouped[mainCat].push(item);
                 }

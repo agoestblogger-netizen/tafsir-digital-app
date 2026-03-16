@@ -84,7 +84,22 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
   const [isWikiTermLoading, setIsWikiTermLoading] = React.useState(false);
   const [currentWikiTerm, setCurrentWikiTerm] = React.useState("");
 
-  // Wikipedia Fetch Function
+  // Helper: Auto-translate English text to Indonesian using Google Translate GTX
+  const translateToIndonesian = async (text: string): Promise<string> => {
+    if (!text) return text;
+    try {
+      const res = await fetch(
+        `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=id&dt=t&q=${encodeURIComponent(text)}`
+      );
+      const data = await res.json();
+      // data[0] is an array of [translatedText, originalText, ...] tuples
+      return (data[0] as [string][]).map((item) => item[0]).join('');
+    } catch {
+      return text; // Jika gagal, kembalikan teks asli
+    }
+  };
+
+  // Wikipedia Fetch Function - 4-Step Cross-Language Fallback + Auto-Translate
   const fetchWikipediaData = async (keyword: string, type: 'tokoh' | 'term') => {
     try {
       if (type === 'tokoh') {
@@ -96,20 +111,55 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
         setIsModalOpen(true);
       }
 
-      // Safe encode to handle spaces and special chars
-      const encodedKeyword = encodeURIComponent(keyword);
-      // Remove text inside parenthesis for better Wiki matching (e.g. "Abbas Ibn Firnas (Muslim)" -> "Abbas Ibn Firnas")
-      const cleanKeywordQuery = encodeURIComponent(keyword.replace(/\s*\(.*?\)\s*/g, ''));
+      // Clean: strip parentheses (e.g. "Abbas Ibn Firnas (Muslim)" -> "Abbas Ibn Firnas")
+      const cleanKeyword = keyword.replace(/\s*\(.*?\)\s*/g, '').trim();
+      const encodedKeyword = encodeURIComponent(cleanKeyword);
 
-      const res = await fetch(`https://id.wikipedia.org/api/rest_v1/page/summary/${cleanKeywordQuery}`);
-      
+      let isEnglishFallback = false;
+
+      // STEP 1: Exact match Bahasa Indonesia
+      let res = await fetch(`https://id.wikipedia.org/api/rest_v1/page/summary/${encodedKeyword}`);
+
+      // STEP 2: Exact match English (if Step 1 fails/404)
+      if (!res.ok) {
+        console.log(`[Wiki] ID miss for: "${cleanKeyword}", trying EN exact...`);
+        res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodedKeyword}`);
+        if (res.ok) isEnglishFallback = true;
+      }
+
+      // STEP 3: Fuzzy Search strictly on EN Wikipedia (if Step 2 also fails)
+      if (!res.ok) {
+        console.log(`[Wiki] EN exact miss, trying EN fuzzy search...`);
+        try {
+          const searchRes = await fetch(
+            `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodedKeyword}&utf8=&format=json&origin=*`
+          );
+          if (searchRes.ok) {
+            const searchData = await searchRes.json();
+            if (searchData.query && searchData.query.search.length > 0) {
+              const bestMatch = searchData.query.search[0].title as string;
+              console.log(`[Wiki] EN best match: "${bestMatch}", fetching summary...`);
+              res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(bestMatch)}`);
+              if (res.ok) isEnglishFallback = true;
+            }
+          }
+        } catch (searchErr) {
+          console.warn("[Wiki] EN fuzzy search failed:", searchErr);
+        }
+      }
+
+      // STEP 4: Set final result or null (with auto-translate if from EN)
       let data = null;
-      if (res.ok) {
+      if (res && res.ok) {
         data = await res.json();
-      } else if (res.status === 404 && cleanKeywordQuery !== encodedKeyword) {
-          // Fallback if the first query failed, try raw string
-          const fallbackRes = await fetch(`https://id.wikipedia.org/api/rest_v1/page/summary/${encodedKeyword}`);
-          if (fallbackRes.ok) data = await fallbackRes.json();
+        if (isEnglishFallback && data) {
+          console.log(`[Wiki] Translating EN content to ID...`);
+          const [translatedExtract, translatedDescription] = await Promise.all([
+            translateToIndonesian(data.extract || ''),
+            translateToIndonesian(data.description || ''),
+          ]);
+          data = { ...data, extract: translatedExtract, description: translatedDescription };
+        }
       }
 
       if (type === 'tokoh') {
@@ -481,7 +531,12 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
                                   className="text-emerald-600 hover:text-emerald-800 cursor-pointer underline decoration-emerald-300 decoration-2 underline-offset-2 transition-colors"
                                   onClick={(e) => {
                                     e.preventDefault();
-                                    const keyword = props.children?.toString() || props.href || "";
+                                    // Use href (the AI-generated keyword) as primary, fallback to display text
+                                    const raw = props.href || props.children?.toString() || "";
+                                    // Sanitize: underscores -> spaces, strip noise prefixes
+                                    let keyword = raw.replace(/_/g, ' ');
+                                    keyword = keyword.replace(/kota kuno |kota |kerajaan |sistem |teori |peradaban |sejarah |bangsa |dinasti |era |zaman /gi, '');
+                                    keyword = keyword.trim();
                                     if (keyword) fetchWikipediaData(keyword, 'term');
                                   }}
                                 >
@@ -530,7 +585,12 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
                                   className="text-emerald-600 hover:text-emerald-800 cursor-pointer font-semibold underline decoration-emerald-300 decoration-2 underline-offset-2 transition-colors not-italic"
                                   onClick={(e) => {
                                     e.preventDefault();
-                                    const keyword = props.children?.toString() || props.href || "";
+                                    // Use href (the AI-generated keyword) as primary, fallback to display text
+                                    const raw = props.href || props.children?.toString() || "";
+                                    // Sanitize: underscores -> spaces, strip noise prefixes
+                                    let keyword = raw.replace(/_/g, ' ');
+                                    keyword = keyword.replace(/kota kuno |kota |kerajaan |sistem |teori |peradaban |sejarah |bangsa |dinasti |era |zaman /gi, '');
+                                    keyword = keyword.trim();
                                     if (keyword) fetchWikipediaData(keyword, 'term');
                                   }}
                                 >

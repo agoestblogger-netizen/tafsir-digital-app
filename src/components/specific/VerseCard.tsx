@@ -324,6 +324,7 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
                 <span
                   key={word.id}
                   onClick={isClickable ? () => handleWordClick(word, index) : undefined}
+                  onMouseEnter={isClickable ? () => handleWordClick(word, index) : undefined}
                   title={word.translation?.text ? `${word.translation.text}${isClickable ? ' — ketuk untuk audio' : ''}` : undefined}
                   className={`tajweed-word font-arabic ${isWordActive ? 'playing' : ''} ${!isClickable ? 'cursor-default' : ''}`}
                 >

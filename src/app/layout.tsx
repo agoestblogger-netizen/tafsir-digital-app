@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Outfit, Amiri } from "next/font/google";
 import "./globals.css";
 import { ClientBottomNav } from "@/components/layout/ClientBottomNav";
+import { ThemeProvider } from "@/components/layout/ThemeProvider";
+import { DarkModeToggle } from "@/components/layout/DarkModeToggle";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -28,12 +30,15 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <body
-        className={`${outfit.variable} ${amiri.variable} antialiased max-w-7xl mx-auto relative shadow-2xl min-h-screen bg-muted/20`}
+        className={`${outfit.variable} ${amiri.variable} antialiased max-w-7xl mx-auto relative shadow-2xl min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200`}
       >
-        <div className="bg-background min-h-screen pb-20 w-full relative">
-          {children}
-          <ClientBottomNav />
-        </div>
+        <ThemeProvider>
+          <div className="min-h-screen pb-20 w-full relative">
+            <DarkModeToggle />
+            {children}
+            <ClientBottomNav />
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

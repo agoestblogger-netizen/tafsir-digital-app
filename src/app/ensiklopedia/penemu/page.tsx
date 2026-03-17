@@ -100,11 +100,11 @@ function PenemuListContent() {
   }, []);
 
   return (
-    <main className="flex flex-col min-h-screen bg-page-warm pb-24 relative overflow-hidden">
+    <main className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200 pb-24 relative overflow-hidden">
       {/* Header */}
-      <header className="px-6 pt-12 pb-6 sticky top-0 bg-background/90 backdrop-blur-xl z-20 border-b gold-divider shadow-sm">
+      <header className="px-6 pt-12 pb-6 sticky top-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl z-20 border-b border-gray-200 dark:border-gray-700 shadow-sm transition-colors duration-200">
         <div className="flex items-center gap-3">
-          <button onClick={() => router.back()} className="text-muted-foreground hover:text-foreground transition-colors mr-2">
+          <button onClick={() => router.back()} className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors mr-2">
             <ArrowLeft className="w-5 h-5" />
           </button>
           <BookOpenCheck className="w-7 h-7 text-gold" />
@@ -125,7 +125,7 @@ function PenemuListContent() {
             value={globalSearchQuery}
             onChange={(e) => setGlobalSearchQuery(e.target.value)}
             placeholder="Cari tokoh atau topik (misal: Fir'aun)..."
-            className="w-full pl-12 pr-4 py-3.5 border-2 border-border/50 rounded-2xl bg-card shadow-sm text-base focus:outline-none focus:border-gold/50 focus:ring-4 focus:ring-gold/10 transition-all font-medium placeholder:text-muted-foreground/60"
+            className="w-full pl-12 pr-4 py-3.5 border-2 border-gray-300 dark:border-gray-600 rounded-2xl bg-white dark:bg-gray-900 shadow-sm text-base text-gray-900 dark:text-gray-100 focus:outline-none focus:border-emerald-500 dark:focus:border-emerald-400 focus:ring-4 focus:ring-emerald-500/20 dark:focus:ring-emerald-400/20 transition-all font-medium placeholder-gray-500 dark:placeholder-gray-400"
           />
         </div>
 
@@ -139,8 +139,8 @@ function PenemuListContent() {
           </div>
         ) : !data ? (
           <div className="flex flex-col items-center justify-center py-24 gap-5">
-            <Loader2 className="w-10 h-10 text-gold animate-spin" />
-            <p className="text-sm font-medium text-foreground/70 mb-1">
+            <Loader2 className="w-10 h-10 text-emerald-600 dark:text-emerald-400 animate-spin" />
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
               Membuka lembaran sejarah...
             </p>
           </div>
@@ -191,19 +191,19 @@ function PenemuListContent() {
                 const isExpanded = query !== '' || expandedCategory === category;
               
               return (
-                <div key={category} className="flex flex-col bg-card border border-border rounded-[2rem] shadow-sm overflow-hidden">
+                <div key={category} className="flex flex-col bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-[2rem] shadow-sm overflow-hidden">
                   <button
                     onClick={() => toggleCategory(category)}
-                    className="w-full flex items-center justify-between p-5 text-left transition-colors hover:bg-muted/30 focus:outline-none"
+                    className="w-full flex items-center justify-between p-5 text-left transition-colors hover:bg-emerald-50 dark:hover:bg-gray-700 focus:outline-none text-gray-700 dark:text-gray-200"
                   >
                     <div className="flex items-center gap-3">
-                      <h2 className="text-xl font-bold text-foreground">{category}</h2>
-                      <span className="px-3 py-1 bg-gold/10 text-gold text-xs font-bold rounded-full border border-gold/20">
+                      <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{category}</h2>
+                      <span className="px-3 py-1 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-xs font-bold rounded-full border border-emerald-200 dark:border-emerald-800">
                         {items.length} tokoh
                       </span>
                     </div>
                     <ChevronDown
-                      className={`w-5 h-5 text-muted-foreground transition-transform duration-300 ${isExpanded ? "rotate-180 text-gold" : ""}`}
+                      className={`w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform duration-300 ${isExpanded ? "rotate-180 text-emerald-600 dark:text-emerald-400" : ""}`}
                     />
                   </button>
 
@@ -216,7 +216,7 @@ function PenemuListContent() {
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                         className="overflow-hidden"
                       >
-                        <div className="p-5 pt-0 border-t border-border grid grid-cols-2 lg:grid-cols-3 gap-3">
+                        <div className="p-5 pt-0 border-t border-gray-100 dark:border-gray-700 grid grid-cols-2 lg:grid-cols-3 gap-3">
                           {items.map((penemu, i) => {
                             const safeId = penemu?.id || penemu?.No || penemu?.no || penemu?.ID;
                             if (!safeId) return null;
@@ -231,28 +231,28 @@ function PenemuListContent() {
                               <Link
                                 href={`/ensiklopedia/penemu/${safeId}`}
                                 key={safeId || i}
-                                className="relative flex flex-col items-start gap-2 p-4 rounded-2xl bg-background border border-border shadow-sm hover:border-gold/50 transition-all overflow-hidden group hover:shadow-md"
+                                className="relative flex flex-col items-start gap-2 p-4 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md dark:hover:bg-gray-750 hover:border-emerald-200 dark:hover:border-gray-600 transition-all overflow-hidden group"
                               >
-                                <div className="absolute top-0 right-0 w-16 h-16 bg-gold/10 rounded-full blur-xl -mr-6 -mt-6 pointer-events-none transition-transform group-hover:scale-150 duration-500" />
+                                <div className="absolute top-0 right-0 w-16 h-16 bg-emerald-50 dark:bg-emerald-900/20 rounded-full blur-xl -mr-6 -mt-6 pointer-events-none transition-transform group-hover:scale-150 duration-500" />
                                 
-                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center shadow-sm relative z-10 shrink-0">
+                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-sm relative z-10 shrink-0">
                                   <Atom className="w-5 h-5" />
                                 </div>
                                 
                                 <div className="mt-1 w-full relative z-10 flex flex-col items-start">
-                                  <h3 className="text-base md:text-lg font-semibold text-foreground leading-tight group-hover:text-gold transition-colors line-clamp-1">
+                                  <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100 leading-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-1">
                                     {cleanName}
                                   </h3>
                                   
                                   {status && (
                                     <span className={`mt-1.5 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded-md border ${
-                                      isMuslim ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-50 text-slate-600 border-slate-200"
+                                      isMuslim ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800" : "bg-slate-50 dark:bg-gray-700/50 text-slate-600 dark:text-gray-400 border-slate-200 dark:border-gray-600"
                                     }`}>
                                       {status}
                                     </span>
                                   )}
                                   
-                                  <p className="text-sm text-gray-600 line-clamp-2 mt-1.5 w-full">
+                                  <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1.5 w-full">
                                     {penemu.julukan || penemu.bidang_ilmu}
                                   </p>
                                 </div>

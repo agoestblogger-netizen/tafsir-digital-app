@@ -173,24 +173,24 @@ export default function HijrahPage() {
 
       {/* Header */}
       <header className="flex flex-col gap-2 relative z-10">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-secondary text-primary mb-2 shadow-sm">
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-secondary dark:bg-emerald-900/30 text-primary dark:text-emerald-400 mb-2 shadow-sm border border-transparent dark:border-emerald-800/50">
           <Leaf className="w-6 h-6" />
         </div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
           Jalur Hijrah
         </h1>
-        <p className="text-muted-foreground leading-relaxed">
-          Program {TOTAL_DAYS}-Hari: <span className="font-semibold text-foreground">Detox Penyakit Hati</span>.
+        <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
+          Program {TOTAL_DAYS}-Hari: <span className="font-semibold text-gray-900 dark:text-gray-100">Detox Penyakit Hati</span>.
         </p>
       </header>
 
       {/* Loading skeleton */}
       {isLoading ? (
         <div className="flex flex-col gap-4 mt-2">
-          <div className="h-48 rounded-3xl bg-secondary/50 animate-pulse" />
-          <div className="h-24 rounded-3xl bg-secondary/50 animate-pulse" />
+          <div className="h-48 rounded-3xl bg-secondary/50 dark:bg-slate-800 animate-pulse" />
+          <div className="h-24 rounded-3xl bg-secondary/50 dark:bg-slate-800 animate-pulse" />
           {[1, 2, 3].map(i => (
-            <div key={i} className="h-16 rounded-2xl bg-secondary/50 animate-pulse" />
+            <div key={i} className="h-16 rounded-2xl bg-secondary/50 dark:bg-slate-800 animate-pulse" />
           ))}
         </div>
       ) : (
@@ -205,26 +205,26 @@ export default function HijrahPage() {
               animate={{ opacity: 1, y: 0 }}
               className="flex justify-center -mt-4 mb-2"
             >
-              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-sm font-semibold text-primary">
+              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-primary/10 dark:bg-emerald-900/40 border border-primary/20 dark:border-emerald-800 text-sm font-semibold text-primary dark:text-emerald-400">
                 {plantLevel.emoji} {plantLevel.label}
               </span>
             </motion.div>
 
             {/* Overall Progress Bar */}
-            <div className="mt-2 card-premium p-5 rounded-3xl relative overflow-hidden">
+            <div className="mt-2 card-premium bg-white dark:bg-slate-800 border-gray-100 dark:border-slate-700 border p-5 rounded-3xl relative overflow-hidden shadow-sm">
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-gold-light to-gold opacity-60" />
               <div className="flex justify-between items-end mb-3">
                 <div>
-                  <p className="text-xs text-gold/80 font-medium uppercase tracking-wider mb-1">Progress Keseluruhan</p>
-                  <p className="font-semibold text-lg text-foreground">
-                    Hari ke-{currentDay} <span className="text-muted-foreground text-sm font-normal">/ {TOTAL_DAYS}</span>
+                  <p className="text-xs text-gold/80 dark:text-amber-500/80 font-medium uppercase tracking-wider mb-1">Progress Keseluruhan</p>
+                  <p className="font-semibold text-lg text-gray-900 dark:text-gray-100">
+                    Hari ke-{currentDay} <span className="text-gray-500 dark:text-gray-400 text-sm font-normal">/ {TOTAL_DAYS}</span>
                   </p>
                 </div>
                 <p className="text-gold font-bold">{Math.round(overallProgress)}%</p>
               </div>
-              <div className="h-3 w-full bg-secondary rounded-full overflow-hidden">
+              <div className="h-3 w-full bg-secondary dark:bg-gray-700 rounded-full overflow-hidden">
                 <motion.div
-                  className="h-full bg-primary"
+                  className="h-full bg-primary dark:bg-emerald-500"
                   initial={{ width: 0 }}
                   animate={{ width: `${overallProgress}%` }}
                   transition={{ duration: 1, ease: "easeOut" }}
@@ -233,10 +233,10 @@ export default function HijrahPage() {
 
               {/* Progress hari ini */}
               <div className="flex justify-between items-center mt-3">
-                <p className="text-xs text-muted-foreground">
-                  Misi hari ini: <span className="font-semibold text-foreground">{completedToday}/{currentMissions.length}</span> selesai
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Misi hari ini: <span className="font-semibold text-gray-900 dark:text-gray-100">{completedToday}/{currentMissions.length}</span> selesai
                 </p>
-                <div className="h-1.5 w-24 bg-secondary rounded-full overflow-hidden">
+                <div className="h-1.5 w-24 bg-secondary dark:bg-gray-700 rounded-full overflow-hidden">
                   <motion.div
                     className="h-full bg-gold"
                     initial={{ width: 0 }}
@@ -250,7 +250,7 @@ export default function HijrahPage() {
 
           {/* Daily Tasks */}
           <section className="relative z-10 mt-4 flex flex-col gap-4">
-            <h3 className="font-semibold text-lg text-foreground pl-1">Misi Hari Ini</h3>
+            <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 pl-1">Misi Hari Ini</h3>
 
             <div className="flex flex-col gap-3">
               {currentMissions.map((task) => {
@@ -263,7 +263,7 @@ export default function HijrahPage() {
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleToggleTask(task.id)}
                     disabled={isSaving}
-                    className={`flex items-center gap-3 p-4 card-premium rounded-2xl cursor-pointer transition-all group hover:border-gold/60 text-left w-full disabled:opacity-70 ${isDone ? "border-primary bg-primary/5" : ""
+                    className={`flex items-center gap-3 p-4 card-premium bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-2xl cursor-pointer transition-all group hover:border-gold/60 dark:hover:border-gold/60 text-left w-full disabled:opacity-70 ${isDone ? "border-primary dark:border-emerald-500 bg-primary/5 dark:bg-emerald-900/40" : ""
                       }`}
                   >
                     {isSaving ? (
@@ -277,7 +277,7 @@ export default function HijrahPage() {
                         />
                       </div>
                     )}
-                    <span className={`text-base font-medium transition-colors ${isDone ? "text-primary/70 line-through" : "text-foreground group-hover:text-gold"
+                    <span className={`text-base font-medium transition-colors ${isDone ? "text-primary/70 dark:text-emerald-500/70 line-through" : "text-gray-900 dark:text-gray-100 group-hover:text-gold dark:group-hover:text-amber-400"
                       }`}>
                       {task.title}
                     </span>

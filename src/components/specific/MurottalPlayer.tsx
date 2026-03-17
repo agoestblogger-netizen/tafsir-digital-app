@@ -113,7 +113,7 @@ export function MurottalPlayer({ chapterId, surahName }: MurottalPlayerProps) {
       <button
         onClick={handleToggle}
         disabled={isLoading}
-        className={`group inline-flex items-center gap-3 px-6 py-3 rounded-2xl font-semibold text-sm shadow-md transition-all active:scale-[0.97] disabled:opacity-60 disabled:cursor-not-allowed ${
+        className={`group inline-flex items-center gap-3 px-6 py-3 rounded-2xl font-semibold text-sm shadow-md transition-all active:scale-[0.97] disabled:opacity-60 disabled:cursor-not-allowed dark:bg-none dark:bg-emerald-700 dark:text-white dark:hover:bg-emerald-600 dark:border-transparent ${
           isPlaying
             ? "bg-gold text-white shadow-gold/30 hover:bg-gold-light"
             : "bg-gradient-to-r from-primary to-primary/90 text-white shadow-primary/20 hover:shadow-lg hover:shadow-primary/30"

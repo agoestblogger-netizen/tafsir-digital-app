@@ -21,30 +21,30 @@ export function SurahCard({ surah }: { surah: SurahProps }) {
   return (
     <Link href={`/surah/${surah.id}`}>
       <motion.div whileTap={{ scale: 0.96 }} whileHover={{ y: -2 }}>
-        <Card className="hover:border-primary/50 transition-colors card-premium relative overflow-hidden group">
+        <Card className="hover:border-primary/50 transition-colors card-premium dark:bg-slate-800 dark:border-slate-700 relative overflow-hidden group">
           {/* Subtle gold decoration on left edge */}
           <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-300 to-amber-500 opacity-60"></div>
           <CardContent className="p-5">
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-secondary text-primary font-semibold">
+                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-secondary dark:bg-slate-700 text-primary dark:text-gray-300 font-semibold">
                   {surah.id}
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                  <h3 className="font-semibold text-foreground dark:text-gray-100 group-hover:text-primary transition-colors">
                     {surah.name}
                   </h3>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground dark:text-gray-400">
                     {surah.translation}
                   </p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="font-arabic text-xl text-foreground font-medium">{surah.arab}</p>
+                <p className="font-arabic text-xl text-foreground dark:text-gray-200 font-medium">{surah.arab}</p>
               </div>
             </div>
             
-            <p className="text-sm text-muted-foreground line-clamp-2 mb-4 leading-relaxed">
+            <p className="text-sm text-muted-foreground dark:text-gray-400 line-clamp-2 mb-4 leading-relaxed">
               {surah.pitch}
             </p>
             

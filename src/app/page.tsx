@@ -92,7 +92,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-col min-h-screen pb-32 bg-background w-full relative">
+    <main className="flex flex-col min-h-screen pb-32 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200 w-full relative">
 
       {/* 1. MUSHAF COVER HERO SECTION (CLASSIC ARABESQUE & CARTOUCHE) */}
       <section className="relative w-full h-[65vh] flex flex-col items-center justify-center p-4 pt-12 overflow-hidden bg-geometric-heavy shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] z-20">
@@ -169,15 +169,15 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1, duration: 0.8 }}
-          className="flex flex-col gap-2 relative bg-white border border-border/50 p-6 rounded-3xl shadow-sm"
+          className="flex flex-col gap-2 relative bg-white dark:bg-gray-800 border border-gray-200/50 dark:border-gray-700/50 p-6 rounded-3xl shadow-sm"
         >
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-secondary/80 text-primary mb-2 shadow-sm border border-primary/10">
             <Sunrise className="w-6 h-6" />
           </div>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
             Assalamu&apos;alaikum.
           </h2>
-          <p className="text-muted-foreground leading-relaxed text-sm">
+          <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-sm">
             Tarik napas dalam-dalam. Mari kita temukan ketenangan dan petunjuk dari ayat-ayat-Nya hari ini.
           </p>
         </motion.header>
@@ -188,14 +188,14 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1, duration: 0.8 }}
-          className="card-premium p-6 rounded-3xl relative overflow-hidden"
+          className="card-premium bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-6 rounded-3xl relative overflow-hidden shadow-sm"
         >
           <div className="absolute top-0 right-0 w-40 h-40 bg-gold/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
 
-          <h3 className="text-lg font-bold text-foreground mb-1 flex items-center gap-2">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 flex items-center gap-2">
             <span className="text-xl">🧠</span> Otak Konselor
           </h3>
-          <p className="text-muted-foreground text-xs mb-4 leading-relaxed">
+          <p className="text-gray-500 dark:text-gray-400 text-xs mb-4 leading-relaxed">
             Ceritakan keluh kesahmu. Al-Hakim akan menemukan ayat Al-Qur&apos;an yang paling relevan beserta tafsir digitalnya.
           </p>
 
@@ -206,7 +206,7 @@ export default function Home() {
               placeholder="Apa yang membebani pikiranmu hari ini? (Misal: Saya merasa tertinggal dari teman-teman saya...)"
               rows={3}
               disabled={isLoading}
-              className="w-full rounded-2xl border border-border/60 bg-white/80 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40 transition-all resize-none disabled:opacity-50"
+              className="w-full rounded-2xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-4 py-3 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition-all resize-none disabled:opacity-50"
             />
             <button
               type="submit"
@@ -244,7 +244,7 @@ export default function Home() {
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="card-premium rounded-3xl p-5 animate-pulse"
+                  className="card-premium bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-3xl p-5 animate-pulse"
                 >
                   <div className="h-3 bg-gold/10 rounded-full w-1/3 mb-4" />
                   <div className="h-3 bg-primary/5 rounded-full w-full mb-2" />
@@ -264,7 +264,7 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="card-premium p-5 rounded-3xl border-red-200 text-center"
+              className="card-premium bg-white dark:bg-gray-800 border-red-200 dark:border-red-900/50 p-5 rounded-3xl text-center"
             >
               <p className="text-red-500 text-sm mb-2">{error}</p>
               <button
@@ -293,7 +293,7 @@ export default function Home() {
                 </h3>
                 <button
                   onClick={handleReset}
-                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-gold transition-colors"
+                  className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-gold transition-colors"
                 >
                   <RotateCcw className="w-3 h-3" />
                   Tanya lagi

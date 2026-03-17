@@ -30,12 +30,12 @@ type ViewState = "categories" | "topicList" | "articleDetail";
 
 // ─── Category Definitions ───────────────────────────────────────
 const CATEGORIES = [
-  { key: "astronomi", apiKey: "Astronomi & Kosmologi", label: "Astronomi", emoji: "🔭", icon: Telescope, gradient: "from-indigo-500 to-violet-600", bg: "bg-indigo-50", border: "border-indigo-100", text: "text-indigo-700", headerGradient: "from-indigo-600 via-violet-600 to-purple-700" },
-  { key: "biologi", apiKey: "Biologi & Embriologi Manusia", label: "Biologi Manusia", emoji: "🧬", icon: Dna, gradient: "from-emerald-500 to-teal-600", bg: "bg-emerald-50", border: "border-emerald-100", text: "text-emerald-700", headerGradient: "from-emerald-600 via-teal-600 to-cyan-700" },
-  { key: "geografi", apiKey: "Geografi & Oseanografi", label: "Geografi & Alam", emoji: "🌊", icon: Waves, gradient: "from-cyan-500 to-blue-600", bg: "bg-cyan-50", border: "border-cyan-100", text: "text-cyan-700", headerGradient: "from-cyan-600 via-blue-600 to-indigo-700" },
-  { key: "sejarah", apiKey: "Sejarah Kaum Lampau", label: "Sejarah Kaum Lampau", emoji: "🏛️", icon: Landmark, gradient: "from-amber-500 to-orange-600", bg: "bg-amber-50", border: "border-amber-100", text: "text-amber-700", headerGradient: "from-amber-600 via-orange-600 to-red-700" },
-  { key: "penemu", href: "/ensiklopedia/penemu", apiKey: "Penemu Muslim", label: "Jejak Al-Qur'an di Alam Semesta", emoji: "💡", icon: Atom, gradient: "from-gold to-amber-600", bg: "bg-amber-50/50", border: "border-gold/30", text: "text-amber-700", headerGradient: "from-gold via-amber-500 to-orange-600" },
-  { key: "psikologi", apiKey: "Psikologi Kognitif & Neurosains", label: "Psikologi Kognitif", emoji: "🧠", icon: Brain, gradient: "from-rose-500 to-pink-600", bg: "bg-rose-50", border: "border-rose-100", text: "text-rose-700", headerGradient: "from-rose-600 via-pink-600 to-fuchsia-700" },
+  { key: "astronomi", apiKey: "Astronomi & Kosmologi", label: "Astronomi", emoji: "🔭", icon: Telescope, gradient: "from-indigo-500 to-violet-600", bg: "bg-indigo-50 dark:bg-indigo-950/30", border: "border-indigo-100 dark:border-indigo-900/50", text: "text-indigo-700 dark:text-indigo-400", headerGradient: "from-indigo-600 via-violet-600 to-purple-700 dark:from-indigo-800 dark:via-violet-800 dark:to-purple-900" },
+  { key: "biologi", apiKey: "Biologi & Embriologi Manusia", label: "Biologi Manusia", emoji: "🧬", icon: Dna, gradient: "from-emerald-500 to-teal-600", bg: "bg-emerald-50 dark:bg-emerald-950/30", border: "border-emerald-100 dark:border-emerald-900/50", text: "text-emerald-700 dark:text-emerald-400", headerGradient: "from-emerald-600 via-teal-600 to-cyan-700 dark:from-emerald-800 dark:via-teal-800 dark:to-cyan-900" },
+  { key: "geografi", apiKey: "Geografi & Oseanografi", label: "Geografi & Alam", emoji: "🌊", icon: Waves, gradient: "from-cyan-500 to-blue-600", bg: "bg-cyan-50 dark:bg-cyan-950/30", border: "border-cyan-100 dark:border-cyan-900/50", text: "text-cyan-700 dark:text-cyan-400", headerGradient: "from-cyan-600 via-blue-600 to-indigo-700 dark:from-cyan-800 dark:via-blue-800 dark:to-indigo-900" },
+  { key: "sejarah", apiKey: "Sejarah Kaum Lampau", label: "Sejarah Kaum Lampau", emoji: "🏛️", icon: Landmark, gradient: "from-amber-500 to-orange-600", bg: "bg-amber-50 dark:bg-amber-950/30", border: "border-amber-100 dark:border-amber-900/50", text: "text-amber-700 dark:text-amber-400", headerGradient: "from-amber-600 via-orange-600 to-red-700 dark:from-amber-800 dark:via-orange-800 dark:to-red-900" },
+  { key: "penemu", href: "/ensiklopedia/penemu", apiKey: "Penemu Muslim", label: "Jejak Al-Qur'an di Alam Semesta", emoji: "💡", icon: Atom, gradient: "from-gold to-amber-600", bg: "bg-amber-50/50 dark:bg-amber-950/20", border: "border-gold/30 dark:border-amber-700/30", text: "text-amber-700 dark:text-amber-400", headerGradient: "from-gold via-amber-500 to-orange-600 dark:from-amber-700 dark:via-amber-600 dark:to-orange-800" },
+  { key: "psikologi", apiKey: "Psikologi Kognitif & Neurosains", label: "Psikologi Kognitif", emoji: "🧠", icon: Brain, gradient: "from-rose-500 to-pink-600", bg: "bg-rose-50 dark:bg-rose-950/30", border: "border-rose-100 dark:border-rose-900/50", text: "text-rose-700 dark:text-rose-400", headerGradient: "from-rose-600 via-pink-600 to-fuchsia-700 dark:from-rose-800 dark:via-pink-800 dark:to-fuchsia-900" },
 ];
 
 type CategoryType = (typeof CATEGORIES)[number];
@@ -187,14 +187,14 @@ export default function EncyclopediaPage() {
   };
 
   return (
-    <main className="flex flex-col min-h-screen bg-page-warm pb-24 relative overflow-hidden">
+    <main className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200 pb-24 relative overflow-hidden">
       {/* Abstract Background */}
       <div className="absolute top-[-10%] left-[-10%] w-[120%] h-[40vh] bg-gradient-to-br from-primary/5 via-gold/5 to-transparent rounded-[100%] blur-3xl -z-10 pointer-events-none" />
 
-      <header className="px-6 pt-12 pb-6 sticky top-0 bg-background/90 backdrop-blur-xl z-20 border-b gold-divider shadow-sm">
+      <header className="px-6 pt-12 pb-6 sticky top-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl z-20 border-b border-gray-200 dark:border-gray-700 shadow-sm transition-colors duration-200">
         <div className="flex items-center gap-3">
-          <BookOpenCheck className="w-7 h-7 text-gold" />
-          <h1 className="text-2xl font-bold tracking-tight">Ensiklopedia Semesta</h1>
+          <BookOpenCheck className="w-7 h-7 text-gold dark:text-amber-400" />
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100">Ensiklopedia Semesta</h1>
         </div>
       </header>
 
@@ -251,7 +251,7 @@ export default function EncyclopediaPage() {
 
             {/* Category Grid */}
             <div>
-              <h3 className="text-sm font-semibold text-muted-foreground mb-3 tracking-wider uppercase">
+              <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-3 tracking-wider uppercase">
                 Jelajahi Kategori
               </h3>
               <div className="grid grid-cols-2 gap-3">
@@ -328,7 +328,7 @@ export default function EncyclopediaPage() {
             {isLoadingList && (
               <div className="flex flex-col items-center justify-center py-20 gap-4">
                 <Loader2 className={`w-8 h-8 ${selectedCategory.text} animate-spin`} />
-                <p className="text-sm text-muted-foreground">AI sedang mengumpulkan topik menarik...</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">AI sedang mengumpulkan topik menarik...</p>
               </div>
             )}
 

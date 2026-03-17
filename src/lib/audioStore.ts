@@ -7,12 +7,13 @@ type AudioState = {
   activeWordId: number | null; // Tracks the currently playing word ID during verse playback
   isPlaying: boolean;
   currentTime: number;
+  playbackRate: number;
 };
 
 // Global instance to coordinate single audio playback
 class GlobalAudioPlayer {
   private audio: HTMLAudioElement;
-  private state: AudioState = { activeVerseKey: null, activeWordId: null, isPlaying: false, currentTime: 0 };
+  private state: AudioState = { activeVerseKey: null, activeWordId: null, isPlaying: false, currentTime: 0, playbackRate: 1 };
   private listeners: Set<(state: AudioState) => void> = new Set();
   private currentSegments: [number, number, number, number][] | null = null;
   private animationFrameId: number | null = null;
@@ -103,20 +104,39 @@ class GlobalAudioPlayer {
 
   private positionToWordId: Record<number, number> | null = null;
 
-  playVerse(verseKey: string, url: string, segments?: [number, number, number, number][], positionMap?: Record<number, number>) {
+  playVerse(verseKey: string, url: string, segments?: [number, number, number, number][], positionMap?: Record<number, number>, rate?: number) {
     this.clearWordTimeout();
     
     if (this.state.activeVerseKey === verseKey && this.state.activeWordId === null) {
       // If same verse full playback, resume
+      if (rate !== undefined) {
+        this.setPlaybackRate(rate);
+      }
       this.safePlay();
     } else {
       // New full verse playback
       this.currentSegments = segments || null;
       this.positionToWordId = positionMap || null;
       this.audio.src = url;
+
+      // SET KECEPATAN *SETELAH* SOURCE DI-LOAD (Agar tidak direset oleh DOM secara internal)
+      if (rate !== undefined) {
+        this.setPlaybackRate(rate);
+      } else {
+        // Fallback to existing global state rate if unspecified
+        this.setPlaybackRate(this.state.playbackRate);
+      }
+      
       this.safePlay();
       this.updateState({ activeVerseKey: verseKey, activeWordId: null, currentTime: 0 });
     }
+  }
+
+  setPlaybackRate(rate: number) {
+    if (this.audio) {
+      this.audio.playbackRate = rate;
+    }
+    this.updateState({ playbackRate: rate });
   }
 
   private safePlay() {
@@ -147,7 +167,7 @@ class GlobalAudioPlayer {
 export const globalAudioPlayer = new GlobalAudioPlayer();
 
 export function useAudioState() {
-  const [state, setState] = useState<AudioState>({ activeVerseKey: null, activeWordId: null, isPlaying: false, currentTime: 0 });
+  const [state, setState] = useState<AudioState>({ activeVerseKey: null, activeWordId: null, isPlaying: false, currentTime: 0, playbackRate: 1 });
 
   useEffect(() => {
     return globalAudioPlayer.subscribe(setState);
@@ -155,7 +175,8 @@ export function useAudioState() {
 
   return {
     ...state,
-    playVerse: (verseKey: string, url: string, segments?: [number, number, number, number][], positionMap?: Record<number, number>) => globalAudioPlayer.playVerse(verseKey, url, segments, positionMap),
+    playVerse: (verseKey: string, url: string, segments?: [number, number, number, number][], positionMap?: Record<number, number>, rate?: number) => globalAudioPlayer.playVerse(verseKey, url, segments, positionMap, rate),
+    setPlaybackRateGlobal: (rate: number) => globalAudioPlayer.setPlaybackRate(rate),
     pause: () => globalAudioPlayer.pause(),
   };
 }

@@ -26,26 +26,26 @@ export function SurahListClient({ initialChapters }: SurahListClientProps) {
   });
 
   return (
-    <main className="flex flex-col min-h-screen bg-page-warm pb-24 max-w-7xl mx-auto w-full px-6">
+    <main className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200 pb-24 max-w-7xl mx-auto w-full px-6">
       <header className="flex flex-col gap-2 pt-6">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-secondary text-primary mb-2 shadow-sm">
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-secondary dark:bg-emerald-900/30 text-primary dark:text-emerald-400 mb-2 shadow-sm border border-transparent dark:border-emerald-800/50">
           <Compass className="w-6 h-6" />
         </div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
           Peta Surah
         </h1>
-        <p className="text-muted-foreground leading-relaxed">
+        <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
           Eksplorasi peta kebijakan Al-Qur&apos;an. 114 Surah, 114 panduan hidup.
         </p>
       </header>
 
       <div className="relative mt-2">
         <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-          <Search className="w-5 h-5 text-muted-foreground" />
+          <Search className="w-5 h-5 text-gray-400 dark:text-gray-500" />
         </div>
         <InputField 
           placeholder="Cari surah, tema, atau nomor..." 
-          className="pl-12 bg-white"
+          className="pl-12 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -72,8 +72,8 @@ export function SurahListClient({ initialChapters }: SurahListClientProps) {
             <div className="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center mb-4">
               <BookOpen className="w-8 h-8 text-gold/60" />
             </div>
-            <h3 className="text-lg font-medium text-foreground mb-2">Pencarian tidak ditemukan</h3>
-            <p className="text-muted-foreground text-sm max-w-[250px] mx-auto leading-relaxed">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Pencarian tidak ditemukan</h3>
+            <p className="text-gray-500 dark:text-gray-400 text-sm max-w-[250px] mx-auto leading-relaxed">
               Coba gunakan kata kunci lain, seperti nomor surah atau nama latinnya.
             </p>
           </div>

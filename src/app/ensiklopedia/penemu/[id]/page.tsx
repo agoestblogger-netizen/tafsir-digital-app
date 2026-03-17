@@ -7,7 +7,6 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
-
 // ─── Interfaces ─────────────────────────────────────────────────
 interface PenemuMuslim {
   id: string;
@@ -300,7 +299,7 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-slate-50/50 flex items-center justify-center p-6">
+      <main className="min-h-screen bg-slate-50/50 dark:bg-gray-900 flex items-center justify-center p-6">
         <div className="flex flex-col items-center gap-4">
           <div className="w-16 h-16 rounded-3xl bg-gold/20 flex items-center justify-center animate-pulse">
             <Atom className="w-8 h-8 text-gold" />
@@ -328,19 +327,21 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
   }
 
   return (
-    <main className="min-h-screen bg-slate-50/50 pb-32 relative overflow-hidden">
+    <main className="min-h-screen bg-slate-50/50 dark:bg-gray-900 pb-32 relative overflow-hidden">
       {/* Background Ornaments */}
       <div className="absolute top-[-10%] left-[-20%] w-[140%] h-[60vh] bg-gradient-to-br from-gold/10 via-amber-500/5 to-transparent rounded-[100%] blur-3xl -z-10 pointer-events-none" />
       <div className="absolute top-[40%] right-[-10%] w-[50vw] h-[50vw] bg-primary/5 rounded-full blur-3xl -z-10 pointer-events-none" />
 
       {/* ─── Navigation Bar ─── */}
-      <nav className="px-6 pt-12 pb-4 sticky top-0 bg-background/80 backdrop-blur-md z-30 border-b border-gold/20">
-        <button
-          onClick={() => router.back()}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 border border-border/50 shadow-sm text-sm font-semibold text-foreground/80 hover:bg-white transition-all"
-        >
-          <ArrowLeft className="w-4 h-4" /> Jejak Al-Qur&apos;an di Alam Semesta
-        </button>
+      <nav className="px-6 pt-12 pb-4 sticky top-0 bg-background/80 dark:bg-gray-900/90 backdrop-blur-md z-30 border-b border-gold/20 dark:border-gray-700">
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => router.back()}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 dark:bg-gray-800 border border-border/50 dark:border-gray-700 shadow-sm text-sm font-semibold text-foreground/80 dark:text-gray-200 hover:bg-white dark:hover:bg-gray-700 transition-all"
+          >
+            <ArrowLeft className="w-4 h-4" /> Jejak Al-Qur&apos;an di Alam Semesta
+          </button>
+        </div>
       </nav>
 
       {/* ─── Header Section ─── */}
@@ -378,11 +379,11 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
                 <div>
                   <h1 
                     onClick={() => fetchWikipediaData(cleanName, 'tokoh')}
-                    className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight mb-1 hover:text-emerald-600 cursor-pointer transition-colors"
+                    className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight mb-1 hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer transition-colors"
                   >
                     {cleanName}
                   </h1>
-                  <p className="text-lg md:text-xl text-gray-600 italic mb-6">
+                  <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 italic mb-6">
                     {data.julukan}
                   </p>
                 </div>
@@ -392,12 +393,12 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
 
           <div className="flex flex-wrap gap-3 mt-2">
             {data.tahun_hidup && (
-              <div className="flex items-center gap-1.5 text-base font-bold text-gray-800 bg-secondary/50 px-3 py-1.5 rounded-lg border border-border">
+              <div className="flex items-center gap-1.5 text-base font-bold text-gray-800 dark:text-gray-200 bg-secondary/50 dark:bg-gray-800 px-3 py-1.5 rounded-lg border border-border dark:border-gray-700">
                 <Hourglass className="w-4 h-4 opacity-70" /> {data.tahun_hidup}
               </div>
             )}
             {data.wilayah_peradaban && (
-              <div className="flex items-center gap-1.5 text-base font-bold text-gray-800 bg-secondary/50 px-3 py-1.5 rounded-lg border border-border">
+              <div className="flex items-center gap-1.5 text-base font-bold text-gray-800 dark:text-gray-200 bg-secondary/50 dark:bg-gray-800 px-3 py-1.5 rounded-lg border border-border dark:border-gray-700">
                 <Globe className="w-4 h-4 opacity-70" /> {data.wilayah_peradaban}
               </div>
             )}
@@ -414,16 +415,16 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
           transition={{ duration: 0.5, delay: 0.1 }}
           className="flex flex-col gap-5"
         >
-          <div className="prose prose-emerald max-w-none text-gray-800 leading-relaxed text-base md:text-lg space-y-8">
+          <div className="prose prose-emerald dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 leading-relaxed text-base md:text-lg space-y-8 dark:prose-blockquote:bg-slate-800 dark:prose-blockquote:text-gray-300 prose-blockquote:px-5 prose-blockquote:py-1 prose-blockquote:rounded-r-xl">
             <div className="font-normal mb-6">
               <ReactMarkdown>{data.profil_singkat}</ReactMarkdown>
             </div>
             
-            <div className="bg-white border border-gray-100 rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden mb-6">
-               <h2 className="bg-emerald-800 text-white font-bold px-4 py-1.5 rounded-md inline-flex items-center gap-2 mb-4 shadow-sm not-prose text-base md:text-lg">
+            <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden mb-6">
+               <h2 className="bg-emerald-800 dark:bg-emerald-900 text-white dark:text-emerald-50 font-bold px-4 py-1.5 rounded-md inline-flex items-center gap-2 mb-4 shadow-sm not-prose text-base md:text-lg">
                  <Award className="w-5 h-5" /> Warisan & Kontribusi
                </h2>
-               <div className="whitespace-pre-line relative z-10 prose prose-emerald max-w-none text-gray-800 leading-relaxed text-base md:text-lg">
+               <div className="whitespace-pre-line relative z-10 prose prose-emerald dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 leading-relaxed text-base md:text-lg dark:prose-blockquote:bg-slate-800 dark:prose-blockquote:text-gray-300 prose-blockquote:px-5 prose-blockquote:py-1 prose-blockquote:rounded-r-xl">
                  <ReactMarkdown>{data.kontribusi_ilmiah}</ReactMarkdown>
                </div>
             </div>
@@ -438,7 +439,7 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <div className="mb-4 px-2">
-              <h2 className="bg-emerald-800 text-white font-bold px-4 py-1.5 rounded-md inline-flex items-center gap-2 mb-4 shadow-sm text-base md:text-lg">
+              <h2 className="bg-emerald-800 dark:bg-emerald-900 text-white dark:text-emerald-50 font-bold px-4 py-1.5 rounded-md inline-flex items-center gap-2 mb-4 shadow-sm text-base md:text-lg">
                 <BookOpen className="w-5 h-5" /> Cahaya Al-Qur&apos;an
               </h2>
             </div>
@@ -459,19 +460,19 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
                 </div>
               ) : (
                 // Fallback rendering
-                <div className="bg-white border border-gray-100 shadow-sm p-6 sm:p-8 rounded-2xl flex flex-col gap-2 relative z-10">
+                <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm p-6 sm:p-8 rounded-2xl flex flex-col gap-2 relative z-10">
                   <div className="mb-4">
-                     <span className="bg-emerald-50 text-emerald-700 border border-emerald-100 px-3 py-1 rounded-full text-sm font-medium w-fit inline-block">
+                     <span className="bg-emerald-50 dark:bg-gray-900 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-gray-700 px-3 py-1 rounded-full text-sm font-medium w-fit inline-block">
                        Surah {data.nomor_surat} : {data.nomor_ayat}
                      </span>
                   </div>
 
-                  <p dir="rtl" className="font-arabic text-2xl md:text-3xl leading-loose text-gray-900 text-right">
+                  <p dir="rtl" className="font-arabic text-2xl md:text-3xl leading-loose text-gray-900 dark:text-gray-100 text-right">
                     Memuat lafaz...
                   </p>
                   
                   <div className="mt-4">
-                    <p className="text-base md:text-lg text-gray-800 font-normal leading-relaxed text-justify">
+                    <p className="text-base md:text-lg text-gray-800 dark:text-gray-200 font-normal leading-relaxed text-justify">
                       {data.ayat_quran || "Terjadi kesalahan memuat terjemahan."}
                     </p>
                   </div>
@@ -489,7 +490,7 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
             transition={{ duration: 0.5, delay: 0.3 }}
           >
             <div className="mb-4 px-2">
-              <h2 className="bg-emerald-800 text-white font-bold px-4 py-1.5 rounded-md inline-flex items-center gap-2 mb-4 shadow-sm text-base md:text-lg">
+              <h2 className="bg-emerald-800 dark:bg-emerald-900 text-white dark:text-emerald-50 font-bold px-4 py-1.5 rounded-md inline-flex items-center gap-2 mb-4 shadow-sm text-base md:text-lg">
                 <Scroll className="w-5 h-5" /> Kajian Mufassir
               </h2>
             </div>
@@ -509,18 +510,18 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <div className="rounded-3xl bg-white border border-gray-100 p-6 sm:p-8 md:p-10 relative overflow-hidden shadow-sm mb-8">
+            <div className="rounded-3xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-6 sm:p-8 md:p-10 relative overflow-hidden shadow-sm mb-8">
               
               <div className="relative z-10 flex flex-col gap-8">
                 {data.refleksi_ilmiah && (
                   <div className="mb-6">
-                    <h3 className="bg-emerald-800 text-white font-bold px-4 py-1.5 rounded-md inline-flex items-center gap-2 mb-4 shadow-sm text-base md:text-lg">
+                    <h3 className="bg-emerald-800 dark:bg-emerald-900 text-white dark:text-emerald-50 font-bold px-4 py-1.5 rounded-md inline-flex items-center gap-2 mb-4 shadow-sm text-base md:text-lg">
                        <Sparkles className="w-5 h-5" /> Perspektif Sains
                     </h3>
                     
                     {/* Storytelling logic for Refleksi */}
                     {data.refleksi_kosmetik || localStory?.refleksi_md ? (
-                      <div className="prose prose-emerald max-w-none text-gray-800 text-base md:text-lg hover-prose-a:text-emerald-700 prose-p:leading-loose prose-p:mb-6 prose-headings:text-emerald-800 prose-headings:font-bold prose-headings:mt-8 prose-headings:mb-4 prose-a:text-blue-600 prose-a:font-semibold prose-a:no-underline hover:prose-a:underline">
+                      <div className="prose prose-emerald dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 text-base md:text-lg hover-prose-a:text-emerald-700 dark:hover:prose-a:text-emerald-400 prose-p:leading-loose prose-p:mb-6 prose-headings:text-emerald-800 dark:prose-headings:text-emerald-400 prose-headings:font-bold prose-headings:mt-8 prose-headings:mb-4 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:font-semibold prose-a:no-underline hover:prose-a:underline dark:prose-blockquote:bg-slate-800 dark:prose-blockquote:text-gray-300 prose-blockquote:px-5 prose-blockquote:py-1 prose-blockquote:rounded-r-xl">
                         <ReactMarkdown
                           components={{
                             a: ({ node, ...props }) => {
@@ -528,7 +529,7 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
                               return (
                                 <a 
                                   {...props} 
-                                  className="text-emerald-600 hover:text-emerald-800 cursor-pointer underline decoration-emerald-300 decoration-2 underline-offset-2 transition-colors"
+                                  className="text-emerald-600 dark:text-emerald-500 hover:text-emerald-800 dark:hover:text-emerald-400 cursor-pointer underline decoration-emerald-300 dark:decoration-emerald-700 decoration-2 underline-offset-2 transition-colors"
                                   onClick={(e) => {
                                     e.preventDefault();
                                     // Use href (the AI-generated keyword) as primary, fallback to display text
@@ -548,19 +549,19 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
                         >{localStory?.refleksi_md || data.refleksi_kosmetik || ""}</ReactMarkdown>
                       </div>
                     ) : (
-                      <div className="flex flex-col gap-4 py-4 px-6 bg-slate-50/50 rounded-2xl border border-dashed border-gray-200">
+                      <div className="flex flex-col gap-4 py-4 px-6 bg-slate-50/50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
                         <div className="flex items-center gap-3 mb-2">
-                          <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center animate-pulse">
-                            <Sparkles className="w-4 h-4 text-emerald-600" />
+                          <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center animate-pulse">
+                            <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                           </div>
-                          <p className="text-base font-bold text-emerald-800 animate-pulse">
+                          <p className="text-base font-bold text-emerald-800 dark:text-emerald-500 animate-pulse">
                             Sedang meracik uraian sains ilmiah...
                           </p>
                         </div>
                         <div className="space-y-3">
-                          <div className="h-4 bg-gray-200 rounded-full w-full animate-pulse" />
-                          <div className="h-4 bg-gray-200 rounded-full w-11/12 animate-pulse" />
-                          <div className="h-4 bg-gray-200 rounded-full w-10/12 animate-pulse" />
+                          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-full w-full animate-pulse" />
+                          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-full w-11/12 animate-pulse" />
+                          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-full w-10/12 animate-pulse" />
                         </div>
                       </div>
                     )}
@@ -569,20 +570,20 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
 
                 {data.renungan && (
                   <div>
-                    <h3 className="bg-emerald-800 text-white font-bold px-4 py-1.5 rounded-md inline-flex items-center gap-2 mb-4 shadow-sm text-base md:text-lg">
+                    <h3 className="bg-emerald-800 dark:bg-emerald-900 text-white dark:text-emerald-50 font-bold px-4 py-1.5 rounded-md inline-flex items-center gap-2 mb-4 shadow-sm text-base md:text-lg">
                       <BookOpen className="w-5 h-5" /> Tadabbur & Renungan
                     </h3>
                     
                     {/* Storytelling logic for Renungan */}
                     {data.renungan_kosmetik || localStory?.renungan_md ? (
-                      <div className="prose prose-emerald max-w-none text-gray-800 italic border-l-2 border-emerald-100 pl-5 text-base md:text-lg hover-prose-a:text-emerald-700 prose-p:leading-loose prose-p:mb-6 prose-headings:text-emerald-800 prose-headings:font-bold prose-headings:mt-8 prose-headings:mb-4 prose-a:text-blue-600 prose-a:font-semibold prose-a:no-underline hover:prose-a:underline">
+                      <div className="prose prose-emerald dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 italic border-l-2 border-emerald-100 dark:border-emerald-900 pl-5 text-base md:text-lg hover-prose-a:text-emerald-700 dark:hover:prose-a:text-emerald-400 prose-p:leading-loose prose-p:mb-6 prose-headings:text-emerald-800 dark:prose-headings:text-emerald-400 prose-headings:font-bold prose-headings:mt-8 prose-headings:mb-4 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:font-semibold prose-a:no-underline hover:prose-a:underline dark:prose-blockquote:bg-slate-800 dark:prose-blockquote:text-gray-300 prose-blockquote:px-5 prose-blockquote:py-1 prose-blockquote:rounded-r-xl">
                         <ReactMarkdown
                           components={{
                             a: ({ node, ...props }) => {
                               return (
                                 <a 
                                   {...props} 
-                                  className="text-emerald-600 hover:text-emerald-800 cursor-pointer font-semibold underline decoration-emerald-300 decoration-2 underline-offset-2 transition-colors not-italic"
+                                  className="text-emerald-600 dark:text-emerald-500 hover:text-emerald-800 dark:hover:text-emerald-400 cursor-pointer font-semibold underline decoration-emerald-300 dark:decoration-emerald-700 decoration-2 underline-offset-2 transition-colors not-italic"
                                   onClick={(e) => {
                                     e.preventDefault();
                                     // Use href (the AI-generated keyword) as primary, fallback to display text
@@ -602,19 +603,19 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
                         >{localStory?.renungan_md || data.renungan_kosmetik || ""}</ReactMarkdown>
                       </div>
                     ) : (
-                      <div className="flex flex-col gap-4 py-4 px-6 bg-slate-50/50 rounded-2xl border border-dashed border-gray-200">
+                      <div className="flex flex-col gap-4 py-4 px-6 bg-slate-50/50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
                         <div className="flex items-center gap-3 mb-2">
-                          <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center animate-pulse">
-                            <BookOpen className="w-4 h-4 text-emerald-600" />
+                          <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center animate-pulse">
+                            <BookOpen className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                           </div>
-                          <p className="text-base font-bold text-emerald-800 animate-pulse">
+                          <p className="text-base font-bold text-emerald-800 dark:text-emerald-500 animate-pulse">
                             Sedang merangkai hikmah tadabbur...
                           </p>
                         </div>
                         <div className="space-y-3">
-                          <div className="h-4 bg-gray-200 rounded-full w-full animate-pulse" />
-                          <div className="h-4 bg-gray-200 rounded-full w-11/12 animate-pulse" />
-                          <div className="h-4 bg-gray-200 rounded-full w-10/12 animate-pulse" />
+                          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-full w-full animate-pulse" />
+                          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-full w-11/12 animate-pulse" />
+                          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-full w-10/12 animate-pulse" />
                         </div>
                       </div>
                     )}
@@ -642,16 +643,16 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 h-full w-full md:w-96 bg-white shadow-2xl z-50 overflow-y-auto"
+              className="fixed top-0 right-0 h-full w-full md:w-96 bg-white dark:bg-gray-900 shadow-2xl z-50 overflow-y-auto"
             >
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                    <Globe className="w-5 h-5 text-gray-400" /> Wikipedia
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                    <Globe className="w-5 h-5 text-gray-400 dark:text-gray-500" /> Wikipedia
                   </h3>
                   <button 
                     onClick={() => setIsDrawerOpen(false)}
-                    className="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors"
+                    className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -659,29 +660,29 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
 
                 {isWikiTokohLoading ? (
                   <div className="flex flex-col gap-4 animate-pulse">
-                    <div className="w-full h-48 bg-gray-200 rounded-xl" />
-                    <div className="h-6 bg-gray-200 rounded w-3/4" />
-                    <div className="h-4 bg-gray-200 rounded w-full mt-2" />
-                    <div className="h-4 bg-gray-200 rounded w-full" />
-                    <div className="h-4 bg-gray-200 rounded w-5/6" />
+                    <div className="w-full h-48 bg-gray-200 dark:bg-gray-800 rounded-xl" />
+                    <div className="h-6 bg-gray-200 dark:bg-gray-800 rounded w-3/4" />
+                    <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-full mt-2" />
+                    <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-full" />
+                    <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-5/6" />
                   </div>
                 ) : wikiTokohData?.extract ? (
                   <div className="flex flex-col gap-6">
                     {wikiTokohData.thumbnail?.source && (
-                      <div className="w-full overflow-hidden rounded-xl border border-gray-100 shadow-sm">
+                      <div className="w-full overflow-hidden rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm relative">
                         <img 
                           src={wikiTokohData.thumbnail.source} 
                           alt={wikiTokohData.title}
-                          className="w-full h-auto object-cover max-h-64"
+                          className="w-full h-auto object-cover max-h-64 dark:brightness-90"
                         />
                       </div>
                     )}
                     <div>
-                      <h4 className="text-xl font-bold text-gray-900 mb-1">{wikiTokohData.title}</h4>
+                      <h4 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-1">{wikiTokohData.title}</h4>
                       {wikiTokohData.description && (
-                        <p className="text-sm text-gray-500 italic mb-4">{wikiTokohData.description}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 italic mb-4">{wikiTokohData.description}</p>
                       )}
-                      <p className="text-base text-gray-700 leading-relaxed text-justify">
+                      <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed text-justify">
                         {wikiTokohData.extract}
                       </p>
                     </div>
@@ -689,17 +690,17 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
                       href={wikiTokohData.content_urls?.desktop?.page || `https://id.wikipedia.org/wiki/${wikiTokohData.title}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2 w-full py-3 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-colors mt-4"
+                      className="inline-flex items-center justify-center gap-2 w-full py-3 bg-slate-900 dark:bg-slate-800 text-white rounded-lg font-medium hover:bg-slate-800 dark:hover:bg-slate-700 transition-colors mt-4"
                     >
                       Baca Selengkapnya
                     </a>
                   </div>
                 ) : (
                   <div className="text-center py-12">
-                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100">
-                      <Globe className="w-8 h-8 text-gray-300" />
+                    <div className="w-16 h-16 bg-gray-50 dark:bg-gray-800/50 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100 dark:border-gray-800">
+                      <Globe className="w-8 h-8 text-gray-300 dark:text-gray-600" />
                     </div>
-                    <p className="text-gray-500 font-medium">Artikel Wikipedia tidak ditemukan.</p>
+                    <p className="text-gray-500 dark:text-gray-400 font-medium">Artikel Wikipedia tidak ditemukan.</p>
                   </div>
                 )}
               </div>
@@ -723,7 +724,7 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 10 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden"
+              className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden border border-transparent dark:border-gray-800"
             >
               <div className="bg-emerald-800 px-6 py-4 flex items-center justify-between">
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
@@ -740,24 +741,24 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
               <div className="p-6 max-h-[70vh] overflow-y-auto">
                 {isWikiTermLoading ? (
                   <div className="flex flex-col gap-3 animate-pulse">
-                    <div className="h-6 bg-gray-200 rounded w-1/2 mb-2" />
-                    <div className="h-4 bg-gray-200 rounded w-full" />
-                    <div className="h-4 bg-gray-200 rounded w-full" />
-                    <div className="h-4 bg-gray-200 rounded w-3/4" />
+                    <div className="h-6 bg-gray-200 dark:bg-gray-800 rounded w-1/2 mb-2" />
+                    <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-full" />
+                    <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-full" />
+                    <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-3/4" />
                   </div>
                 ) : wikiTermData?.extract ? (
                   <div className="flex flex-col gap-4">
                     {wikiTermData.thumbnail?.source && (
-                      <div className="w-full bg-slate-50 rounded-xl overflow-hidden border border-gray-100 flex justify-center py-4 mb-2">
+                      <div className="w-full bg-slate-50 dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700 flex justify-center py-4 mb-2">
                         <img 
                           src={wikiTermData.thumbnail.source} 
                           alt={wikiTermData.title}
-                          className="h-32 w-auto object-contain mix-blend-multiply"
+                          className="h-32 w-auto object-contain mix-blend-multiply dark:mix-blend-normal dark:brightness-90"
                         />
                       </div>
                     )}
-                    <h4 className="text-xl font-bold text-gray-900 border-b border-gray-100 pb-3">{wikiTermData.title}</h4>
-                    <p className="text-base text-gray-700 leading-relaxed">
+                    <h4 className="text-xl font-bold text-gray-900 dark:text-gray-100 border-b border-gray-100 dark:border-gray-800 pb-3">{wikiTermData.title}</h4>
+                    <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
                       {wikiTermData.extract}
                     </p>
                     <div className="pt-4 mt-2">
@@ -765,7 +766,7 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
                         href={wikiTermData.content_urls?.desktop?.page || `https://id.wikipedia.org/wiki/${wikiTermData.title}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-emerald-600 hover:text-emerald-700 font-medium inline-flex items-center gap-1 text-sm bg-emerald-50 px-3 py-1.5 rounded-md"
+                        className="text-emerald-600 dark:text-emerald-500 hover:text-emerald-700 dark:hover:text-emerald-400 font-medium inline-flex items-center gap-1 text-sm bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1.5 rounded-md"
                       >
                         Lihat Sumber di Wikipedia
                       </a>
@@ -773,18 +774,18 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
                   </div>
                 ) : (
                   <div className="text-center py-8 flex flex-col items-center gap-4">
-                    <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center border border-red-100 mb-2">
-                       <BookOpen className="w-8 h-8 text-red-300" />
+                    <div className="w-16 h-16 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center border border-red-100 dark:border-red-900/30 mb-2">
+                       <BookOpen className="w-8 h-8 text-red-300 dark:text-red-500" />
                     </div>
                     <div>
-                      <h4 className="text-lg font-bold text-gray-900 mb-1">Data Tidak Ditemukan</h4>
-                      <p className="text-gray-500 font-medium">Penjelasan Wikipedia untuk istilah ini belum tersedia.</p>
+                      <h4 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">Data Tidak Ditemukan</h4>
+                      <p className="text-gray-500 dark:text-gray-400 font-medium">Penjelasan Wikipedia untuk istilah ini belum tersedia.</p>
                     </div>
                     <a 
                       href={`https://www.google.com/search?q=${encodeURIComponent(currentWikiTerm)}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 mt-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors"
+                      className="inline-flex items-center gap-2 mt-2 px-5 py-2.5 bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-600 text-white font-medium rounded-lg shadow-sm transition-colors"
                     >
                       <ExternalLink className="w-4 h-4" /> Cari di Google
                     </a>
@@ -812,8 +813,8 @@ function TafsirAccordion({ title, content, defaultOpen = false }: { title: strin
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between p-4 sm:p-5 text-left bg-secondary/30 hover:bg-secondary/50 transition-colors"
       >
-        <span className="font-bold text-gray-800 text-base md:text-lg flex items-center gap-2">
-          <FileText className="w-5 h-5 text-teal-600" /> {title}
+        <span className="font-bold text-gray-800 dark:text-gray-100 text-base md:text-lg flex items-center gap-2">
+          <FileText className="w-5 h-5 text-teal-600 dark:text-teal-400" /> {title}
         </span>
         <div className={`w-8 h-8 rounded-full bg-background flex items-center justify-center border border-border/50 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
           <ChevronDown className="w-4 h-4 text-muted-foreground" />
@@ -830,7 +831,7 @@ function TafsirAccordion({ title, content, defaultOpen = false }: { title: strin
             className="overflow-hidden"
           >
             <div className="p-4 sm:p-6 pt-2 border-t border-border/10">
-              <div className="prose prose-emerald max-w-none text-base md:text-lg text-gray-800 leading-relaxed whitespace-pre-line">
+              <div className="prose prose-emerald dark:prose-invert max-w-none text-base md:text-lg text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-line dark:prose-blockquote:bg-slate-800 dark:prose-blockquote:text-gray-300 prose-blockquote:px-5 prose-blockquote:py-1 prose-blockquote:rounded-r-xl">
                 <ReactMarkdown>{content}</ReactMarkdown>
               </div>
             </div>
@@ -859,16 +860,16 @@ function SurahAccordion({ verses, defaultOpen = false }: { verses: {arabic: stri
   const title = `QS ${surahLabel}: ${ayatRangeText}`;
 
   return (
-    <div className="rounded-2xl bg-white border border-gray-100 shadow-sm overflow-hidden transition-all hover:border-gray-200">
+    <div className="rounded-2xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden transition-all hover:border-gray-200 dark:hover:border-slate-600">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-4 bg-emerald-50 hover:bg-emerald-100/50 transition-colors"
+        className="w-full flex items-center justify-between p-4 bg-emerald-50 dark:bg-slate-800 hover:bg-emerald-100/50 dark:hover:bg-slate-700 transition-colors"
       >
-        <span className="font-bold text-emerald-800 text-base md:text-lg flex items-center gap-2 text-left">
+        <span className="font-bold text-emerald-800 dark:text-emerald-400 text-base md:text-lg flex items-center gap-2 text-left">
           <BookOpen className="w-5 h-5 opacity-70 flex-shrink-0" /> {title}
         </span>
         <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-transform duration-300 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`}>
-          <ChevronDown className="w-5 h-5 text-emerald-600" />
+          <ChevronDown className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
         </div>
       </button>
       
@@ -881,16 +882,16 @@ function SurahAccordion({ verses, defaultOpen = false }: { verses: {arabic: stri
             transition={{ duration: 0.3 }}
             className="overflow-hidden"
           >
-            <div className="p-5 sm:p-6 border-t border-emerald-100/30 flex flex-col">
+            <div className="p-5 sm:p-6 border-t border-emerald-100/30 dark:border-slate-700 flex flex-col">
               {verses.map((quran, idx) => (
-                <div key={`${quran.surahNum}-${quran.ayatNum}`} className={`flex flex-col gap-4 ${idx !== verses.length - 1 ? 'border-b border-gray-100 mb-6 pb-6' : ''}`}>
-                   <p dir="rtl" className="font-arabic text-2xl md:text-3xl leading-loose text-gray-900 text-right">
+                <div key={`${quran.surahNum}-${quran.ayatNum}`} className={`flex flex-col gap-4 ${idx !== verses.length - 1 ? 'border-b border-gray-100 dark:border-slate-700 mb-6 pb-6' : ''}`}>
+                   <p dir="rtl" className="font-arabic text-2xl md:text-3xl leading-loose text-gray-900 dark:text-gray-100 text-right">
                      {quran.arabic}
                    </p>
-                   <p className="text-base md:text-lg italic text-gray-600 text-left">
+                   <p className="text-base md:text-lg italic text-gray-600 dark:text-gray-400 text-left">
                      {quran.latin}
                    </p>
-                   <div className="mt-2 text-base md:text-lg text-gray-800 font-normal leading-relaxed text-justify">
+                   <div className="mt-2 text-base md:text-lg text-gray-800 dark:text-gray-300 font-normal leading-relaxed text-justify">
                      {quran.translation}
                    </div>
                 </div>

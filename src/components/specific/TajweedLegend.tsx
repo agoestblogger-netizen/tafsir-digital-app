@@ -78,11 +78,11 @@ export function TajweedLegend() {
             <button
                 onClick={() => setIsOpen((v) => !v)}
                 aria-expanded={isOpen}
-                className="group w-full flex items-center justify-between gap-3 px-5 py-3 rounded-2xl border border-gold/30 bg-white/60 backdrop-blur-sm hover:bg-white/80 hover:border-gold/60 transition-all duration-200 shadow-sm"
+                className="group w-full flex items-center justify-between gap-3 px-5 py-3 rounded-2xl border border-gold/30 bg-white/60 dark:bg-slate-800 backdrop-blur-sm hover:bg-white/80 dark:hover:bg-slate-700 hover:border-gold/60 transition-all duration-200 shadow-sm"
             >
                 <div className="flex items-center gap-2.5">
                     <Palette className="w-4 h-4 text-gold flex-shrink-0" strokeWidth={1.8} />
-                    <span className="text-sm font-semibold text-foreground/80">
+                    <span className="text-sm font-semibold text-foreground/80 dark:text-gray-200">
                         Panduan Warna Tajwid
                     </span>
                     {/* Pil warna kecil sebagai preview */}
@@ -114,9 +114,9 @@ export function TajweedLegend() {
                         transition={{ duration: 0.28, ease: "easeInOut" }}
                         className="overflow-hidden"
                     >
-                        <div className="mt-2 p-4 rounded-2xl border border-gold/20 bg-white/70 backdrop-blur-sm shadow-sm">
+                        <div className="mt-2 p-4 rounded-2xl border border-gold/20 bg-white/70 dark:bg-slate-800 backdrop-blur-sm shadow-sm">
                             {/* Header */}
-                            <p className="text-xs text-foreground/45 mb-3 font-medium tracking-wide uppercase">
+                            <p className="text-xs text-foreground/45 dark:text-gray-400 mb-3 font-medium tracking-wide uppercase">
                                 Kamus Warna Al-Qur&apos;an (Rasm Uthmani Tajweed)
                             </p>
 
@@ -135,7 +135,7 @@ export function TajweedLegend() {
                                         {/* Teks */}
                                         <div className="min-w-0">
                                             <div className="flex items-baseline gap-2 flex-wrap">
-                                                <span className="text-sm font-semibold text-foreground/85 leading-snug">
+                                                <span className="text-sm font-semibold text-foreground/85 dark:text-gray-200 leading-snug">
                                                     {name}
                                                 </span>
                                                 <span
@@ -145,7 +145,7 @@ export function TajweedLegend() {
                                                     {arabic}
                                                 </span>
                                             </div>
-                                            <p className="text-xs text-foreground/50 leading-snug mt-0.5">
+                                            <p className="text-xs text-foreground/50 dark:text-gray-400 leading-snug mt-0.5">
                                                 {desc}
                                             </p>
                                         </div>

@@ -41,14 +41,14 @@ export function CounselorCard({ data }: CounselorCardProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2, duration: 0.6 }}
-        className="card-premium p-5 rounded-3xl relative overflow-hidden"
+        className="card-premium bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-5 rounded-3xl relative overflow-hidden shadow-sm"
       >
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
         <div className="flex items-start gap-3">
           <div className="w-9 h-9 rounded-xl bg-gold/10 flex items-center justify-center flex-shrink-0 mt-0.5">
             <Heart className="w-4 h-4 text-gold" />
           </div>
-          <p className="text-foreground/85 text-sm leading-relaxed italic">
+          <p className="text-gray-900/85 dark:text-gray-200/85 text-sm leading-relaxed italic">
             &ldquo;{data.emotion_validation}&rdquo;
           </p>
         </div>
@@ -59,7 +59,7 @@ export function CounselorCard({ data }: CounselorCardProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.7 }}
-        className="card-premium rounded-3xl relative overflow-hidden"
+        className="card-premium bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-3xl relative overflow-hidden shadow-sm"
       >
         <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-gold/70 via-gold to-gold/70" />
         <div className="p-5 pl-6">
@@ -74,7 +74,7 @@ export function CounselorCard({ data }: CounselorCardProps) {
           </p>
           <div className="relative pl-4 py-2">
             <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-gold/30 rounded-full" />
-            <p className="text-sm text-foreground/80 leading-relaxed italic">
+            <p className="text-sm text-gray-800/80 dark:text-gray-300/80 leading-relaxed italic">
               &ldquo;{data.quran_verse.translation}&rdquo;
             </p>
           </div>
@@ -86,7 +86,7 @@ export function CounselorCard({ data }: CounselorCardProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7, duration: 0.7 }}
-        className="card-premium rounded-3xl relative overflow-hidden"
+        className="card-premium bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-3xl relative overflow-hidden shadow-sm"
       >
         <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary/50 via-primary/70 to-primary/50" />
         <div className="p-5 pl-6">
@@ -96,7 +96,7 @@ export function CounselorCard({ data }: CounselorCardProps) {
               Hadits — {data.hadith.reference}
             </span>
           </div>
-          <p className="text-sm text-foreground/80 leading-relaxed italic">
+          <p className="text-sm text-gray-800/80 dark:text-gray-300/80 leading-relaxed italic">
             &ldquo;{data.hadith.translation}&rdquo;
           </p>
         </div>
@@ -107,7 +107,7 @@ export function CounselorCard({ data }: CounselorCardProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1, duration: 0.7 }}
-        className="card-premium rounded-3xl p-5 relative overflow-hidden"
+        className="card-premium bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-3xl p-5 relative overflow-hidden shadow-sm"
       >
         {/* Watermark tulisan Arab dekoratif */}
         <div className="absolute top-3 right-4 font-arabic text-6xl text-gold/5 select-none leading-none">
@@ -119,12 +119,12 @@ export function CounselorCard({ data }: CounselorCardProps) {
             Sirah Nabawiyah
           </span>
         </div>
-        <p className="text-xs text-foreground/40 mb-3 italic">{data.sirah_reference.source}</p>
-        <p className="text-sm text-foreground/85 leading-relaxed mb-3">
+        <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 italic">{data.sirah_reference.source}</p>
+        <p className="text-sm text-gray-900/85 dark:text-gray-200/85 leading-relaxed mb-3">
           {data.sirah_reference.story}
         </p>
         <div className="relative pl-4 py-2 border-l-2 border-gold/40">
-          <p className="text-sm text-foreground/70 leading-relaxed italic">
+          <p className="text-sm text-gray-900/70 dark:text-gray-300/70 leading-relaxed italic">
             <span className="font-semibold text-gold/80 not-italic">Pelajaran: </span>
             {data.sirah_reference.lesson}
           </p>
@@ -136,7 +136,7 @@ export function CounselorCard({ data }: CounselorCardProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.3, duration: 0.7 }}
-        className="bg-primary/5 rounded-3xl p-5 border border-primary/10"
+        className="bg-emerald-50 dark:bg-emerald-900/20 rounded-3xl p-5 border border-emerald-100 dark:border-emerald-800"
       >
         <div className="flex items-center gap-2 mb-3">
           <Star className="w-4 h-4 text-primary" />
@@ -144,7 +144,7 @@ export function CounselorCard({ data }: CounselorCardProps) {
             Prophetic Method — Metode Kenabian
           </span>
         </div>
-        <p className="text-sm text-foreground/75 leading-relaxed">
+        <p className="text-sm text-gray-900/75 dark:text-gray-300/75 leading-relaxed">
           {data.prophetic_method}
         </p>
       </motion.div>

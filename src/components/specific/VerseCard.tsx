@@ -4,7 +4,7 @@ import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   PlayCircle, PauseCircle, Sparkles, Loader2,
-  ScrollText, BookOpen, Lightbulb, ChevronDown, Atom, ArrowRight
+  ScrollText, BookOpen, Lightbulb, ChevronDown, Atom, ArrowRight, Telescope
 } from "lucide-react";
 import Link from "next/link";
 import { Verse, VerseWord } from "@/lib/api/quran";
@@ -42,9 +42,10 @@ interface VerseCardProps {
 }
 
 export function VerseCard({ verse, index, surahName }: VerseCardProps) {
-  const { activeVerseKey, activeWordId, isPlaying, playVerse, pause } = useAudioState();
+  const { activeVerseKey, activeWordId, isPlaying, playVerse, pause, setPlaybackRateGlobal } = useAudioState();
   const [clickedWordId, setClickedWordId] = React.useState<number | null>(null);
   const wordAudioRef = React.useRef<HTMLAudioElement | null>(null);
+  const [playbackRate, setPlaybackRate] = React.useState<number>(1);
 
   // Tafsir AI State
   const [isAnalyzing, setIsAnalyzing] = React.useState(false);
@@ -53,8 +54,8 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
   const [showTafsir, setShowTafsir] = React.useState(false);
   const [activeLens, setActiveLens] = React.useState<LensKey>('psikologi');
 
-  // Penemu Muslim State
-  const [penemuData, setPenemuData] = React.useState<PenemuMuslimRef | null>(null);
+  // Penemu Muslim Cross-Link State
+  const [penemuList, setPenemuList] = React.useState<PenemuMuslimRef[]>([]);
 
   // Cleanup on unmount
   React.useEffect(() => {
@@ -66,6 +67,28 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
       }
     };
   }, []);
+
+  // ─── Fetch Cross-Link Penemu Muslim ─────────────────────
+  // Berjalan diam-diam saat VerseCard di-mount (intersection observer / render)
+  React.useEffect(() => {
+    // Avoid re-fetching if data is already loaded or attempted
+    let isMounted = true;
+    const surahNumber = verse.verse_key.split(":")[0];
+    const ayatNumber = verse.verse_key.split(":")[1];
+
+    fetch(`/api/penemu-muslim?surah=${surahNumber}&ayat=${ayatNumber}`)
+      .then(r => r.json())
+      .then(d => {
+        if (isMounted && d.data && d.data.length > 0) {
+          setPenemuList(d.data);
+        }
+      })
+      .catch(err => console.error("Gagal sinkronisasi data cross-link Penemu Muslim:", err));
+
+    return () => {
+      isMounted = false;
+    };
+  }, [verse.verse_key]);
 
   // Translate 33 is Kemenag Indonesian translation, 57 is Transliteration
   const translationText = verse.translations?.find(t => t.resource_id === 33)?.text || "Terjemahan tidak tersedia.";
@@ -96,24 +119,56 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
           }
         }
       });
-      playVerse(verse.verse_key, verse.audio.url, verse.audio.segments, positionMap);
+      playVerse(verse.verse_key, verse.audio.url, verse.audio.segments, positionMap, playbackRate);
     }
   };
 
-  const handleWordClick = (word: VerseWord) => {
-    if (!word.audio_url) return;
+  const handleSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rate = parseFloat(e.target.value);
+    setPlaybackRate(rate);
 
-    if (isPlaying) pause();
-
-    if (wordAudioRef.current) {
-      wordAudioRef.current.pause();
-      wordAudioRef.current.currentTime = 0;
-      wordAudioRef.current.src = "";
+    // Jika sedang play audio global
+    if (isActive) {
+      setPlaybackRateGlobal(rate);
     }
 
-    setClickedWordId(word.id);
+    // Jika sedang play word-by-word
+    if (wordAudioRef.current) {
+      wordAudioRef.current.playbackRate = rate;
+    }
+  };
 
-    const wordAudio = new Audio(word.audio_url);
+  const handleWordClick = (wordObj: VerseWord & { correct_audio_url?: string | null }, visualIndex: number) => {
+    const activeUrl = wordObj.correct_audio_url || wordObj.audio_url;
+
+    // 1. AUDIT LOG
+    console.log("Diklik kata:", wordObj.text_uthmani, "URL Audio Asli:", wordObj.audio_url, "URL Bypass:", activeUrl);
+
+    // 2. CEK WAKAF / KOSONG
+    if (!activeUrl || wordObj.char_type_name === 'pause' || wordObj.char_type_name === 'end') {
+      console.log("Ini wakaf/end, batalkan audio.");
+      return;
+    }
+
+    // Jeda lantunan satu surat utuh jika sedang berbunyi
+    if (isPlaying) pause();
+
+    // 3. HENTIKAN AUDIO SEBELUMNYA
+    if (wordAudioRef.current) {
+      // CLEAR LISTENER LAMA AGAR TIDAK TER-TRIGGER SAAT DI-CLEANUP
+      wordAudioRef.current.onended = null;
+      wordAudioRef.current.onerror = null;
+      wordAudioRef.current.pause();
+      wordAudioRef.current.currentTime = 0;
+      wordAudioRef.current.removeAttribute('src'); // Forcing clean up source
+      wordAudioRef.current.load();
+    }
+
+    // 4. JALANKAN AUDIO & BINDING STATE
+    setClickedWordId(visualIndex);
+
+    const wordAudio = new Audio(activeUrl);
+    wordAudio.playbackRate = playbackRate;
     wordAudioRef.current = wordAudio;
 
     wordAudio.onended = () => setClickedWordId(null);
@@ -156,17 +211,7 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
         }),
       });
 
-      // Fetch cross-reference Penemu Muslim
-      const fetchPenemu = fetch(`/api/penemu-muslim?surah=${verse.verse_key.split(":")[0]}&ayat=${verseNumber}`)
-        .then(r => r.json())
-        .then(d => {
-          if (d.data && d.data.length > 0) {
-            setPenemuData(d.data[0]);
-          }
-        })
-        .catch(err => console.error("Gagal fetch penemu:", err));
-
-      const [resData] = await Promise.all([res.json(), fetchPenemu]);
+      const resData = await res.json();
       if (!res.ok) throw new Error(resData.error || "Gagal menganalisis ayat.");
 
       setTafsirData(resData as VerseTafsirData);
@@ -177,6 +222,23 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
       setIsAnalyzing(false);
     }
   };
+
+  // ─── Pre-processing Audio Offset Bypass ───────────────────────
+  let audioCounter = 1;
+  const processedWords = verse.words.map(word => {
+    if (word.char_type_name === 'word' && word.audio_url) {
+      // Ekstrak base URL (contoh: ".../021_035_") dan timpa 3 digit terakhirnya
+      const match = word.audio_url.match(/(.*_)\d{3}(\.mp3)/);
+      let fixedUrl = word.audio_url;
+      if (match) {
+        const correctNum = String(audioCounter).padStart(3, '0');
+        fixedUrl = match[1] + correctNum + match[2];
+      }
+      audioCounter++;
+      return { ...word, correct_audio_url: fixedUrl };
+    }
+    return { ...word, correct_audio_url: null };
+  });
 
 
   return (
@@ -198,29 +260,50 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
           <div className="h-px flex-1 bg-gradient-to-r from-gold/30 to-transparent"></div>
 
 
-          {verse.audio?.url && (
-            <button
-              onClick={toggleVerseAudio}
-              className="flex items-center justify-center p-2 rounded-full text-gold hover:text-gold-light hover:bg-gold/10 transition-colors"
-              aria-label={isCurrentlyPlaying && activeWordId === null ? "Pause Audio" : "Play Full Verse"}
-            >
-              {isCurrentlyPlaying && activeWordId === null ? (
-                <PauseCircle className="w-8 h-8 fill-gold/10" strokeWidth={1.5} />
-              ) : (
-                <PlayCircle className="w-8 h-8" strokeWidth={1.5} />
-              )}
-            </button>
-          )}
+          {/* Wrapper flex untuk Slider & Play Button */}
+          <div className="flex items-center gap-4">
+            {verse.audio?.url && (
+              <div className="flex items-center gap-3 bg-gray-50 dark:bg-slate-700/50 px-3 py-1.5 rounded-full border border-gray-200 dark:border-slate-600">
+                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 w-8 text-center">
+                  {playbackRate}x
+                </span>
+                <input
+                  type="range"
+                  min="0.25"
+                  max="2"
+                  step="0.25"
+                  value={playbackRate}
+                  onChange={handleSpeedChange}
+                  className="w-20 md:w-24 h-1.5 bg-gray-300 dark:bg-slate-600 rounded-lg appearance-none cursor-pointer accent-emerald-500 hover:accent-emerald-600"
+                  aria-label="Atur Kecepatan Murottal"
+                />
+              </div>
+            )}
+
+            {verse.audio?.url && (
+              <button
+                onClick={toggleVerseAudio}
+                className="flex items-center justify-center p-2 rounded-full text-gold hover:text-gold-light hover:bg-gold/10 transition-colors"
+                aria-label={isCurrentlyPlaying && activeWordId === null ? "Pause Audio" : "Play Full Verse"}
+              >
+                {isCurrentlyPlaying && activeWordId === null ? (
+                  <PauseCircle className="w-8 h-8 fill-gold/10" strokeWidth={1.5} />
+                ) : (
+                  <PlayCircle className="w-8 h-8" strokeWidth={1.5} />
+                )}
+              </button>
+            )}
+          </div>
         </div>
 
 
         {/* Arabic Text — Word-by-Word Interactive Tajweed (semua surah) */}
         <div dir="rtl" className="mb-6">
           <div className="tajweed flex flex-wrap gap-x-1 gap-y-3 justify-end text-3xl md:text-5xl leading-loose drop-shadow-sm">
-            {verse.words.map((word) => {
+            {processedWords.map((word, index) => {
               const isWordActive =
                 (isActive && activeWordId === word.id && isPlaying) ||
-                (clickedWordId === word.id);
+                (clickedWordId === index);
 
               // 'end' glyph (nomor ayat) — render tanpa interaksi
               if (word.char_type_name === 'end') {
@@ -234,12 +317,13 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
                 );
               }
 
-              const isClickable = !!word.audio_url;
+              const actualUrl = word.correct_audio_url || word.audio_url;
+              const isClickable = !!actualUrl && word.char_type_name !== 'pause' && word.char_type_name !== 'end';
 
               return (
                 <span
                   key={word.id}
-                  onClick={isClickable ? () => handleWordClick(word) : undefined}
+                  onClick={isClickable ? () => handleWordClick(word, index) : undefined}
                   title={word.translation?.text ? `${word.translation.text}${isClickable ? ' — ketuk untuk audio' : ''}` : undefined}
                   className={`tajweed-word font-arabic ${isWordActive ? 'playing' : ''} ${!isClickable ? 'cursor-default' : ''}`}
                 >
@@ -266,7 +350,7 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
         {/* Translation */}
         <div className="relative pl-6 py-2 border-l-2 border-gold/40 mt-4">
           <div
-            className="text-base text-foreground/90 leading-relaxed pr-2"
+            className="text-base text-foreground/90 dark:text-gray-200 leading-relaxed pr-2"
             dangerouslySetInnerHTML={{ __html: translationText }}
           />
         </div>
@@ -276,7 +360,7 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
           <button
             onClick={handleKupasMakna}
             disabled={isAnalyzing}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-primary/90 to-primary text-white text-sm font-semibold shadow-sm hover:shadow-md active:scale-[0.97] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-primary/90 to-primary text-white text-sm font-semibold shadow-sm hover:shadow-md active:scale-[0.97] transition-all disabled:opacity-50 disabled:cursor-not-allowed dark:bg-none dark:bg-emerald-700 dark:text-white dark:hover:bg-emerald-600 dark:border-transparent"
           >
             {isAnalyzing ? (
               <>
@@ -350,14 +434,44 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
                   transition={{ duration: 0.4 }}
                   className="mt-4 flex flex-col gap-4 overflow-hidden"
                 >
+                  {/* ─── Premium Cross-Link Banner: Jejak Al-Qur'an (Dipindah Dalam Accordion) ─────────────────────────── */}
+                  {penemuList.length > 0 && (
+                    <div className="space-y-3 mb-2">
+                      {penemuList.map((tokoh) => (
+                        <Link 
+                          key={tokoh.id}
+                          href={`/ensiklopedia/penemu/${tokoh.id}`} 
+                          className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/40 dark:to-slate-800 border border-emerald-200 dark:border-emerald-800/50 hover:shadow-md transition-all group"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400 flex flex-shrink-0 items-center justify-center">
+                              <Telescope className="w-5 h-5" />
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-emerald-900 dark:text-emerald-50 text-sm md:text-base">
+                                Jejak Al-Qur&apos;an di Alam Semesta
+                              </h4>
+                              <p className="text-xs md:text-sm text-emerald-700/80 dark:text-emerald-200/70">
+                                Temukan kaitan ayat ini dengan penemu <strong>{tokoh.nama_ilmuwan}</strong>
+                              </p>
+                            </div>
+                          </div>
+                          <span className="text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform ml-2 flex-shrink-0">
+                            <ArrowRight className="w-5 h-5" />
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+
                   {/* Section 1: Tafsir Kemenag (ALWAYS SHOWN) */}
                   {tafsirData.tafsir_kemenag && String(tafsirData.tafsir_kemenag).trim() !== "" && String(tafsirData.tafsir_kemenag).trim().toLowerCase() !== "null" && (
-                    <div className="rounded-2xl bg-teal-50/60 border border-teal-100/80 p-4">
+                    <div className="rounded-2xl bg-teal-50/60 dark:bg-slate-800 border border-teal-100/80 dark:border-slate-700 p-4">
                       <div className="flex items-center gap-2 mb-2">
-                        <BookOpen className="w-4 h-4 text-teal-600" />
-                        <h4 className="text-xs font-bold text-teal-700 tracking-wider uppercase">Tafsir Kemenag RI</h4>
+                        <BookOpen className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+                        <h4 className="text-xs font-bold text-teal-700 dark:text-teal-300 tracking-wider uppercase">Tafsir Kemenag RI</h4>
                       </div>
-                      <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-line">
+                      <p className="text-sm text-foreground/80 dark:text-gray-200 leading-relaxed whitespace-pre-line">
                         {tafsirData.tafsir_kemenag}
                       </p>
                     </div>
@@ -369,12 +483,12 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
                    String(tafsirData.asbabun_nuzul).trim().toLowerCase() !== "null" && 
                    !String(tafsirData.asbabun_nuzul).toLowerCase().includes("riwayat asbabun nuzul jika disebutkan kemenag") && 
                    !String(tafsirData.asbabun_nuzul).toLowerCase().includes("jika asbabun nuzul tidak ditemukan") && (
-                    <div className="rounded-2xl bg-amber-50/60 border border-amber-100/80 p-4">
+                    <div className="rounded-2xl bg-amber-50/60 dark:bg-slate-800 border border-amber-100/80 dark:border-slate-700 p-4">
                       <div className="flex items-center gap-2 mb-2">
-                        <ScrollText className="w-4 h-4 text-amber-600" />
-                        <h4 className="text-xs font-bold text-amber-700 tracking-wider uppercase">Asbabun Nuzul</h4>
+                        <ScrollText className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                        <h4 className="text-xs font-bold text-amber-700 dark:text-amber-300 tracking-wider uppercase">Asbabun Nuzul</h4>
                       </div>
-                      <p className="text-sm text-foreground/80 leading-relaxed">
+                      <p className="text-sm text-foreground/80 dark:text-gray-200 leading-relaxed">
                         {tafsirData.asbabun_nuzul}
                       </p>
                     </div>
@@ -382,10 +496,10 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
 
                   {/* Section 3: Perspektif Modern — CONDITIONAL */}
                   {hasAnyPerspective && effectiveLens && (
-                    <div className="rounded-2xl bg-blue-50/60 border border-blue-100/80 p-4">
+                    <div className="rounded-2xl bg-blue-50/60 dark:bg-slate-800 border border-blue-100/80 dark:border-slate-700 p-4">
                       <div className="flex items-center gap-2 mb-3">
-                        <Lightbulb className="w-4 h-4 text-blue-600" />
-                        <h4 className="text-xs font-bold text-blue-700 tracking-wider uppercase">Perspektif Modern</h4>
+                        <Lightbulb className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                        <h4 className="text-xs font-bold text-blue-700 dark:text-blue-300 tracking-wider uppercase">Perspektif Modern</h4>
                       </div>
 
                       <div className="flex gap-2 mb-3">
@@ -394,8 +508,8 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
                             key={lens.key}
                             onClick={() => setActiveLens(lens.key)}
                             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 ${effectiveLens === lens.key
-                              ? `${lens.activeColor} shadow-sm`
-                              : `bg-white/70 ${lens.color} hover:bg-white border border-current/10`
+                              ? `${lens.activeColor} shadow-sm dark:bg-indigo-600`
+                              : `bg-white/70 dark:bg-slate-700 ${lens.color} dark:text-gray-300 hover:bg-white dark:hover:bg-slate-600 border border-current/10 dark:border-slate-600`
                               }`}
                           >
                             <span>{lens.emoji}</span>
@@ -411,7 +525,7 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -6 }}
                           transition={{ duration: 0.2 }}
-                          className="text-sm text-foreground/80 leading-relaxed"
+                          className="text-sm text-foreground/80 dark:text-gray-200 leading-relaxed"
                         >
                           {tafsirData[`perspektif_${effectiveLens}` as keyof VerseTafsirData] as string}
                         </motion.p>
@@ -421,12 +535,12 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
 
                   {/* Section 4: Hadits Penguat */}
                   {tafsirData.hadith && String(tafsirData.hadith).trim() !== "" && String(tafsirData.hadith).trim().toLowerCase() !== "null" && (
-                    <div className="rounded-2xl bg-emerald-50/60 border border-emerald-100/80 p-4">
+                    <div className="rounded-2xl bg-emerald-50/60 dark:bg-slate-800 border border-emerald-100/80 dark:border-slate-700 p-4">
                       <div className="flex items-center gap-2 mb-2">
-                        <ScrollText className="w-4 h-4 text-emerald-600" />
-                        <h4 className="text-xs font-bold text-emerald-700 tracking-wider uppercase">Hadits Penguat</h4>
+                        <ScrollText className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                        <h4 className="text-xs font-bold text-emerald-700 dark:text-emerald-300 tracking-wider uppercase">Hadits Penguat</h4>
                       </div>
-                      <p className="text-sm text-foreground/80 leading-relaxed italic">
+                      <p className="text-sm text-foreground/80 dark:text-gray-200 leading-relaxed italic">
                         &ldquo;{tafsirData.hadith}&rdquo;
                       </p>
                     </div>
@@ -434,41 +548,6 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
                 </motion.div>
               );
             })()}
-          </AnimatePresence>
-
-          {/* ─── Penemu Muslim Cross-Reference ───────────────────── */}
-          <AnimatePresence>
-            {showTafsir && penemuData && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.4, delay: 0.2 }}
-                className="mt-4 card-premium border-gold/50 bg-gold/5 p-5 rounded-2xl relative overflow-hidden group"
-              >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gold/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
-                
-                <div className="flex items-start gap-3 relative z-10">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm mt-0.5">
-                    <Atom className="w-5 h-5" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-xs font-bold text-gold tracking-wider uppercase flex items-center gap-1.5 mb-1">
-                      <Lightbulb className="w-3.5 h-3.5" /> Khazanah Sains Islam
-                    </h4>
-                    <p className="text-sm text-foreground/90 leading-relaxed mb-3">
-                      Ayat ini menginspirasi <strong>{penemuData.nama_ilmuwan}</strong> dalam bidang <strong>{penemuData.bidang_ilmu}</strong>.
-                    </p>
-                    <Link
-                      href={`/ensiklopedia/penemu/${penemuData.id}`}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-gold transition-colors"
-                    >
-                      Baca Kisah Ilmuwan <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-                  </div>
-                </div>
-              </motion.div>
-            )}
           </AnimatePresence>
         </div>
       </div>

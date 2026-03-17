@@ -37,6 +37,29 @@
   --radius: 1rem;
 }
 
+.dark {
+  --background: #111827;
+  --foreground: #F3F4F6;
+  --card: #1F2937;
+  --card-foreground: #F3F4F6;
+  --popover: #1F2937;
+  --popover-foreground: #F3F4F6;
+  --primary: #6EE7B7;
+  --primary-foreground: #064E3B;
+  --secondary: #1F2937;
+  --secondary-foreground: #D1FAE5;
+  --muted: #374151;
+  --muted-foreground: #9CA3AF;
+  --accent: #374151;
+  --accent-foreground: #F9FAFB;
+  --border: #374151;
+  --input: #374151;
+  --ring: #6EE7B7;
+  --gold: #C5A880;
+  --gold-light: #D4B896;
+  --gold-foreground: #1C1C1C;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -83,6 +106,11 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
+  .dark body,
+  .dark .bg-page-warm {
+    background-image: linear-gradient(180deg, rgba(212, 184, 150, 0.05) 0%, rgba(17, 24, 39, 1) 35vh);
+  }
 }
 
 /* Typography Utils */
@@ -99,6 +127,12 @@
   border: 1px solid rgba(166, 138, 86, 0.4);
   /* Muted Gold Border */
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  color: var(--foreground);
+}
+
+.dark .card-premium {
+  background-color: rgba(31, 41, 55, 0.85); /* Tailwind Gray 800 */
+  border-color: rgba(55, 65, 81, 0.8); /* Tailwind Gray 700 */
 }
 
 .gold-divider {

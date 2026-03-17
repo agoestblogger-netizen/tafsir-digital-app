@@ -21,15 +21,15 @@ export function LogoutButton() {
     <button
       onClick={handleLogout}
       disabled={isLoading}
-      className="w-full flex items-center justify-between p-4 hover:bg-red-50/50 transition-colors text-left disabled:opacity-50"
+      className="w-full flex items-center justify-between p-4 hover:bg-red-50/50 dark:hover:bg-red-900/20 transition-colors text-left disabled:opacity-50"
     >
       <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-2xl bg-red-100/80 flex items-center justify-center text-red-600 border border-red-200/50">
+        <div className="w-12 h-12 rounded-2xl bg-red-100/80 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 border border-red-200/50 dark:border-red-800/50">
           {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <LogOut className="w-5 h-5" />}
         </div>
         <div className="flex flex-col">
-          <span className="text-sm font-bold text-red-600">Keluar / Logout</span>
-          <span className="text-xs text-muted-foreground mt-0.5">Akhiri sesi premium saat ini</span>
+          <span className="text-sm font-bold text-red-600 dark:text-red-400">Keluar / Logout</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Akhiri sesi premium saat ini</span>
         </div>
       </div>
     </button>

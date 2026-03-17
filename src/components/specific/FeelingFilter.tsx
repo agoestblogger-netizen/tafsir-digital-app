@@ -16,28 +16,28 @@ type FeelingItem = {
 };
 
 const morningFeelings: FeelingItem[] = [
-  { id: "afraid-start", label: "Takut Memulai Hari", icon: Sunrise, color: "bg-sky-50 text-sky-600 border-sky-100" },
-  { id: "need-spirit", label: "Butuh Semangat", icon: Flame, color: "bg-amber-50 text-amber-600 border-amber-100" },
-  { id: "work-anxiety", label: "Cemas Pekerjaan", icon: CloudRain, color: "bg-blue-50 text-blue-600 border-blue-100" },
+  { id: "afraid-start", label: "Takut Memulai Hari", icon: Sunrise, color: "bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 border-sky-100 dark:border-sky-800/50" },
+  { id: "need-spirit", label: "Butuh Semangat", icon: Flame, color: "bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border-amber-100 dark:border-amber-800/50" },
+  { id: "work-anxiety", label: "Cemas Pekerjaan", icon: CloudRain, color: "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-100 dark:border-blue-800/50" },
 ];
 
 const afternoonFeelings: FeelingItem[] = [
-  { id: "tired-work", label: "Lelah Bekerja", icon: Coffee, color: "bg-orange-50 text-orange-600 border-orange-100" },
-  { id: "lost-focus", label: "Kehilangan Fokus", icon: Target, color: "bg-purple-50 text-purple-600 border-purple-100" },
-  { id: "burnout", label: "Burnout", icon: BatteryLow, color: "bg-red-50 text-red-600 border-red-100" },
+  { id: "tired-work", label: "Lelah Bekerja", icon: Coffee, color: "bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 border-orange-100 dark:border-orange-800/50" },
+  { id: "lost-focus", label: "Kehilangan Fokus", icon: Target, color: "bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 border-purple-100 dark:border-purple-800/50" },
+  { id: "burnout", label: "Burnout", icon: BatteryLow, color: "bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-100 dark:border-red-800/50" },
 ];
 
 const nightFeelings: FeelingItem[] = [
-  { id: "overthinking", label: "Overthinking Malam", icon: Brain, color: "bg-indigo-50 text-indigo-600 border-indigo-100" },
-  { id: "insomnia", label: "Susah Tidur", icon: Moon, color: "bg-violet-50 text-violet-600 border-violet-100" },
-  { id: "lonely", label: "Kesepian", icon: HeartHandshake, color: "bg-rose-50 text-rose-600 border-rose-100" },
+  { id: "overthinking", label: "Overthinking Malam", icon: Brain, color: "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border-indigo-100 dark:border-indigo-800/50" },
+  { id: "insomnia", label: "Susah Tidur", icon: Moon, color: "bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 border-violet-100 dark:border-violet-800/50" },
+  { id: "lonely", label: "Kesepian", icon: HeartHandshake, color: "bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 border-rose-100 dark:border-rose-800/50" },
 ];
 
 // Always-visible feelings
 const universalFeelings: FeelingItem[] = [
-  { id: "insecure", label: "Butuh Kepercayaan Diri", icon: ShieldCheck, color: "bg-emerald-50 text-emerald-600 border-emerald-100" },
-  { id: "overwhelmed", label: "Merasa Kewalahan", icon: Zap, color: "bg-yellow-50 text-yellow-600 border-yellow-100" },
-  { id: "lost-purpose", label: "Kehilangan Arah Hidup", icon: Eye, color: "bg-teal-50 text-teal-600 border-teal-100" },
+  { id: "insecure", label: "Butuh Kepercayaan Diri", icon: ShieldCheck, color: "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-800/50" },
+  { id: "overwhelmed", label: "Merasa Kewalahan", icon: Zap, color: "bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 border-yellow-100 dark:border-yellow-800/50" },
+  { id: "lost-purpose", label: "Kehilangan Arah Hidup", icon: Eye, color: "bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 border-teal-100 dark:border-teal-800/50" },
 ];
 
 function getTimeLabel(hour: number): { label: string; feelings: FeelingItem[] } {
@@ -66,7 +66,7 @@ export function FeelingFilter({ onSelectFeeling }: FeelingFilterProps) {
 
   return (
     <div className="flex flex-col gap-3">
-      <h3 className="font-medium text-foreground/80 px-1">
+      <h3 className="font-medium text-gray-900/80 dark:text-gray-200/80 px-1">
         Bagaimana perasaanmu {label.toLowerCase()} ini?
       </h3>
       <div className="flex flex-wrap gap-2">
@@ -79,14 +79,14 @@ export function FeelingFilter({ onSelectFeeling }: FeelingFilterProps) {
             whileTap={{ scale: 0.95 }}
             onClick={() => onSelectFeeling?.(feeling.label)}
             className={cn(
-              "flex items-center gap-2 px-4 py-2.5 rounded-2xl border bg-white shadow-sm transition-all hover:shadow-md active:bg-secondary/20",
+              "flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm transition-all hover:shadow-md dark:hover:bg-gray-750 active:bg-emerald-50 dark:active:bg-emerald-900/40",
               "text-sm font-medium"
             )}
           >
             <div className={cn("inline-flex p-1.5 rounded-full", feeling.color)}>
               <feeling.icon className="w-4 h-4" />
             </div>
-            <span className="text-foreground/80">{feeling.label}</span>
+            <span className="text-gray-900/80 dark:text-gray-200/80">{feeling.label}</span>
           </motion.button>
         ))}
       </div>

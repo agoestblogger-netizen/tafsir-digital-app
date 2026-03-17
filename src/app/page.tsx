@@ -142,7 +142,7 @@ export default function Home() {
               </div>
 
               {/* Arabic Title: Tafsir Al-Qur'an Al-Mu'ashir */}
-              <h1 className="font-arabic text-4xl md:text-5xl font-bold tracking-tight mb-4 leading-tight text-gold-glow">
+              <h1 className="font-arabic text-3xl md:text-5xl font-bold tracking-tight mb-4 leading-tight text-gold-glow">
                 تفسير القرآن المعاصر
               </h1>
 
@@ -162,7 +162,7 @@ export default function Home() {
       </section>
 
       {/* 2. INTERACTIVE SECTION */}
-      <section className="px-6 flex flex-col md:grid md:grid-cols-2 md:gap-x-12 gap-8 flex-1 mt-6 relative z-10 max-w-7xl mx-auto w-full">
+      <section className="px-4 sm:px-6 flex flex-col md:grid md:grid-cols-2 md:gap-x-12 gap-6 md:gap-8 flex-1 mt-6 relative z-10 max-w-7xl mx-auto w-full">
 
         {/* Header / Sapaan Menenangkan */}
         <motion.header
@@ -174,7 +174,7 @@ export default function Home() {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-secondary/80 text-primary mb-2 shadow-sm border border-primary/10">
             <Sunrise className="w-6 h-6" />
           </div>
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+          <h2 className="text-xl md:text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
             Assalamu&apos;alaikum.
           </h2>
           <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-sm">
@@ -188,7 +188,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1, duration: 0.8 }}
-          className="card-premium bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-6 rounded-3xl relative overflow-hidden shadow-sm"
+          className="card-premium bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-5 md:p-6 rounded-3xl relative overflow-hidden shadow-sm"
         >
           <div className="absolute top-0 right-0 w-40 h-40 bg-gold/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
 

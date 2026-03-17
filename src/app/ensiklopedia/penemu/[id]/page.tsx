@@ -724,7 +724,7 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 10 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden border border-transparent dark:border-gray-800"
+              className="bg-white dark:bg-gray-900 rounded-2xl w-[95%] md:w-[80%] max-w-2xl shadow-2xl overflow-hidden border border-transparent dark:border-gray-800"
             >
               <div className="bg-emerald-800 px-6 py-4 flex items-center justify-between">
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">

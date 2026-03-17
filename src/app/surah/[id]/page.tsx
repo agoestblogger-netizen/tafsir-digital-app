@@ -1,9 +1,7 @@
 import * as React from "react";
 import { DetailSurahHeader } from "@/components/specific/DetailSurahHeader";
-import { VerseCard } from "@/components/specific/VerseCard";
-import { MurottalPlayer } from "@/components/specific/MurottalPlayer";
-import { TajweedLegend } from "@/components/specific/TajweedLegend";
-import { getChapter, getTajweedVerses, getChapterInfo, Verse } from "@/lib/api/quran";
+import { SurahInteractiveClient } from "./SurahInteractiveClient";
+import { getChapter, getTajweedVerses, getChapterInfo } from "@/lib/api/quran";
 import { getLocalizedSurahName, getLocalizedSurahTranslation } from "@/lib/surahLocalization";
 
 export default async function DetailSurahPage({ params }: { params: Promise<{ id: string }> }) {
@@ -33,17 +31,14 @@ export default async function DetailSurahPage({ params }: { params: Promise<{ id
   };
 
   return (
-    <main className="flex flex-col min-h-screen bg-page-warm px-6 pb-32">
+    <main className="flex flex-col min-h-screen bg-page-warm px-4 sm:px-6 pb-32">
       <DetailSurahHeader surah={surah} />
 
-      <MurottalPlayer chapterId={chapter.id} surahName={surah.name} />
-
-      <div className="flex flex-col gap-2 relative z-10 w-full max-w-3xl mx-auto">
-        <TajweedLegend />
-        {verses.map((verse: Verse, index: number) => (
-          <VerseCard key={verse.id} verse={verse} index={index} surahName={surah.name} />
-        ))}
-      </div>
+      <SurahInteractiveClient 
+        chapterId={chapter.id} 
+        surahName={surah.name} 
+        verses={verses} 
+      />
     </main>
   );
 }

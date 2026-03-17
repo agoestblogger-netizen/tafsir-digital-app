@@ -39,9 +39,10 @@ interface VerseCardProps {
   verse: Verse;
   index: number;
   surahName?: string;
+  masterSpeed?: number;
 }
 
-export function VerseCard({ verse, index, surahName }: VerseCardProps) {
+export function VerseCard({ verse, index, surahName, masterSpeed = 1 }: VerseCardProps) {
   const { activeVerseKey, activeWordId, isPlaying, playVerse, pause, setPlaybackRateGlobal } = useAudioState();
   const [clickedWordId, setClickedWordId] = React.useState<number | null>(null);
   const wordAudioRef = React.useRef<HTMLAudioElement | null>(null);
@@ -67,6 +68,14 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
       }
     };
   }, []);
+
+  // ─── Tunduk pada Titah Sang Master (Global Speed) ─────────────
+  React.useEffect(() => {
+    setPlaybackRate(masterSpeed);
+    if (wordAudioRef.current) {
+      wordAudioRef.current.playbackRate = masterSpeed;
+    }
+  }, [masterSpeed]);
 
   // ─── Fetch Cross-Link Penemu Muslim ─────────────────────
   // Berjalan diam-diam saat VerseCard di-mount (intersection observer / render)
@@ -251,9 +260,9 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
       {/* Gold left edge */}
       <div className={`absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b transition-opacity duration-300 ${isActive ? 'from-gold to-primary opacity-100' : 'from-gold-light to-gold opacity-60'}`}></div>
 
-      <div className="p-6 md:p-8">
+      <div className="p-4 sm:p-6 md:p-8">
         {/* Verse Header (Number and Play Button) */}
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
           <div className={`flex items-center justify-center w-10 h-10 rounded-full border text-sm font-medium transition-colors ${isActive ? 'bg-gold text-white border-gold shadow-sm' : 'bg-gold/10 border-gold/30 text-gold'}`}>
             {verseNumber}
           </div>
@@ -261,7 +270,7 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
 
 
           {/* Wrapper flex untuk Slider & Play Button */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             {verse.audio?.url && (
               <div className="flex items-center gap-3 bg-gray-50 dark:bg-slate-700/50 px-3 py-1.5 rounded-full border border-gray-200 dark:border-slate-600">
                 <span className="text-xs font-medium text-gray-500 dark:text-gray-400 w-8 text-center">
@@ -298,8 +307,8 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
 
 
         {/* Arabic Text — Word-by-Word Interactive Tajweed (semua surah) */}
-        <div dir="rtl" className="mb-6">
-          <div className="tajweed flex flex-wrap gap-x-1 gap-y-3 justify-end text-3xl md:text-5xl leading-loose drop-shadow-sm">
+        <div dir="rtl" className="mb-4 md:mb-6">
+          <div className="tajweed flex flex-wrap gap-x-1 gap-y-3 justify-end text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-loose drop-shadow-sm">
             {processedWords.map((word, index) => {
               const isWordActive =
                 (isActive && activeWordId === word.id && isPlaying) ||
@@ -342,16 +351,16 @@ export function VerseCard({ verse, index, surahName }: VerseCardProps) {
         {/* Transliteration */}
         {transliterationText && (
           <div className="mb-4 text-right">
-            <p className="text-base text-primary/80 italic leading-relaxed">
+            <p className="text-sm md:text-base text-primary/80 italic leading-relaxed">
               {transliterationText}
             </p>
           </div>
         )}
 
         {/* Translation */}
-        <div className="relative pl-6 py-2 border-l-2 border-gold/40 mt-4">
+        <div className="relative pl-4 md:pl-6 py-2 border-l-2 border-gold/40 mt-4">
           <div
-            className="text-base text-foreground/90 dark:text-gray-200 leading-relaxed pr-2"
+            className="text-sm md:text-base text-foreground/90 dark:text-gray-200 leading-relaxed pr-2"
             dangerouslySetInnerHTML={{ __html: translationText }}
           />
         </div>

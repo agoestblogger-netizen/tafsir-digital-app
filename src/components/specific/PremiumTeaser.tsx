@@ -18,14 +18,13 @@ export function PremiumTeaser() {
         <div className="absolute top-0 right-0 p-4 opacity-10">
           <Crown className="w-24 h-24" />
         </div>
-        
-        <CardContent className="p-6 relative z-10">
+        <CardContent className="p-5 md:p-6 relative z-10">
           <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200 border-amber-200 mb-3 shadow-sm">
             <Sparkles className="w-3 h-3 mr-1" /> Premium
           </Badge>
           
-          <h3 className="text-xl font-semibold mb-2">Buka Potensi Penuhmu</h3>
-          <p className="text-sm text-muted-foreground mb-4 leading-relaxed max-w-[250px]">
+          <h3 className="text-lg md:text-xl font-semibold mb-2">Buka Potensi Penuhmu</h3>
+          <p className="text-xs md:text-sm text-muted-foreground mb-4 leading-relaxed max-w-[250px]">
             Dapatkan akses ke program hijrah 40 hari, tafsir mendalam neurosains, dan mentoring eksklusif.
           </p>
           

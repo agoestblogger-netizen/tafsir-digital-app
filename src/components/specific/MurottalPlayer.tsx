@@ -8,9 +8,10 @@ import { globalAudioPlayer } from "@/lib/audioStore";
 interface MurottalPlayerProps {
   chapterId: number;
   surahName: string;
+  globalSpeed?: number;
 }
 
-export function MurottalPlayer({ chapterId, surahName }: MurottalPlayerProps) {
+export function MurottalPlayer({ chapterId, surahName, globalSpeed = 1 }: MurottalPlayerProps) {
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -27,6 +28,13 @@ export function MurottalPlayer({ chapterId, surahName }: MurottalPlayerProps) {
       }
     };
   }, []);
+
+  // Sync with global master speed
+  React.useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.playbackRate = globalSpeed;
+    }
+  }, [globalSpeed]);
 
   const fetchAudioUrl = async (): Promise<string | null> => {
     // Return cached URL if already fetched
@@ -74,6 +82,7 @@ export function MurottalPlayer({ chapterId, surahName }: MurottalPlayerProps) {
     // Initialize audio if not already, or reuse existing
     if (!audioRef.current || audioRef.current.src !== url) {
       const audio = new Audio(url);
+      audio.playbackRate = globalSpeed; // Set proper speed early
       audioRef.current = audio;
 
       audio.onended = () => setIsPlaying(false);

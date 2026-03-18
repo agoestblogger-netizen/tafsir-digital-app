@@ -252,25 +252,29 @@ export function VerseCard({ verse, index, surahName, masterSpeed = 1 }: VerseCar
 
   return (
     <motion.div
+      id={`ayat-${verseNumber}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.4 }}
-      className={`relative overflow-hidden mb-6 rounded-3xl group transition-all duration-500 ${isActive ? 'card-premium border-gold/50 shadow-md scale-[1.01]' : 'card-premium'}`}
+      className={`relative overflow-hidden mb-6 rounded-3xl group transition-all duration-500 scroll-mt-32 ${isActive ? 'card-premium border-gold/50 shadow-md scale-[1.01]' : 'card-premium'}`}
     >
       {/* Gold left edge */}
       <div className={`absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b transition-opacity duration-300 ${isActive ? 'from-gold to-primary opacity-100' : 'from-gold-light to-gold opacity-60'}`}></div>
 
       <div className="p-4 sm:p-6 md:p-8">
         {/* Verse Header (Number and Play Button) */}
-        <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
-          <div className={`flex items-center justify-center w-10 h-10 rounded-full border text-sm font-medium transition-colors ${isActive ? 'bg-gold text-white border-gold shadow-sm' : 'bg-gold/10 border-gold/30 text-gold'}`}>
-            {verseNumber}
+        <div className="flex flex-col items-center gap-4 mb-6 md:mb-8">
+          {/* Centered Number with Side Lines */}
+          <div className="flex items-center w-full max-w-xs mx-auto">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-gold/30"></div>
+            <div className={`mx-4 flex shrink-0 items-center justify-center w-10 h-10 rounded-full border text-sm font-medium transition-colors ${isActive ? 'bg-gold text-white border-gold shadow-sm' : 'bg-gold/10 border-gold/30 text-gold'}`}>
+              {verseNumber}
+            </div>
+            <div className="h-px flex-1 bg-gradient-to-l from-transparent to-gold/30"></div>
           </div>
-          <div className="h-px flex-1 bg-gradient-to-r from-gold/30 to-transparent"></div>
 
-
-          {/* Wrapper flex untuk Slider & Play Button */}
-          <div className="flex items-center gap-2 md:gap-4">
+          {/* Wrapper flex untuk Slider & Play Button (Centered) */}
+          <div className="flex items-center justify-center gap-2 md:gap-4">
             {verse.audio?.url && (
               <div className="flex items-center gap-3 bg-gray-50 dark:bg-slate-700/50 px-3 py-1.5 rounded-full border border-gray-200 dark:border-slate-600">
                 <span className="text-xs font-medium text-gray-500 dark:text-gray-400 w-8 text-center">
@@ -308,7 +312,7 @@ export function VerseCard({ verse, index, surahName, masterSpeed = 1 }: VerseCar
 
         {/* Arabic Text — Word-by-Word Interactive Tajweed (semua surah) */}
         <div dir="rtl" className="mb-4 md:mb-6">
-          <div className="tajweed flex flex-wrap gap-x-1 gap-y-3 justify-end text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-loose drop-shadow-sm">
+          <div className="tajweed flex flex-wrap justify-center items-center gap-x-2 gap-y-3 text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-loose drop-shadow-sm">
             {processedWords.map((word, index) => {
               const isWordActive =
                 (isActive && activeWordId === word.id && isPlaying) ||
@@ -350,7 +354,7 @@ export function VerseCard({ verse, index, surahName, masterSpeed = 1 }: VerseCar
 
         {/* Transliteration */}
         {transliterationText && (
-          <div className="mb-4 text-right">
+          <div className="mb-4 text-center">
             <p className="text-sm md:text-base text-primary/80 italic leading-relaxed">
               {transliterationText}
             </p>
@@ -358,15 +362,15 @@ export function VerseCard({ verse, index, surahName, masterSpeed = 1 }: VerseCar
         )}
 
         {/* Translation */}
-        <div className="relative pl-4 md:pl-6 py-2 border-l-2 border-gold/40 mt-4">
+        <div className="relative py-2 mt-4">
           <div
-            className="text-sm md:text-base text-foreground/90 dark:text-gray-200 leading-relaxed pr-2"
+            className="text-sm md:text-base text-foreground/90 dark:text-gray-200 leading-relaxed text-center"
             dangerouslySetInnerHTML={{ __html: translationText }}
           />
         </div>
 
         {/* ✨ Kupas Makna Modern — AI Tafsir CTA */}
-        <div className="mt-6 pt-4 border-t border-border/30">
+        <div className="mt-6 pt-6 border-t border-border/30 flex justify-center">
           <button
             onClick={handleKupasMakna}
             disabled={isAnalyzing}
@@ -543,12 +547,12 @@ export function VerseCard({ verse, index, surahName, masterSpeed = 1 }: VerseCar
                     </div>
                   )}
 
-                  {/* Section 4: Hadits Penguat */}
+                  {/* Section 4: Hadist Penguat */}
                   {tafsirData.hadith && String(tafsirData.hadith).trim() !== "" && String(tafsirData.hadith).trim().toLowerCase() !== "null" && (
                     <div className="rounded-2xl bg-emerald-50/60 dark:bg-slate-800 border border-emerald-100/80 dark:border-slate-700 p-4">
                       <div className="flex items-center gap-2 mb-2">
                         <ScrollText className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                        <h4 className="text-xs font-bold text-emerald-700 dark:text-emerald-300 tracking-wider uppercase">Hadits Penguat</h4>
+                        <h4 className="text-xs font-bold text-emerald-700 dark:text-emerald-300 tracking-wider uppercase">Hadist Penguat</h4>
                       </div>
                       <p className="text-sm text-foreground/80 dark:text-gray-200 leading-relaxed italic">
                         &ldquo;{tafsirData.hadith}&rdquo;

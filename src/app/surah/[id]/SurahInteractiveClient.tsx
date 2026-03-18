@@ -19,6 +19,18 @@ export function SurahInteractiveClient({ chapterId, surahName, verses }: SurahIn
     setMasterSpeed(parseFloat(e.target.value));
   };
 
+  // Bulletproof Ayah Jump (Scroll DOM Timing Fix)
+  React.useEffect(() => {
+    if (verses && verses.length > 0 && window.location.hash) {
+      setTimeout(() => {
+        const element = document.querySelector(window.location.hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 500); // Wait 500ms for stable DOM
+    }
+  }, [verses]);
+
   return (
     <div className="flex flex-col gap-2 relative z-10 w-full max-w-3xl mx-auto">
       

@@ -81,7 +81,7 @@ export function CounselorCard({ data }: CounselorCardProps) {
         </div>
       </motion.div>
 
-      {/* 3. Hadits Nabi */}
+      {/* 3. Hadist Nabi */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -93,7 +93,7 @@ export function CounselorCard({ data }: CounselorCardProps) {
           <div className="flex items-center gap-2 mb-3">
             <ScrollText className="w-4 h-4 text-primary" />
             <span className="text-xs font-semibold text-primary tracking-wide uppercase">
-              Hadits — {data.hadith.reference}
+              Hadist — {data.hadith.reference}
             </span>
           </div>
           <p className="text-sm text-gray-800/80 dark:text-gray-300/80 leading-relaxed italic">

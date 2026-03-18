@@ -3,16 +3,16 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Compass, BookOpenCheck, Sprout, User } from "lucide-react";
+import { Home, Compass, BookOpen, Sprout, ScrollText } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { name: "Beranda", href: "/", icon: Home },
-  { name: "Surah", href: "/surah", icon: Compass },
-  { name: "Cari", href: "/search", icon: BookOpenCheck },
-  { name: "Hijrah", href: "/hijrah", icon: Sprout },
-  { name: "Profil", href: "/profile", icon: User },
+  { name: "Al Quran", href: "/surah", icon: BookOpen },
+  { name: "Jejak Al-Qur'an di Alam Semesta", href: "/ensiklopedia/penemu", icon: Sprout },
+  { name: "Kumpulan Hadist", href: "/ensiklopedia/hadits", icon: ScrollText },
+  { name: "Jalur Hijrah", href: "/hijrah", icon: Compass },
 ];
 
 export function BottomNav() {
@@ -25,20 +25,26 @@ export function BottomNav() {
           const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
           
           return (
-            <Link key={item.name} href={item.href} className="relative flex flex-col items-center justify-center w-16 h-12 gap-1 touch-manipulation">
+            <Link key={item.name} href={item.href} className="relative flex flex-col items-center justify-center w-[72px] sm:w-[80px] h-14 md:h-16 gap-0.5 touch-manipulation">
               <motion.div
                 whileTap={{ scale: 0.85 }}
                 className={cn(
-                  "flex items-center justify-center w-10 h-10 rounded-2xl transition-colors",
+                  "flex flex-col items-center justify-center p-1.5 rounded-xl transition-colors",
                   isActive ? "bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400" : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                 )}
               >
-                <item.icon className={cn("w-5 h-5", isActive && "stroke-[2.5]")} />
+                <item.icon className={cn("w-5 h-5 shrink-0", isActive && "stroke-[2.5]")} />
+                <span className={cn(
+                  "text-[9px] md:text-[10px] text-center leading-tight whitespace-normal break-words mt-1 px-1",
+                  isActive ? "text-emerald-700 dark:text-emerald-300 font-bold" : "text-gray-500 dark:text-gray-400 font-medium"
+                )}>
+                  {item.name}
+                </span>
               </motion.div>
               {isActive && (
                 <motion.div 
                   layoutId="bottom-nav-indicator"
-                  className="absolute -bottom-2 w-1 h-1 rounded-full bg-emerald-600 dark:bg-emerald-400"
+                  className="absolute -bottom-1 w-1 h-1 rounded-full bg-emerald-600 dark:bg-emerald-400"
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 />
               )}

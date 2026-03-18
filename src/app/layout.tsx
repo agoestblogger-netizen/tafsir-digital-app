@@ -3,7 +3,6 @@ import { Outfit, Amiri } from "next/font/google";
 import "./globals.css";
 import { ClientBottomNav } from "@/components/layout/ClientBottomNav";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
-import { DarkModeToggle } from "@/components/layout/DarkModeToggle";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -34,7 +33,6 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <div className="min-h-screen pb-20 w-full relative">
-            <DarkModeToggle />
             {children}
             <ClientBottomNav />
           </div>

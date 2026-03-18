@@ -1,10 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { Sunrise, Send, Loader2, RotateCcw } from "lucide-react";
+import Link from "next/link";
+import { Sunrise, Send, Loader2, RotateCcw, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FeelingFilter } from "@/components/specific/FeelingFilter";
 import { CounselorCard, CounselorResponse } from "@/components/specific/CounselorCard";
+import { DarkModeToggle } from "@/components/layout/DarkModeToggle";
+import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
 // Reusable SVG for Classic Islamic Corner Ornaments
@@ -32,8 +35,21 @@ export default function Home() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [aiResponse, setAiResponse] = React.useState<CounselorResponse | null>(null);
   const [error, setError] = React.useState<string | null>(null);
+  const [userName, setUserName] = React.useState("Hamba Allah");
   const resultRef = React.useRef<HTMLDivElement>(null);
   const counselorRef = React.useRef<HTMLDivElement>(null);
+
+  // Fetch Supabase User
+  React.useEffect(() => {
+    const fetchUser = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.email) {
+        setUserName(user.email.split('@')[0]);
+      }
+    };
+    fetchUser();
+  }, []);
 
   // Core fetch logic — reusable by form submit AND feeling filter shortcuts
   const submitPrompt = React.useCallback(async (text: string) => {
@@ -94,8 +110,22 @@ export default function Home() {
   return (
     <main className="flex flex-col min-h-screen pb-32 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200 w-full relative">
 
+      {/* 🌟 SOLID PROFILE HEADER (Anti-Overlap) */}
+      <div className="w-full flex justify-between items-center p-4 px-6 bg-transparent z-40 relative">
+        <Link href="/profile" className="flex items-center gap-3 group">
+          <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-105 transition-transform">
+            <User className="w-5 h-5" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Assalamu&apos;alaikum,</span>
+            <span className="text-sm font-semibold text-gray-800 dark:text-gray-200 capitalize">{userName}</span>
+          </div>
+        </Link>
+        <DarkModeToggle />
+      </div>
+
       {/* 1. MUSHAF COVER HERO SECTION (CLASSIC ARABESQUE & CARTOUCHE) */}
-      <section className="relative w-full h-[65vh] flex flex-col items-center justify-center p-4 pt-12 overflow-hidden bg-geometric-heavy shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] z-20">
+      <section className="relative w-full h-[65vh] flex flex-col items-center justify-center p-4 pt-6 overflow-hidden bg-geometric-heavy shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] z-20">
 
         {/* Entrance Light Sweep Animation on Page Load */}
         <motion.div

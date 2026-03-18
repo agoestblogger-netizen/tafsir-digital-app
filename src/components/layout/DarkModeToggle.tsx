@@ -16,7 +16,7 @@ export function DarkModeToggle() {
 
   if (!mounted) {
     return (
-      <div className="fixed top-4 right-4 z-[100] w-10 h-10 p-2 rounded-full bg-white/50 border border-border/50 shadow-sm animate-pulse" />
+      <div className="w-10 h-10 p-2 rounded-full bg-white/50 border border-border/50 shadow-sm animate-pulse" />
     );
   }
 
@@ -26,7 +26,7 @@ export function DarkModeToggle() {
     <button
       onClick={() => setTheme(isDark ? "light" : "dark")}
       aria-label={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-      className="fixed top-4 right-4 z-[100] p-2 w-10 h-10 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md flex items-center justify-center hover:scale-105 transition-all duration-200"
+      className="p-2 w-10 h-10 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md flex items-center justify-center hover:scale-105 transition-all duration-200"
     >
       {isDark ? (
         <Sun className="w-4 h-4 text-amber-400" />

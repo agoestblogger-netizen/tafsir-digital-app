@@ -3,14 +3,14 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Compass, BookOpen, Sprout, ScrollText } from "lucide-react";
+import { Home, Compass, BookOpen, Globe, ScrollText } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { name: "Beranda", href: "/", icon: Home },
   { name: "Al Quran", href: "/surah", icon: BookOpen },
-  { name: "Jejak Al-Qur'an di Alam Semesta", href: "/ensiklopedia/penemu", icon: Sprout },
+  { name: "Jejak Al-Qur'an", href: "/ensiklopedia/penemu", icon: Globe },
   { name: "Kumpulan Hadist", href: "/ensiklopedia/hadits", icon: ScrollText },
   { name: "Jalur Hijrah", href: "/hijrah", icon: Compass },
 ];
@@ -22,7 +22,7 @@ export function BottomNav() {
     <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-safe">
       <div className="w-full max-w-7xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-t border-gray-200/50 dark:border-gray-700/50 px-6 py-3 flex justify-between items-center md:rounded-t-3xl shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.05)]">
         {navItems.map((item) => {
-          const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
+          const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href + "/"));
           
           return (
             <Link key={item.name} href={item.href} className="relative flex flex-col items-center justify-center w-[72px] sm:w-[80px] h-14 md:h-16 gap-0.5 touch-manipulation">

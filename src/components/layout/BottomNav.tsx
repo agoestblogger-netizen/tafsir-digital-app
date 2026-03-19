@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { name: "Beranda", href: "/", icon: Home },
   { name: "Al Quran", href: "/surah", icon: BookOpen },
-  { name: "Jejak Al-Qur'an", href: "/ensiklopedia/penemu", icon: Globe },
+  { name: "Ensiklopedia Semesta", href: "/search", icon: Globe },
   { name: "Kumpulan Hadist", href: "/ensiklopedia/hadits", icon: ScrollText },
   { name: "Jalur Hijrah", href: "/hijrah", icon: Compass },
 ];

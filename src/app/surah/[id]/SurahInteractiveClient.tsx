@@ -7,14 +7,23 @@ import { TajweedLegend } from "@/components/specific/TajweedLegend";
 import { BelajarTajwidView } from "@/components/specific/BelajarTajwidView";
 import { ListVideo, BookOpenCheck } from "lucide-react";
 import { Verse } from "@/lib/api/quran";
+import { DetailSurahHeader } from "@/components/specific/DetailSurahHeader";
 
 interface SurahInteractiveClientProps {
   chapterId: number;
   surahName: string;
   verses: Verse[];
+  surah: {
+    id: number;
+    name: string;
+    translation: string;
+    arab: string;
+    pitch: string;
+    resume?: string;
+  };
 }
 
-export function SurahInteractiveClient({ chapterId, surahName, verses }: SurahInteractiveClientProps) {
+export function SurahInteractiveClient({ chapterId, surahName, verses, surah }: SurahInteractiveClientProps) {
   const [masterSpeed, setMasterSpeed] = React.useState(1);
   const [viewMode, setViewMode] = React.useState<"daftar" | "tajwid">("daftar");
 
@@ -35,9 +44,11 @@ export function SurahInteractiveClient({ chapterId, surahName, verses }: SurahIn
   }, [verses]);
 
   return (
-    <div className="flex flex-col gap-2 relative z-10 w-full max-w-3xl mx-auto">
-      
-      {/* AREA HEADER KONTROL MUROTTAL & SPEED MASTER */}
+    <>
+      <DetailSurahHeader surah={surah} viewMode={viewMode} />
+      <div className="flex flex-col gap-2 relative z-10 w-full max-w-3xl mx-auto">
+        
+        {/* AREA HEADER KONTROL MUROTTAL & SPEED MASTER */}
       <div className="flex flex-col md:flex-row items-center justify-between mt-6 mb-4 gap-4 p-4 md:p-6 bg-white dark:bg-slate-800 rounded-3xl border border-gray-200 dark:border-slate-700 shadow-sm relative overflow-hidden">
         
         <div className="w-full flex justify-center md:justify-start">
@@ -104,5 +115,6 @@ export function SurahInteractiveClient({ chapterId, surahName, verses }: SurahIn
         )}
       </div>
     </div>
+    </>
   );
 }

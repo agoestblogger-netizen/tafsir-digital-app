@@ -14,9 +14,10 @@ interface DetailSurahHeaderProps {
     pitch: string;
     resume?: string;
   };
+  viewMode?: "daftar" | "tajwid";
 }
 
-export function DetailSurahHeader({ surah }: DetailSurahHeaderProps) {
+export function DetailSurahHeader({ surah, viewMode = "daftar" }: DetailSurahHeaderProps) {
   const router = useRouter();
 
   return (
@@ -42,18 +43,20 @@ export function DetailSurahHeader({ surah }: DetailSurahHeaderProps) {
       <div className="flex flex-col items-center text-center">
         <p className="font-arabic text-3xl md:text-4xl text-primary font-medium mb-3 drop-shadow-sm">{surah.arab}</p>
         
-        <div className="card-premium p-3 md:px-5 rounded-2xl relative overflow-hidden w-full text-left flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-gold/10 rounded-full blur-2xl -mr-12 -mt-12 pointer-events-none" />
-          <p className="text-foreground/80 leading-snug text-xs md:text-sm relative z-10 font-medium md:border-r border-gold/20 md:pr-4 md:whitespace-nowrap flex-shrink-0">
-            &quot;{surah.pitch}&quot;
-          </p>
-          {surah.resume && (
-            <div 
-              className="text-foreground/70 leading-snug text-[11px] md:text-xs relative z-10 italic line-clamp-2 md:line-clamp-none flex-grow"
-              dangerouslySetInnerHTML={{ __html: surah.resume }}
-            />
-          )}
-        </div>
+        {viewMode === "daftar" && (
+          <div className="card-premium p-3 md:px-5 rounded-2xl relative overflow-hidden w-full text-left flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-gold/10 rounded-full blur-2xl -mr-12 -mt-12 pointer-events-none" />
+            <p className="text-foreground/80 leading-snug text-xs md:text-sm relative z-10 font-medium md:border-r border-gold/20 md:pr-4 md:whitespace-nowrap flex-shrink-0">
+              &quot;{surah.pitch}&quot;
+            </p>
+            {surah.resume && (
+              <div 
+                className="text-foreground/70 leading-snug text-[11px] md:text-xs relative z-10 italic line-clamp-2 md:line-clamp-none flex-grow"
+                dangerouslySetInnerHTML={{ __html: surah.resume }}
+              />
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

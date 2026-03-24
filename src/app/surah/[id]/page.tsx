@@ -32,11 +32,10 @@ export default async function DetailSurahPage({ params }: { params: Promise<{ id
 
   return (
     <main className="flex flex-col min-h-screen bg-page-warm px-4 sm:px-6 pb-32">
-      <DetailSurahHeader surah={surah} />
-
       <SurahInteractiveClient 
         chapterId={chapter.id} 
         surahName={surah.name} 
+        surah={surah}
         verses={verses} 
       />
     </main>

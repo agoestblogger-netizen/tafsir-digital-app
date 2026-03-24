@@ -31,10 +31,13 @@ export function DetailSurahHeader({ surah, viewMode = "daftar" }: DetailSurahHea
         >
           <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
         </Button>
-        <div className="flex flex-col items-center">
-          <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground">{surah.name}</h1>
+        <div className="flex flex-col items-center min-w-0 px-2">
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground flex items-center justify-center gap-2 whitespace-nowrap">
+            <span className="truncate">{surah.name}</span>
+            <span className="font-arabic text-[1.1em] text-primary/80 font-medium relative top-0.5">{"{"}{surah.arab}{"}"}</span>
+          </h1>
           {viewMode === "daftar" && (
-            <p className="text-muted-foreground text-[10px] md:text-xs tracking-widest uppercase">{surah.translation}</p>
+            <p className="text-muted-foreground text-[10px] md:text-xs tracking-widest uppercase truncate max-w-full">{surah.translation}</p>
           )}
         </div>
         <Button variant="ghost" size="icon" className="w-8 h-8 md:w-10 md:h-10 text-gold">

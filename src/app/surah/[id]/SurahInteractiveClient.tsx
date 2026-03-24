@@ -4,6 +4,8 @@ import * as React from "react";
 import { VerseCard } from "@/components/specific/VerseCard";
 import { MurottalPlayer } from "@/components/specific/MurottalPlayer";
 import { TajweedLegend } from "@/components/specific/TajweedLegend";
+import { BelajarTajwidView } from "@/components/specific/BelajarTajwidView";
+import { ListVideo, BookOpenCheck } from "lucide-react";
 import { Verse } from "@/lib/api/quran";
 
 interface SurahInteractiveClientProps {
@@ -14,6 +16,7 @@ interface SurahInteractiveClientProps {
 
 export function SurahInteractiveClient({ chapterId, surahName, verses }: SurahInteractiveClientProps) {
   const [masterSpeed, setMasterSpeed] = React.useState(1);
+  const [viewMode, setViewMode] = React.useState<"daftar" | "tajwid">("daftar");
 
   const handleMasterSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMasterSpeed(parseFloat(e.target.value));
@@ -59,16 +62,46 @@ export function SurahInteractiveClient({ chapterId, surahName, verses }: SurahIn
 
       <TajweedLegend />
       
-      <div className="mt-4">
-        {verses.map((verse, index) => (
-          <VerseCard 
-            key={verse.id} 
-            verse={verse} 
-            index={index} 
-            surahName={surahName} 
-            masterSpeed={masterSpeed}
-          />
-        ))}
+      {/* TOGGLE DAFTAR / TAJWID */}
+      <div className="flex justify-center mt-2 mb-6">
+        <div className="flex bg-gray-100 dark:bg-slate-800/80 p-1.5 rounded-2xl shadow-inner border border-gray-200 dark:border-slate-700 max-w-sm w-full">
+          <button
+            onClick={() => setViewMode("daftar")}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all ${
+              viewMode === "daftar"
+                ? "bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 shadow-sm"
+                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+            }`}
+          >
+            <ListVideo className="w-4 h-4" /> Daftar
+          </button>
+          <button
+            onClick={() => setViewMode("tajwid")}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all ${
+              viewMode === "tajwid"
+                ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md shadow-emerald-500/20"
+                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+            }`}
+          >
+            <BookOpenCheck className="w-4 h-4" /> Belajar-Tajwid
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-2">
+        {viewMode === "daftar" ? (
+          verses.map((verse, index) => (
+            <VerseCard 
+              key={verse.id} 
+              verse={verse} 
+              index={index} 
+              surahName={surahName} 
+              masterSpeed={masterSpeed}
+            />
+          ))
+        ) : (
+          <BelajarTajwidView verses={verses} surahName={surahName} />
+        )}
       </div>
     </div>
   );

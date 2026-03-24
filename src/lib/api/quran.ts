@@ -49,6 +49,10 @@ export interface VerseWord {
     text: string;
     language_name: string;
   };
+  transliteration?: {
+    text: string;
+    language_name: string;
+  };
 }
 
 export interface Verse {

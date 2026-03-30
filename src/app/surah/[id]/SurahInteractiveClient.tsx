@@ -52,6 +52,15 @@ export function SurahInteractiveClient({ chapterId, surahName, verses, surah }: 
     setPlayingVerseIndex(null);
   }, []);
 
+  // Dipanggil oleh VerseCard saat toggle "Lanjut Ayat" aktif dan audio manual selesai
+  const handleStartContinuous = React.useCallback((startIndex: number) => {
+    if (startIndex < verses.length) {
+      setViewMode("daftar");
+      setIsFullPlayActive(true);
+      setPlayingVerseIndex(startIndex);
+    }
+  }, [verses.length]);
+
   const handleVerseEnd = React.useCallback((currentIndex: number) => {
     if (isFullPlayActive && currentIndex + 1 < verses.length) {
       setPlayingVerseIndex(currentIndex + 1);
@@ -80,14 +89,10 @@ export function SurahInteractiveClient({ chapterId, surahName, verses, surah }: 
     };
   }, [stopFullPlay]);
 
-  React.useEffect(() => {
-    if (playingVerseIndex !== null && viewMode === "daftar") {
-      const verseElement = document.getElementById(`verse-${playingVerseIndex}`);
-      if (verseElement) {
-        verseElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }
-  }, [playingVerseIndex, viewMode]);
+  // NOTE: Scroll saat pergantian ayat kini diatur sepenuhnya oleh useEffect
+  // Pelacak Scroll Per-Kata di dalam komponen VerseCard (block: 'start' untuk
+  // kata pertama, block: 'center' untuk kata berikutnya). Tidak ada scroll di
+  // sini agar tidak terjadi 'tarik-menarik' / efek bouncing.
 
   const handleInteraction = () => {
     if (isFullPlayActive) {
@@ -209,6 +214,7 @@ export function SurahInteractiveClient({ chapterId, surahName, verses, surah }: 
                 onInteraction={handleInteraction}
                 isAutoPlaying={playingVerseIndex === index}
                 onAutoPlayEnd={() => handleVerseEnd(index)}
+                onStartContinuous={handleStartContinuous}
               />
             ))}
           </>

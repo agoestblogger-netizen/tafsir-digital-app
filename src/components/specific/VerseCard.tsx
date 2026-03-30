@@ -45,6 +45,7 @@ interface VerseCardProps {
   onInteraction?: () => void;
   isAutoPlaying?: boolean;
   onAutoPlayEnd?: () => void;
+  onStartContinuous?: (nextIndex: number) => void;
 }
 
 export function VerseCard({ 
@@ -56,12 +57,21 @@ export function VerseCard({
   isInteractiveAudio = true,
   onInteraction,
   isAutoPlaying = false,
-  onAutoPlayEnd
+  onAutoPlayEnd,
+  onStartContinuous,
 }: VerseCardProps) {
   const { activeVerseKey, activeWordId, isPlaying, playVerse, pause, setPlaybackRateGlobal } = useAudioState();
   const [clickedWordId, setClickedWordId] = React.useState<number | null>(null);
   const wordAudioRef = React.useRef<HTMLAudioElement | null>(null);
   const [playbackRate, setPlaybackRate] = React.useState<number>(1);
+
+  // Toggle "Lanjut Ayat" — jika aktif, play manual akan menyambung ke estafet
+  const [isContinuous, setIsContinuous] = React.useState(false);
+  const isContinuousRef = React.useRef(isContinuous);
+  const onStartContinuousRef = React.useRef(onStartContinuous);
+
+  React.useEffect(() => { isContinuousRef.current = isContinuous; }, [isContinuous]);
+  React.useEffect(() => { onStartContinuousRef.current = onStartContinuous; }, [onStartContinuous]);
 
   const onAutoPlayEndRef = React.useRef(onAutoPlayEnd);
 
@@ -196,7 +206,8 @@ export function VerseCard({
   };
 
   const handleWordClick = (wordObj: VerseWord & { correct_audio_url?: string | null }, visualIndex: number) => {
-    if (isAutoPlaying) return; 
+    // 🔒 GUARD CLAUSE: blokir klik kata saat Murottal berjalan (estafet atau manual)
+    if (isAutoPlaying || isCurrentlyPlaying) return;
     if (!isInteractiveAudio) return;
     if (onInteraction) onInteraction();
 
@@ -303,6 +314,8 @@ export function VerseCard({
 
   // ─── Robot Pencet (Auto-Clicker) Mode Full Estafet ────────────
   React.useEffect(() => {
+    let playTimer: ReturnType<typeof setTimeout> | null = null;
+
     if (isAutoPlaying) {
       // Guard: URL harus tersedia sebelum robot menekan tombol play
       const audioUrl = verse.audio?.url;
@@ -314,30 +327,78 @@ export function VerseCard({
         return () => clearTimeout(timer);
       }
 
-      if (!isCurrentlyPlaying) {
-        playVerseManual();
+      // Langsung scroll ke kepala ayat agar user bisa bersiap sebelum audio mulai
+      const verseContainer = document.getElementById(`verse-${index}`);
+      if (verseContainer) {
+        verseContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
+
+      // Beri jeda napas 1.5 detik sebelum audio dimulai
+      playTimer = setTimeout(() => {
+        if (!isCurrentlyPlaying) {
+          playVerseManual();
+        }
+      }, 1500);
+
     } else {
       if (isCurrentlyPlaying) {
         pause();
       }
     }
+
+    return () => { if (playTimer) clearTimeout(playTimer); };
   }, [isAutoPlaying]); // Ter-trigger saat tongkat estafet dipassing
 
   // Listener Oper Tongkat (End of Verse Observer)
   const wasPlayingRef = React.useRef(false);
   React.useEffect(() => {
-    // Jika komponen ini sedang memegang tongkat estafet...
     if (isAutoPlaying) {
-      // ...dan audionya baru saja berhenti (transisi dari true ke false)
+      // Mode Estafet: oper tongkat ke ayat berikutnya saat audio habis
       if (wasPlayingRef.current && !isCurrentlyPlaying) {
         if (onAutoPlayEndRef.current) {
-          onAutoPlayEndRef.current(); // Oper tongkat ke ayat berikutnya!
+          onAutoPlayEndRef.current();
+        }
+      }
+    } else {
+      // Mode Manual + Toggle Lanjut Ayat: sambung otomatis ke estafet berikutnya
+      if (wasPlayingRef.current && !isCurrentlyPlaying) {
+        if (isContinuousRef.current && onStartContinuousRef.current) {
+          onStartContinuousRef.current(index + 1);
         }
       }
     }
     wasPlayingRef.current = isCurrentlyPlaying;
   }, [isCurrentlyPlaying, isAutoPlaying]);
+
+  // ─── Pelacak Scroll Per-Kata (Teleprompter Style) ─────────────
+  // Logika scroll DIPISAH menjadi dua fase agar tidak ada efek "bouncing":
+  //   Fase 1 — Kata pertama (awal ayat): gulir ke KEPALA ayat (block: 'start')
+  //             agar nomor ayat & header tetap terlihat di atas layar.
+  //   Fase 2 — Kata berikutnya: mode Teleprompter (block: 'center') agar
+  //             kata yang disorot selalu berada di tengah layar.
+  // Berlaku BAIK saat mode estafet (isAutoPlaying) MAUPUN play manual (isCurrentlyPlaying).
+  React.useEffect(() => {
+    const isPlayingAnyMode = isAutoPlaying || isCurrentlyPlaying;
+    if (!isPlayingAnyMode || !isActive || activeWordId === null) return;
+
+    // Cari indeks kata pertama yang benar-benar "word" (bukan end/pause)
+    const firstRealWord = processedWords.find(w => w.char_type_name === 'word');
+    const isFirstWord = firstRealWord?.id === activeWordId;
+
+    if (isFirstWord) {
+      // Fase 1: Ayat baru dimulai — tampilkan kepala ayat di atas layar
+      const verseContainer = document.getElementById(`verse-${index}`);
+      if (verseContainer) {
+        verseContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } else {
+      // Fase 2: Kata selanjutnya — Teleprompter ke tengah layar
+      const activeWordElement = document.getElementById('active-playing-word');
+      if (activeWordElement) {
+        activeWordElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [activeWordId, isAutoPlaying, isCurrentlyPlaying, isActive]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleContainerClick = () => {
     if (isCurrentlyPlaying || isAutoPlaying) {
@@ -369,8 +430,8 @@ export function VerseCard({
             <div className="h-px flex-1 bg-gradient-to-l from-transparent to-gold/30"></div>
           </div>
 
-          {/* Wrapper flex untuk Slider & Play Button (Centered) */}
-          <div className="flex items-center justify-center gap-2 md:gap-4">
+          {/* Wrapper flex untuk Slider, Play Button & Toggle Lanjut Ayat (Centered) */}
+          <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
             {verse.audio?.url && (
               <div className="flex items-center gap-3 bg-gray-50 dark:bg-slate-700/50 px-3 py-1.5 rounded-full border border-gray-200 dark:border-slate-600">
                 <span className="text-xs font-medium text-gray-500 dark:text-gray-400 w-8 text-center">
@@ -401,6 +462,36 @@ export function VerseCard({
                   <PlayCircle className="w-8 h-8" strokeWidth={1.5} />
                 )}
               </button>
+            )}
+
+            {/* Toggle Lanjut Ayat — aktif hanya saat mode interaktif & ada audio */}
+            {verse.audio?.url && !isAutoPlaying && onStartContinuous && (
+              <label
+                className="flex items-center gap-1.5 cursor-pointer select-none group"
+                title="Lanjutkan ke ayat berikutnya secara otomatis setelah audio selesai"
+              >
+                <div
+                  onClick={() => setIsContinuous(p => !p)}
+                  className={`relative w-9 h-5 rounded-full transition-colors duration-300 flex-shrink-0 ${
+                    isContinuous
+                      ? 'bg-emerald-500 shadow-sm shadow-emerald-400/30'
+                      : 'bg-gray-300 dark:bg-slate-600'
+                  }`}
+                >
+                  <span
+                    className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform duration-300 ${
+                      isContinuous ? 'translate-x-4' : 'translate-x-0'
+                    }`}
+                  />
+                </div>
+                <span className={`text-xs font-medium transition-colors ${
+                  isContinuous
+                    ? 'text-emerald-600 dark:text-emerald-400'
+                    : 'text-gray-400 dark:text-gray-500'
+                }`}>
+                  Lanjut
+                </span>
+              </label>
             )}
           </div>
         </div>
@@ -439,13 +530,29 @@ export function VerseCard({
               const actualUrl = word.correct_audio_url || word.audio_url;
               const isClickable = !!actualUrl && word.char_type_name !== 'pause' && word.char_type_name !== 'end';
 
+              // Beri ID pada kata aktif saat estafet ATAU play manual
+              // agar useEffect Pelacak Scroll bisa menemukannya via document.getElementById
+              const isAutoPlayActiveWord = isActive && activeWordId === word.id && isPlaying && (isAutoPlaying || isCurrentlyPlaying);
+
+              // ─── Hard-Lock Klik Kata saat Murottal Aktif ──────────────────
+              // CSS pointer-events-none TIDAK memblokir event dari child elements.
+              // onClick ditrap di sini untuk memutus bubble chain ke handleContainerClick.
+              const isMurottalActive = isAutoPlaying || isCurrentlyPlaying;
+
               return (
                 <span
                   key={word.id}
-                  onClick={isClickable ? () => handleWordClick(word, index) : undefined}
-                  onMouseEnter={isClickable ? () => handleWordClick(word, index) : undefined}
-                  title={word.translation?.text ? `${word.translation.text}${isClickable ? ' — ketuk untuk audio' : ''}` : undefined}
-                  className={`transition-all duration-300 tajweed-word font-arabic ${isWordActive ? 'playing !bg-amber-400/30 rounded-lg px-1 scale-105 inline-block border border-amber-400/50 shadow-sm shadow-amber-500/30' : ''} ${!isClickable ? 'cursor-default' : ''}`}
+                  id={isAutoPlayActiveWord ? 'active-playing-word' : undefined}
+                  onClick={
+                    isMurottalActive
+                      ? (e) => e.stopPropagation()          // Trap klik, matikan bubble ke container
+                      : isClickable
+                        ? (e) => { e.stopPropagation(); handleWordClick(word, index); }
+                        : undefined
+                  }
+                  onMouseEnter={!isMurottalActive && isClickable ? () => handleWordClick(word, index) : undefined}
+                  title={word.translation?.text ? `${word.translation.text}${isClickable && !isMurottalActive ? ' — ketuk untuk audio' : ''}` : undefined}
+                  className={`transition-all duration-300 tajweed-word font-arabic ${isWordActive ? 'playing !bg-amber-400/30 rounded-lg px-1 scale-105 inline-block border border-amber-400/50 shadow-sm shadow-amber-500/30' : ''} ${isMurottalActive ? 'cursor-default select-none' : !isClickable ? 'cursor-default' : ''}`}
                 >
                   {word.text_uthmani_tajweed ? (
                     <span dangerouslySetInnerHTML={{ __html: word.text_uthmani_tajweed }} />

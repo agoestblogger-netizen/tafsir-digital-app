@@ -6,6 +6,9 @@ import { Verse } from "@/lib/api/quran";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
+// TUAS KALIBRASI: Naikkan jika telat, turunkan jika terlalu cepat
+const MAGIC_OFFSET_MS = 1500;
+
 interface BelajarTajwidViewProps {
   verses: Verse[];
   surahName: string;
@@ -14,6 +17,7 @@ interface BelajarTajwidViewProps {
 export function BelajarTajwidView({ verses, surahName }: BelajarTajwidViewProps) {
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [isAudioInteractive, setIsAudioInteractive] = React.useState(false);
+  const [activeWordIndex, setActiveWordIndex] = React.useState<number | null>(null);
   const audioRef = React.useRef<HTMLAudioElement | null>(null);
 
   const currentVerse = verses[currentIndex];
@@ -37,6 +41,7 @@ export function BelajarTajwidView({ verses, surahName }: BelajarTajwidViewProps)
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
+    setActiveWordIndex(null);
   };
 
   const playWordAudio = (url: string | null) => {
@@ -72,8 +77,9 @@ export function BelajarTajwidView({ verses, surahName }: BelajarTajwidViewProps)
     return { ...word, correct_audio_url: null };
   });
 
+
   return (
-    <div className="flex flex-col w-full bg-white dark:bg-slate-800 rounded-3xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden mt-6 mb-12">
+    <div className="flex flex-col w-full rounded-3xl overflow-hidden mt-6 mb-12 transition-all duration-500 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-sm">
       {/* Top Header: Controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 md:p-6 border-b border-gray-100 dark:border-slate-700/50 bg-gray-50/50 dark:bg-slate-800/50 gap-4">
         <div className="flex items-center gap-3">
@@ -103,7 +109,8 @@ export function BelajarTajwidView({ verses, surahName }: BelajarTajwidViewProps)
       </div>
 
       {/* Main Focus Content */}
-      <div className="p-6 md:p-12 flex flex-col items-center justify-center min-h-[45vh] bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.03),transparent)]">
+      <div className="p-6 md:p-12 flex flex-col items-center justify-center min-h-[45vh] bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.03),transparent)] relative">
+        
         <AnimatePresence mode="wait">
           <motion.div
             key={currentVerse.id}
@@ -114,7 +121,7 @@ export function BelajarTajwidView({ verses, surahName }: BelajarTajwidViewProps)
             className="flex flex-wrap justify-center gap-x-10 gap-y-16 w-full max-w-4xl"
             dir="rtl"
           >
-            {processedWords.map((word) => (
+            {processedWords.map((word, index) => (
               <div 
                 key={word.id} 
                 className="flex flex-col items-center gap-3 w-fit group"
@@ -122,9 +129,12 @@ export function BelajarTajwidView({ verses, surahName }: BelajarTajwidViewProps)
                 {/* Arabic Tajweed */}
                 <div 
                   className={cn(
-                    "font-arabic text-4xl sm:text-5xl md:text-6xl lg:text-[70px] text-slate-800 dark:text-slate-100 leading-[2.6]",
+                    "font-arabic text-4xl sm:text-5xl md:text-6xl lg:text-[70px] leading-[2.6] px-3 py-1",
+                    index === activeWordIndex 
+                      ? "transition-all duration-300 bg-amber-600/20 dark:bg-amber-600/30 rounded-xl text-red-600 dark:text-red-400 font-bold scale-105 border border-amber-600/30 shadow-md" 
+                      : "transition-all duration-300 text-slate-800 dark:text-slate-100 bg-transparent border border-transparent",
                     isAudioInteractive && word.correct_audio_url 
-                      ? "transition-colors duration-200 hover:text-red-600 dark:hover:text-red-400 cursor-pointer" 
+                      ? "hover:text-red-600 dark:hover:text-red-400 cursor-pointer" 
                       : ""
                   )}
                   onClick={() => playWordAudio(word.correct_audio_url)}

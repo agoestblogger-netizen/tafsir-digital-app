@@ -40,13 +40,34 @@ interface VerseCardProps {
   index: number;
   surahName?: string;
   masterSpeed?: number;
+  isPlayingVerse?: boolean;
+  isInteractiveAudio?: boolean;
+  onInteraction?: () => void;
+  isAutoPlaying?: boolean;
+  onAutoPlayEnd?: () => void;
 }
 
-export function VerseCard({ verse, index, surahName, masterSpeed = 1 }: VerseCardProps) {
+export function VerseCard({ 
+  verse, 
+  index, 
+  surahName, 
+  masterSpeed = 1,
+  isPlayingVerse = false,
+  isInteractiveAudio = true,
+  onInteraction,
+  isAutoPlaying = false,
+  onAutoPlayEnd
+}: VerseCardProps) {
   const { activeVerseKey, activeWordId, isPlaying, playVerse, pause, setPlaybackRateGlobal } = useAudioState();
   const [clickedWordId, setClickedWordId] = React.useState<number | null>(null);
   const wordAudioRef = React.useRef<HTMLAudioElement | null>(null);
   const [playbackRate, setPlaybackRate] = React.useState<number>(1);
+
+  const onAutoPlayEndRef = React.useRef(onAutoPlayEnd);
+
+  React.useEffect(() => {
+    onAutoPlayEndRef.current = onAutoPlayEnd;
+  }, [onAutoPlayEnd]);
 
   // Tafsir AI State
   const [isAnalyzing, setIsAnalyzing] = React.useState(false);
@@ -109,10 +130,19 @@ export function VerseCard({ verse, index, surahName, masterSpeed = 1 }: VerseCar
   const isActive = activeVerseKey === verse.verse_key;
   const isCurrentlyPlaying = isActive && isPlaying;
 
-  const toggleVerseAudio = () => {
-    if (isCurrentlyPlaying) {
-      pause();
-    } else if (verse.audio?.url) {
+  const playVerseManual = () => {
+    const audioUrl = verse.audio?.url;
+    // Guard clause: jangan lanjutkan jika URL tidak valid
+    if (!audioUrl || typeof audioUrl !== 'string' || audioUrl.trim() === '') {
+      console.warn(`[VerseCard] Audio URL kosong untuk ayat ${verse.verse_key}, skip.`);
+      // Skip to next verse jika dalam mode estafet
+      if (onAutoPlayEndRef.current) {
+        setTimeout(() => { if (onAutoPlayEndRef.current) onAutoPlayEndRef.current(); }, 200);
+      }
+      return;
+    }
+
+    try {
       const positionMap: Record<number, number> = {};
       let lastValidWordId: number | null = null;
 
@@ -128,7 +158,25 @@ export function VerseCard({ verse, index, surahName, masterSpeed = 1 }: VerseCar
           }
         }
       });
-      playVerse(verse.verse_key, verse.audio.url, verse.audio.segments, positionMap, playbackRate);
+      playVerse(verse.verse_key, audioUrl, verse.audio!.segments, positionMap, playbackRate);
+    } catch (error) {
+      console.error(`[VerseCard] Gagal memuat audio ayat ${verse.verse_key}:`, error);
+      // Jangan biarkan estafet macet; skip aman
+      if (onAutoPlayEndRef.current) {
+        setTimeout(() => { if (onAutoPlayEndRef.current) onAutoPlayEndRef.current(); }, 1000);
+      }
+    }
+  };
+
+  const toggleVerseAudio = () => {
+    if (isAutoPlaying) return;
+    if (!isInteractiveAudio) return;
+    if (onInteraction) onInteraction();
+
+    if (isCurrentlyPlaying) {
+      pause();
+    } else {
+      playVerseManual();
     }
   };
 
@@ -148,6 +196,10 @@ export function VerseCard({ verse, index, surahName, masterSpeed = 1 }: VerseCar
   };
 
   const handleWordClick = (wordObj: VerseWord & { correct_audio_url?: string | null }, visualIndex: number) => {
+    if (isAutoPlaying) return; 
+    if (!isInteractiveAudio) return;
+    if (onInteraction) onInteraction();
+
     const activeUrl = wordObj.correct_audio_url || wordObj.audio_url;
 
     // 1. AUDIT LOG
@@ -249,14 +301,58 @@ export function VerseCard({ verse, index, surahName, masterSpeed = 1 }: VerseCar
     return { ...word, correct_audio_url: null };
   });
 
+  // ─── Robot Pencet (Auto-Clicker) Mode Full Estafet ────────────
+  React.useEffect(() => {
+    if (isAutoPlaying) {
+      // Guard: URL harus tersedia sebelum robot menekan tombol play
+      const audioUrl = verse.audio?.url;
+      if (!audioUrl) {
+        console.warn(`[VerseCard] isAutoPlaying=true tapi audio URL kosong untuk ${verse.verse_key}. Skip aman.`);
+        const timer = setTimeout(() => {
+          if (onAutoPlayEndRef.current) onAutoPlayEndRef.current();
+        }, 200);
+        return () => clearTimeout(timer);
+      }
+
+      if (!isCurrentlyPlaying) {
+        playVerseManual();
+      }
+    } else {
+      if (isCurrentlyPlaying) {
+        pause();
+      }
+    }
+  }, [isAutoPlaying]); // Ter-trigger saat tongkat estafet dipassing
+
+  // Listener Oper Tongkat (End of Verse Observer)
+  const wasPlayingRef = React.useRef(false);
+  React.useEffect(() => {
+    // Jika komponen ini sedang memegang tongkat estafet...
+    if (isAutoPlaying) {
+      // ...dan audionya baru saja berhenti (transisi dari true ke false)
+      if (wasPlayingRef.current && !isCurrentlyPlaying) {
+        if (onAutoPlayEndRef.current) {
+          onAutoPlayEndRef.current(); // Oper tongkat ke ayat berikutnya!
+        }
+      }
+    }
+    wasPlayingRef.current = isCurrentlyPlaying;
+  }, [isCurrentlyPlaying, isAutoPlaying]);
+
+  const handleContainerClick = () => {
+    if (isCurrentlyPlaying || isAutoPlaying) {
+      pause();
+    }
+  };
 
   return (
     <motion.div
-      id={`ayat-${verseNumber}`}
+      id={`verse-${index}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.4 }}
-      className={`relative overflow-hidden mb-6 rounded-3xl group transition-all duration-500 scroll-mt-32 ${isActive ? 'card-premium border-gold/50 shadow-md scale-[1.01]' : 'card-premium'}`}
+      onClick={handleContainerClick}
+      className={`cursor-pointer relative overflow-hidden mb-6 rounded-3xl group transition-all duration-500 scroll-mt-32 ${isActive ? 'card-premium border-gold/50 shadow-md scale-[1.01]' : 'card-premium'} ${(isCurrentlyPlaying || isAutoPlaying) ? 'bg-red-50/80 dark:bg-red-900/20 border-l-4 border-red-500 shadow-md' : 'border-l-4 border-transparent'}`}
     >
       {/* Gold left edge */}
       <div className={`absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b transition-opacity duration-300 ${isActive ? 'from-gold to-primary opacity-100' : 'from-gold-light to-gold opacity-60'}`}></div>
@@ -318,15 +414,25 @@ export function VerseCard({ verse, index, surahName, masterSpeed = 1 }: VerseCar
                 (isActive && activeWordId === word.id && isPlaying) ||
                 (clickedWordId === index);
 
+              // Tanda Waqaf (ۚ ۖ ۗ ۛ ۙ) — render dengan styling sederhana, tanpa klik audio
+              if (word.char_type_name === 'pause') {
+                return (
+                  <span
+                    key={word.id}
+                    className="font-arabic text-gray-500 dark:text-gray-400 opacity-90 select-none self-center mx-0.5"
+                    dangerouslySetInnerHTML={{ __html: word.text_uthmani_tajweed || word.text_uthmani || word.text || '' }}
+                  />
+                );
+              }
+
               // 'end' glyph (nomor ayat) — render tanpa interaksi
               if (word.char_type_name === 'end') {
                 return (
                   <span
                     key={word.id}
                     className="font-arabic text-foreground/50 opacity-75 select-none self-center"
-                  >
-                    {word.text_uthmani || word.text}
-                  </span>
+                    dangerouslySetInnerHTML={{ __html: word.text_uthmani_tajweed || word.text_uthmani || word.text || '' }}
+                  />
                 );
               }
 
@@ -339,7 +445,7 @@ export function VerseCard({ verse, index, surahName, masterSpeed = 1 }: VerseCar
                   onClick={isClickable ? () => handleWordClick(word, index) : undefined}
                   onMouseEnter={isClickable ? () => handleWordClick(word, index) : undefined}
                   title={word.translation?.text ? `${word.translation.text}${isClickable ? ' — ketuk untuk audio' : ''}` : undefined}
-                  className={`tajweed-word font-arabic ${isWordActive ? 'playing' : ''} ${!isClickable ? 'cursor-default' : ''}`}
+                  className={`transition-all duration-300 tajweed-word font-arabic ${isWordActive ? 'playing !bg-amber-400/30 rounded-lg px-1 scale-105 inline-block border border-amber-400/50 shadow-sm shadow-amber-500/30' : ''} ${!isClickable ? 'cursor-default' : ''}`}
                 >
                   {word.text_uthmani_tajweed ? (
                     <span dangerouslySetInnerHTML={{ __html: word.text_uthmani_tajweed }} />

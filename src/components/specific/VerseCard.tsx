@@ -74,6 +74,11 @@ export function VerseCard({
   React.useEffect(() => { onStartContinuousRef.current = onStartContinuous; }, [onStartContinuous]);
 
   const onAutoPlayEndRef = React.useRef(onAutoPlayEnd);
+  // Ref untuk menyimpan timer jeda pre-ayat agar bisa di-clear dari luar useEffect
+  const playTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Flag: apakah user secara sengaja menghentikan audio?
+  // Diset ke true sebelum pause/onInteraction agar wasPlayingRef tidak meneruskan baton.
+  const isUserStoppingRef = React.useRef(false);
 
   React.useEffect(() => {
     onAutoPlayEndRef.current = onAutoPlayEnd;
@@ -314,8 +319,6 @@ export function VerseCard({
 
   // ─── Robot Pencet (Auto-Clicker) Mode Full Estafet ────────────
   React.useEffect(() => {
-    let playTimer: ReturnType<typeof setTimeout> | null = null;
-
     if (isAutoPlaying) {
       // Guard: URL harus tersedia sebelum robot menekan tombol play
       const audioUrl = verse.audio?.url;
@@ -334,7 +337,9 @@ export function VerseCard({
       }
 
       // Beri jeda napas 1.5 detik sebelum audio dimulai
-      playTimer = setTimeout(() => {
+      // Timer disimpan di ref agar bisa di-clear dari handleContainerClick
+      playTimerRef.current = setTimeout(() => {
+        playTimerRef.current = null;
         if (!isCurrentlyPlaying) {
           playVerseManual();
         }
@@ -342,29 +347,46 @@ export function VerseCard({
 
     } else {
       if (isCurrentlyPlaying) {
+        // isAutoPlaying baru saja menjadi false sementara audio masih berbunyi.
+        // Artinya user menghentikan secara sengaja (bukan audio habis alami).
+        // Pasang flag SEBELUM pause() agar wasPlayingRef tidak meneruskan baton.
+        isUserStoppingRef.current = true;
         pause();
       }
     }
 
-    return () => { if (playTimer) clearTimeout(playTimer); };
+    // Cleanup: hapus timer jika isAutoPlaying berubah sebelum timer meledak
+    return () => {
+      if (playTimerRef.current) {
+        clearTimeout(playTimerRef.current);
+        playTimerRef.current = null;
+      }
+    };
   }, [isAutoPlaying]); // Ter-trigger saat tongkat estafet dipassing
 
   // Listener Oper Tongkat (End of Verse Observer)
   const wasPlayingRef = React.useRef(false);
   React.useEffect(() => {
     if (isAutoPlaying) {
-      // Mode Estafet: oper tongkat ke ayat berikutnya saat audio habis
+      // Mode Estafet: oper tongkat HANYA jika audio berakhir alami (bukan dihentikan user)
       if (wasPlayingRef.current && !isCurrentlyPlaying) {
-        if (onAutoPlayEndRef.current) {
-          onAutoPlayEndRef.current();
+        if (isUserStoppingRef.current) {
+          // User menghentikan secara sengaja — BLOKIR baton, reset flag
+          isUserStoppingRef.current = false;
+        } else {
+          // Audio habis secara alami — oper baton
+          if (onAutoPlayEndRef.current) {
+            onAutoPlayEndRef.current();
+          }
         }
       }
     } else {
       // Mode Manual + Toggle Lanjut Ayat: sambung otomatis ke estafet berikutnya
       if (wasPlayingRef.current && !isCurrentlyPlaying) {
-        if (isContinuousRef.current && onStartContinuousRef.current) {
+        if (!isUserStoppingRef.current && isContinuousRef.current && onStartContinuousRef.current) {
           onStartContinuousRef.current(index + 1);
         }
+        isUserStoppingRef.current = false; // selalu reset setelah cek
       }
     }
     wasPlayingRef.current = isCurrentlyPlaying;
@@ -401,8 +423,19 @@ export function VerseCard({
   }, [activeWordId, isAutoPlaying, isCurrentlyPlaying, isActive]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleContainerClick = () => {
-    if (isCurrentlyPlaying || isAutoPlaying) {
+    if (isAutoPlaying || isCurrentlyPlaying) {
+      // 1. Pasang flag SEBELUM pause() — wajib synchronous agar wasPlayingRef tidak
+      //    sempat membaca isUserStopping=false dan meneruskan baton.
+      isUserStoppingRef.current = true;
+      // 2. Bersihkan timer jeda pre-ayat
+      if (playTimerRef.current) {
+        clearTimeout(playTimerRef.current);
+        playTimerRef.current = null;
+      }
+      // 3. Hentikan audio seketika
       pause();
+      // 4. Matikan relay race di parent (async setState — tidak masalah, flag sudah terpasang)
+      if (onInteraction) onInteraction();
     }
   };
 
@@ -412,7 +445,7 @@ export function VerseCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.4 }}
-      onClick={handleContainerClick}
+      onClick={(e) => { e.stopPropagation(); handleContainerClick(); }}
       className={`cursor-pointer relative overflow-hidden mb-6 rounded-3xl group transition-all duration-500 scroll-mt-32 ${isActive ? 'card-premium border-gold/50 shadow-md scale-[1.01]' : 'card-premium'} ${(isCurrentlyPlaying || isAutoPlaying) ? 'bg-red-50/80 dark:bg-red-900/20 border-l-4 border-red-500 shadow-md' : 'border-l-4 border-transparent'}`}
     >
       {/* Gold left edge */}
@@ -433,7 +466,10 @@ export function VerseCard({
           {/* Wrapper flex untuk Slider, Play Button & Toggle Lanjut Ayat (Centered) */}
           <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
             {verse.audio?.url && (
-              <div className="flex items-center gap-3 bg-gray-50 dark:bg-slate-700/50 px-3 py-1.5 rounded-full border border-gray-200 dark:border-slate-600">
+              <div
+                className="flex items-center gap-3 bg-gray-50 dark:bg-slate-700/50 px-3 py-1.5 rounded-full border border-gray-200 dark:border-slate-600"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <span className="text-xs font-medium text-gray-500 dark:text-gray-400 w-8 text-center">
                   {playbackRate}x
                 </span>
@@ -452,7 +488,7 @@ export function VerseCard({
 
             {verse.audio?.url && (
               <button
-                onClick={toggleVerseAudio}
+                onClick={(e) => { e.stopPropagation(); toggleVerseAudio(); }}
                 className="flex items-center justify-center p-2 rounded-full text-gold hover:text-gold-light hover:bg-gold/10 transition-colors"
                 aria-label={isCurrentlyPlaying && activeWordId === null ? "Pause Audio" : "Play Full Verse"}
               >
@@ -471,7 +507,7 @@ export function VerseCard({
                 title="Lanjutkan ke ayat berikutnya secara otomatis setelah audio selesai"
               >
                 <div
-                  onClick={() => setIsContinuous(p => !p)}
+                  onClick={(e) => { e.stopPropagation(); setIsContinuous(p => !p); }}
                   className={`relative w-9 h-5 rounded-full transition-colors duration-300 flex-shrink-0 ${
                     isContinuous
                       ? 'bg-emerald-500 shadow-sm shadow-emerald-400/30'

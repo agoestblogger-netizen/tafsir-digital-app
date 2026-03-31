@@ -8,6 +8,7 @@ import { ListVideo, BookOpenCheck } from "lucide-react";
 import { Verse } from "@/lib/api/quran";
 import { DetailSurahHeader } from "@/components/specific/DetailSurahHeader";
 import { PlayCircle, PauseCircle, Volume2, VolumeX } from "lucide-react";
+import { useAudioState } from "@/lib/audioStore";
 
 interface SurahInteractiveClientProps {
   chapterId: number;
@@ -24,6 +25,7 @@ interface SurahInteractiveClientProps {
 }
 
 export function SurahInteractiveClient({ chapterId, surahName, verses, surah }: SurahInteractiveClientProps) {
+  const { isPlaying, pause } = useAudioState();
   const [masterSpeed, setMasterSpeed] = React.useState(1);
   const [viewMode, setViewMode] = React.useState<"daftar" | "tajwid">("daftar");
   const [isInteractiveAudio, setIsInteractiveAudio] = React.useState(true);
@@ -51,6 +53,14 @@ export function SurahInteractiveClient({ chapterId, surahName, verses, surah }: 
     setIsFullPlayActive(false);
     setPlayingVerseIndex(null);
   }, []);
+
+  // Stop total: matikan relay race + sinyal VerseCard untuk pause via Robot Pencet.
+  // PENTING: JANGAN panggil pause() di sini! pause() harus dipanggil dari Robot Pencet
+  // SETELAH isAutoPlaying berubah menjadi false, agar isUserStoppingRef sudah terpasang
+  // sebelum wasPlayingRef sempat meneruskan baton.
+  const stopAll = React.useCallback(() => {
+    stopFullPlay();
+  }, [stopFullPlay]);
 
   // Dipanggil oleh VerseCard saat toggle "Lanjut Ayat" aktif dan audio manual selesai
   const handleStartContinuous = React.useCallback((startIndex: number) => {
@@ -106,23 +116,25 @@ export function SurahInteractiveClient({ chapterId, surahName, verses, surah }: 
     <>
       <DetailSurahHeader surah={surah} viewMode={viewMode} />
 
-      {/* OVERLAY KLIK DARURAT UNTUK STOP AUTO-PLAY */}
-      {isFullPlayActive && playingVerseIndex !== null && (
+      {/* OVERLAY GLOBAL STOP — Muncul saat relay race ATAU play manual aktif */}
+      {/* Overlay z-40 hanya menerima klik pada area background (luar content z-50) */}
+      {(isFullPlayActive || isPlaying) && (
         <div 
-          className="fixed inset-0 z-50 cursor-pointer" 
-          onClick={stopFullPlay}
+          className="fixed inset-0 z-40 cursor-pointer" 
+          onClick={stopAll}
           title="Klik di mana saja untuk menghentikan Murottal"
         />
       )}
 
-      <div className="flex flex-col gap-2 relative z-10 w-full max-w-3xl mx-auto">
+      {/* z-50 agar semua kontrol halaman tetap dapat diklik di atas overlay z-40 */}
+      <div className="flex flex-col gap-2 relative z-50 w-full max-w-3xl mx-auto">
         
         {/* AREA HEADER KONTROL MUROTTAL & SPEED MASTER */}
       <div className="flex flex-col md:flex-row items-center justify-between mt-6 mb-4 gap-4 p-4 md:p-6 bg-white dark:bg-slate-800 rounded-3xl border border-gray-200 dark:border-slate-700 shadow-sm relative overflow-hidden">
         
         <div className="w-full flex justify-center md:justify-start">
           <button
-            onClick={toggleFullPlay}
+            onClick={(e) => { e.stopPropagation(); toggleFullPlay(); }}
             className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-sm md:text-base font-bold transition-all shadow-sm w-full md:w-auto justify-center ${
               isFullPlayActive
                 ? "bg-red-600 text-white hover:bg-red-700 shadow-red-600/30"

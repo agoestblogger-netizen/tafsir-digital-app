@@ -21,7 +21,7 @@ export function DetailSurahHeader({ surah, viewMode = "daftar" }: DetailSurahHea
   const router = useRouter();
 
   return (
-    <div className={`sticky top-0 z-50 bg-background/95 backdrop-blur-md shadow-sm border-b border-border/50 px-4 -mx-4 transition-all duration-300 ${viewMode === "tajwid" ? "py-2 mb-2" : "py-3 mb-4 flex flex-col gap-3"}`}>
+    <div className={`z-50 bg-background/95 backdrop-blur-md shadow-sm border-b border-border/50 px-4 -mx-4 transition-all duration-300 ${viewMode === "tajwid" ? "py-2 mb-2" : "py-3 mb-4 flex flex-col gap-3"}`}>
       <div className="flex items-center justify-between">
         <Button 
           variant="ghost" 

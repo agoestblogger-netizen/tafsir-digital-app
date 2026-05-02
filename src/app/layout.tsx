@@ -1,24 +1,40 @@
 import type { Metadata } from "next";
-import { Outfit, Amiri } from "next/font/google";
+import { Amiri, Cinzel, Cairo } from "next/font/google";
 import "./globals.css";
 import { ClientBottomNav } from "@/components/layout/ClientBottomNav";
-import { ThemeProvider } from "@/components/layout/ThemeProvider";
-
-const outfit = Outfit({
-  variable: "--font-outfit",
-  subsets: ["latin"],
-});
 
 const amiri = Amiri({
   variable: "--font-amiri",
   weight: ["400", "700"],
   subsets: ["arabic"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
+  weight: ["400", "600", "700"],
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const cairo = Cairo({
+  variable: "--font-cairo",
+  weight: ["300", "400", "600", "700"],
+  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Tafsir Digital",
-  description: "Aplikasi panduan spiritual dan tafsir Al-Qur'an eksklusif dari PT Sinergi Adhi Inovasi Digital.",
-  manifest: '/manifest.json',
+  title: "Quranic Life Hacking",
+  description: "Panduan spiritual premium — Tafsir Al-Qur'an, Sains Islam, dan Hijrah Digital.",
+  manifest: "/manifest.json",
+  themeColor: "#060d12",
+  openGraph: {
+    title: "Quranic Life Hacking",
+    description: "Panduan spiritual premium — Tafsir Al-Qur'an, Sains Islam, dan Hijrah Digital.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -27,16 +43,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" suppressHydrationWarning>
+    <html lang="id" suppressHydrationWarning className="dark">
       <body
-        className={`${outfit.variable} ${amiri.variable} antialiased max-w-7xl mx-auto relative shadow-2xl min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200`}
+        className={`${amiri.variable} ${cinzel.variable} ${cairo.variable} font-cairo antialiased bg-[#060d12] text-[#E8F4EC] max-w-7xl mx-auto relative shadow-2xl min-h-screen transition-colors duration-200`}
       >
-        <ThemeProvider>
-          <div className="min-h-screen pb-20 w-full relative">
-            {children}
-            <ClientBottomNav />
-          </div>
-        </ThemeProvider>
+        <div className="min-h-screen pb-24 w-full relative">
+          {children}
+          <ClientBottomNav />
+        </div>
       </body>
     </html>
   );

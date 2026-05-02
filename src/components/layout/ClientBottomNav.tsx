@@ -2,10 +2,11 @@
 
 import dynamic from 'next/dynamic';
 
-const BottomNav = dynamic(() => import('@/components/layout/BottomNav').then(mod => mod.BottomNav), {
-  ssr: false,
-});
+const FloatingNav = dynamic(
+  () => import('@/components/layout/FloatingNav').then(mod => mod.FloatingNav),
+  { ssr: false }
+);
 
 export function ClientBottomNav() {
-  return <BottomNav />;
+  return <FloatingNav />;
 }

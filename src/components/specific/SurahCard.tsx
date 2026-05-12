@@ -3,9 +3,6 @@
 import * as React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { BookOpen } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/Card"; // Keep CardContent, remove CardHeader/Title as they are not used in the final structure
-import { Badge } from "@/components/ui/Badge";
 
 export interface SurahProps {
   id: number;
@@ -15,49 +12,115 @@ export interface SurahProps {
   revelation: string;
   verses: number;
   pitch: string;
+  hasSains?: boolean;
 }
 
 export function SurahCard({ surah }: { surah: SurahProps }) {
   return (
     <Link href={`/surah/${surah.id}`}>
-      <motion.div whileTap={{ scale: 0.96 }} whileHover={{ y: -2 }}>
-        <Card className="hover:border-primary/50 transition-colors card-premium dark:bg-slate-800 dark:border-slate-700 relative overflow-hidden group">
-          {/* Subtle gold decoration on left edge */}
-          <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-300 to-amber-500 opacity-60"></div>
-          <CardContent className="p-4 md:p-5">
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-secondary dark:bg-slate-700 text-primary dark:text-gray-300 font-semibold">
-                  {surah.id}
-                </div>
-                <div>
-                  <h3 className="font-semibold text-base md:text-lg text-foreground dark:text-gray-100 group-hover:text-primary transition-colors">
-                    {surah.name}
-                  </h3>
-                  <p className="text-xs text-muted-foreground dark:text-gray-400">
-                    {surah.translation}
-                  </p>
-                </div>
+      <motion.div
+        whileTap={{ scale: 0.97 }}
+        whileHover={{ y: -2 }}
+        className="relative overflow-hidden rounded-2xl border transition-all duration-200 cursor-pointer group"
+        style={{
+          background: "rgba(10,21,32,0.9)",
+          border: surah.hasSains
+            ? "1px solid rgba(56,189,248,0.15)"
+            : "1px solid rgba(201,163,90,0.08)",
+          boxShadow: "0 2px 12px rgba(0,0,0,0.3)",
+        }}
+        onMouseEnter={(e) => {
+          (e.currentTarget as HTMLElement).style.border = surah.hasSains
+            ? "1px solid rgba(56,189,248,0.35)"
+            : "1px solid rgba(201,163,90,0.22)";
+          (e.currentTarget as HTMLElement).style.boxShadow = surah.hasSains
+            ? "0 4px 20px rgba(56,189,248,0.1)"
+            : "0 4px 20px rgba(13,79,60,0.2)";
+        }}
+        onMouseLeave={(e) => {
+          (e.currentTarget as HTMLElement).style.border = surah.hasSains
+            ? "1px solid rgba(56,189,248,0.15)"
+            : "1px solid rgba(201,163,90,0.08)";
+          (e.currentTarget as HTMLElement).style.boxShadow = "0 2px 12px rgba(0,0,0,0.3)";
+        }}
+      >
+        {/* Gold left accent */}
+        <div
+          className="absolute left-0 top-0 bottom-0 w-[3px]"
+          style={{ background: "linear-gradient(180deg, var(--teal-400), var(--teal-600))" }}
+        />
+
+        <div className="p-4 pl-5">
+          {/* Top row */}
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex items-center gap-3">
+              {/* Surah number */}
+              <div
+                className="flex items-center justify-center w-9 h-9 rounded-full text-sm font-bold font-cairo flex-shrink-0"
+                style={{
+                  background: "linear-gradient(135deg, var(--teal-600), var(--teal-500))",
+                  color: "var(--gold-light)",
+                  boxShadow: "0 2px 8px rgba(13,79,60,0.4)",
+                }}
+              >
+                {surah.id}
               </div>
-              <div className="text-right">
-                <p className="font-arabic text-lg md:text-xl text-foreground dark:text-gray-200 font-medium">{surah.arab}</p>
+              <div>
+                <h3 className="font-bold text-base font-cairo leading-tight" style={{ color: "var(--text1)" }}>
+                  {surah.name}
+                </h3>
+                <p className="text-xs font-cairo mt-0.5" style={{ color: "var(--text2)" }}>
+                  {surah.translation}
+                </p>
               </div>
             </div>
-            
-            <p className="text-xs md:text-sm text-muted-foreground dark:text-gray-400 line-clamp-2 md:mb-4 mb-3 leading-relaxed">
-              {surah.pitch}
+
+            {/* Arabic name */}
+            <p
+              className="font-amiri text-xl leading-none mt-1"
+              style={{ color: "var(--gold-light)" }}
+              dir="rtl"
+            >
+              {surah.arab}
             </p>
-            
-            <div className="flex gap-2">
-              <Badge variant="secondary" className="bg-muted text-muted-foreground gap-1">
-                <BookOpen className="w-3 h-3" /> {surah.verses} Ayat
-              </Badge>
-              <Badge variant="outline" className="border-border text-muted-foreground">
-                {surah.revelation}
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+
+          {/* Tags row */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold font-cairo border"
+              style={{
+                background: "rgba(13,79,60,0.15)",
+                border: "1px solid rgba(13,143,101,0.25)",
+                color: "var(--teal-200)",
+              }}
+            >
+              📖 {surah.verses} Ayat
+            </span>
+            <span
+              className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold font-cairo border"
+              style={{
+                background: "rgba(201,163,90,0.06)",
+                border: "1px solid rgba(201,163,90,0.15)",
+                color: "rgba(201,163,90,0.7)",
+              }}
+            >
+              {surah.revelation}
+            </span>
+            {surah.hasSains && (
+              <span
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold font-cairo border"
+                style={{
+                  background: "rgba(56,189,248,0.08)",
+                  border: "1px solid rgba(56,189,248,0.25)",
+                  color: "#38BDF8",
+                }}
+              >
+                🔬 Sains
+              </span>
+            )}
+          </div>
+        </div>
       </motion.div>
     </Link>
   );

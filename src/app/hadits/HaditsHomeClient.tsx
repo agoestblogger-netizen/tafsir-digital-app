@@ -1,0 +1,191 @@
+"use client";
+
+import * as React from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { PERAWI_LIST } from "@/lib/api/hadits";
+import { Hadits } from "@/lib/api/hadits";
+
+const LEVEL_COLOR: Record<string, string> = {
+  "Paling Shahih": "rgba(201,163,90,0.9)",
+  "Hasan Shahih":  "#4DC99A",
+  "Shahih":        "#38BDF8",
+  "Hasan":         "#a78bfa",
+};
+
+export default function HaditsHomeClient({
+  haditsHariIni,
+}: {
+  haditsHariIni: Hadits | null;
+}) {
+  return (
+    <main className="flex flex-col min-h-screen pb-28 font-cairo">
+      {/* ── Topbar ─────────────────────────────────────────── */}
+      <div
+        className="sticky top-0 z-30 flex items-center justify-between px-4 py-3"
+        style={{
+          background: "rgba(6,13,18,0.95)",
+          backdropFilter: "blur(16px)",
+          borderBottom: "1px solid rgba(201,163,90,0.08)",
+        }}
+      >
+        <h1 className="font-cinzel text-lg font-bold" style={{ color: "var(--gold-light)" }}>
+          📜 Hadits Center
+        </h1>
+        <Link
+          href="/hadits/cari"
+          className="flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-xl transition-all"
+          style={{ background: "rgba(13,79,60,0.2)", border: "1px solid rgba(13,143,101,0.25)", color: "var(--teal-200)" }}
+        >
+          🔍 Cari Hadits
+        </Link>
+      </div>
+
+      {/* ── Hero — Hadits Hari Ini ──────────────────────────── */}
+      <section
+        className="relative overflow-hidden px-4 pt-6 pb-8"
+        style={{ background: "linear-gradient(145deg, var(--teal-900), var(--dark2))" }}
+      >
+        <div className="arabesque-bg opacity-30" />
+        <div className="relative z-10 max-w-2xl mx-auto">
+          <p className="text-xs font-bold tracking-widest mb-4 text-center" style={{ color: "rgba(201,163,90,0.7)" }}>
+            ✦ HADITS HARI INI ✦
+          </p>
+          {haditsHariIni ? (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="rounded-2xl p-5"
+              style={{ background: "rgba(10,21,32,0.8)", border: "1px solid rgba(201,163,90,0.15)" }}
+            >
+              {/* Arab text */}
+              <p
+                className="font-amiri text-3xl text-right leading-loose mb-3"
+                dir="rtl"
+                style={{ color: "var(--gold-light)", fontFamily: "'Amiri', serif" }}
+              >
+                {haditsHariIni.arab}
+              </p>
+              {/* Divider */}
+              <div className="h-px my-3" style={{ background: "linear-gradient(to right, transparent, rgba(201,163,90,0.3), transparent)" }} />
+              {/* Terjemahan */}
+              <p className="text-sm leading-relaxed mb-4" style={{ color: "var(--text2)" }}>
+                {haditsHariIni.id}
+              </p>
+              {/* Footer */}
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold" style={{ color: "var(--gold)" }}>
+                  HR. Bukhari No. {haditsHariIni.number}
+                </span>
+                <span
+                  className="text-[10px] font-bold px-2 py-1 rounded-full"
+                  style={{ background: "rgba(201,163,90,0.1)", border: "1px solid rgba(201,163,90,0.3)", color: "var(--gold-light)" }}
+                >
+                  ✓ Shahih
+                </span>
+              </div>
+              <Link
+                href={`/hadits/bukhari/${haditsHariIni.number}`}
+                className="mt-3 flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-bold transition-all"
+                style={{ background: "rgba(13,79,60,0.25)", border: "1px solid rgba(13,143,101,0.3)", color: "var(--teal-200)" }}
+              >
+                Baca Selengkapnya →
+              </Link>
+            </motion.div>
+          ) : (
+            <div className="rounded-2xl p-5 text-center" style={{ background: "rgba(10,21,32,0.7)", border: "1px solid rgba(201,163,90,0.1)" }}>
+              <p style={{ color: "var(--text3)" }}>Memuat hadits hari ini...</p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ── Stats ──────────────────────────────────────────── */}
+      <div className="flex justify-center gap-4 px-4 py-4">
+        {[
+          { n: "9",    label: "Perawi" },
+          { n: "30K+", label: "Hadits" },
+          { n: "100%", label: "Terpercaya" },
+        ].map(s => (
+          <div
+            key={s.label}
+            className="flex flex-col items-center px-4 py-2 rounded-xl flex-1"
+            style={{ background: "rgba(10,21,32,0.7)", border: "1px solid rgba(201,163,90,0.1)" }}
+          >
+            <span className="font-cinzel text-lg font-bold" style={{ color: "var(--gold-light)" }}>{s.n}</span>
+            <span className="text-xs" style={{ color: "var(--text3)" }}>{s.label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Grid 9 Perawi ──────────────────────────────────── */}
+      <section className="px-4 max-w-3xl mx-auto w-full">
+        <p className="font-cinzel text-sm font-bold mb-4" style={{ color: "var(--gold)" }}>
+          ✦ Pilih Kitab Hadits
+        </p>
+        <div className="grid grid-cols-3 gap-3">
+          {PERAWI_LIST.map((p, i) => (
+            <motion.div
+              key={p.id}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+            >
+              <Link
+                href={`/hadits/${p.id}`}
+                className="flex flex-col gap-1.5 p-3 rounded-2xl h-full transition-all"
+                style={{
+                  background: "rgba(10,21,32,0.85)",
+                  border: p.level === "Paling Shahih"
+                    ? "1px solid rgba(201,163,90,0.35)"
+                    : "1px solid rgba(13,143,101,0.15)",
+                  boxShadow: "0 2px 12px rgba(0,0,0,0.3)",
+                }}
+              >
+                {/* Arabic name */}
+                <p className="font-amiri text-3xl text-right leading-normal text-yellow-400 font-bold mb-3" style={{ fontFamily: 'Amiri, serif', direction: 'rtl' }}>
+                  {p.arabName}
+                </p>
+                {/* Latin name */}
+                <p className="font-cinzel text-base md:text-lg font-bold leading-tight" style={{ color: "var(--text1)" }}>
+                  {p.name}
+                </p>
+                {/* Total */}
+                <p className="text-base md:text-lg" style={{ color: "var(--text3)" }}>
+                  {p.available.toLocaleString('id-ID')} hadits
+                </p>
+                {/* Level badge */}
+                <span
+                  className="self-start text-sm font-bold px-4 py-1.5 rounded-full mt-auto"
+                  style={{
+                    background: "rgba(0,0,0,0.3)",
+                    border: `1px solid ${LEVEL_COLOR[p.level] ?? '#4a6a5a'}`,
+                    color: LEVEL_COLOR[p.level] ?? '#4a6a5a',
+                  }}
+                >
+                  {p.level}
+                </span>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Cari Hadits CTA ────────────────────────────────── */}
+      <div className="px-4 mt-6 max-w-3xl mx-auto w-full">
+        <Link
+          href="/hadits/cari"
+          className="flex items-center justify-center gap-3 py-4 rounded-2xl font-bold text-sm transition-all"
+          style={{
+            background: "linear-gradient(135deg, var(--teal-600), var(--teal-500))",
+            boxShadow: "0 4px 20px rgba(13,79,60,0.4)",
+            color: "#E8F4EC",
+          }}
+        >
+          🔍 Cari Hadits dari 9 Perawi
+        </Link>
+      </div>
+    </main>
+  );
+}

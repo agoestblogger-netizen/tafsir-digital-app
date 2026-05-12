@@ -9,6 +9,8 @@ import {
 import Link from "next/link";
 import { Verse, VerseWord } from "@/lib/api/quran";
 import { useAudioState } from "@/lib/audioStore";
+import { getSainsForAyat } from "@/data/sains_ayat";
+import { HadistPenguatSection } from "@/components/quran/HadistPenguatSection";
 
 // ─── Tafsir Data Interface (v2 — nullable perspectives) ────────
 type LensKey = 'sains' | 'psikologi' | 'sosial';
@@ -703,7 +705,7 @@ export function VerseCard({
                       {penemuList.map((tokoh) => (
                         <Link 
                           key={tokoh.id}
-                          href={`/ensiklopedia/penemu/${tokoh.id}`} 
+                          href={`/tafsir-sains?tab=tokoh&id=${tokoh.id}`} 
                           className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/40 dark:to-slate-800 border border-emerald-200 dark:border-emerald-800/50 hover:shadow-md transition-all group"
                         >
                           <div className="flex items-center gap-3">
@@ -758,56 +760,109 @@ export function VerseCard({
                   )}
 
                   {/* Section 3: Perspektif Modern — CONDITIONAL */}
-                  {hasAnyPerspective && effectiveLens && (
-                    <div className="rounded-2xl bg-blue-50/60 dark:bg-slate-800 border border-blue-100/80 dark:border-slate-700 p-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Lightbulb className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                        <h4 className="text-xs font-bold text-blue-700 dark:text-blue-300 tracking-wider uppercase">Perspektif Modern</h4>
-                      </div>
+                  {hasAnyPerspective && effectiveLens && (() => {
+                    const [surahId, verseNum] = verse.verse_key.split(':').map(Number);
+                    const sainsData = effectiveLens === 'sains' ? getSainsForAyat(surahId, verseNum) : null;
+                    return (
+                      <div className="rounded-2xl bg-blue-50/60 dark:bg-slate-800 border border-blue-100/80 dark:border-slate-700 p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Lightbulb className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                          <h4 className="text-xs font-bold text-blue-700 dark:text-blue-300 tracking-wider uppercase">Perspektif Modern</h4>
+                        </div>
 
-                      <div className="flex gap-2 mb-3">
-                        {availableLenses.map(lens => (
-                          <button
-                            key={lens.key}
-                            onClick={() => setActiveLens(lens.key)}
-                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 ${effectiveLens === lens.key
-                              ? `${lens.activeColor} shadow-sm dark:bg-indigo-600`
-                              : `bg-white/70 dark:bg-slate-700 ${lens.color} dark:text-gray-300 hover:bg-white dark:hover:bg-slate-600 border border-current/10 dark:border-slate-600`
-                              }`}
+                        <div className="flex gap-2 mb-3">
+                          {availableLenses.map(lens => (
+                            <button
+                              key={lens.key}
+                              onClick={() => setActiveLens(lens.key)}
+                              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 ${effectiveLens === lens.key
+                                ? `${lens.activeColor} shadow-sm dark:bg-indigo-600`
+                                : `bg-white/70 dark:bg-slate-700 ${lens.color} dark:text-gray-300 hover:bg-white dark:hover:bg-slate-600 border border-current/10 dark:border-slate-600`
+                                }`}
+                            >
+                              <span>{lens.emoji}</span>
+                              {lens.label}
+                            </button>
+                          ))}
+                        </div>
+
+                        <AnimatePresence mode="wait">
+                          <motion.p
+                            key={effectiveLens}
+                            initial={{ opacity: 0, y: 6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -6 }}
+                            transition={{ duration: 0.2 }}
+                            className="text-sm text-foreground/80 dark:text-gray-200 leading-relaxed"
                           >
-                            <span>{lens.emoji}</span>
-                            {lens.label}
-                          </button>
-                        ))}
-                      </div>
+                            {tafsirData[`perspektif_${effectiveLens}` as keyof VerseTafsirData] as string}
+                          </motion.p>
+                        </AnimatePresence>
 
-                      <AnimatePresence mode="wait">
-                        <motion.p
-                          key={effectiveLens}
-                          initial={{ opacity: 0, y: 6 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -6 }}
-                          transition={{ duration: 0.2 }}
-                          className="text-sm text-foreground/80 dark:text-gray-200 leading-relaxed"
-                        >
-                          {tafsirData[`perspektif_${effectiveLens}` as keyof VerseTafsirData] as string}
-                        </motion.p>
-                      </AnimatePresence>
-                    </div>
-                  )}
-
-                  {/* Section 4: Hadist Penguat */}
-                  {tafsirData.hadith && String(tafsirData.hadith).trim() !== "" && String(tafsirData.hadith).trim().toLowerCase() !== "null" && (
-                    <div className="rounded-2xl bg-emerald-50/60 dark:bg-slate-800 border border-emerald-100/80 dark:border-slate-700 p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <ScrollText className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                        <h4 className="text-xs font-bold text-emerald-700 dark:text-emerald-300 tracking-wider uppercase">Hadist Penguat</h4>
+                        {/* Konten Sains tambahan jika lens === 'sains' */}
+                        {effectiveLens === 'sains' && sainsData && (
+                          <div className="mt-4 pt-4 border-t border-blue-100 dark:border-slate-700">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-[var(--sci-bg)] text-[var(--sci-blue)] border border-[var(--sci-border)]">
+                                🔬 {sainsData.kategori}
+                              </span>
+                              <span className="text-xs font-bold text-[var(--text1)]">{sainsData.topik_sains}</span>
+                            </div>
+                            <div className="space-y-2">
+                              {sainsData.penjelasan.split('\n\n').map((para: string, idx: number) => (
+                                <p key={idx} className="text-xs text-foreground/70 dark:text-gray-300 leading-relaxed">
+                                  {para}
+                                </p>
+                              ))}
+                            </div>
+                            {sainsData.videos && sainsData.videos.length > 0 && (
+                              <div className="mt-3 flex flex-col gap-2">
+                                <p className="text-[10px] font-bold text-[var(--text3)] uppercase tracking-wider">
+                                  📹 Video Penjelasan
+                                </p>
+                                {sainsData.videos.map((video: { url: string; judul: string; channel: string; bahasa: string }, idx: number) => (
+                                  <a
+                                    key={idx}
+                                    href={video.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-2 bg-white/70 dark:bg-slate-700 rounded-xl p-2 border border-blue-100 dark:border-slate-600 hover:border-blue-300 transition-all group"
+                                  >
+                                    <div className="w-10 h-7 rounded bg-red-600 flex items-center justify-center text-white text-sm flex-shrink-0">
+                                      ▶
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-xs font-bold text-foreground/80 line-clamp-1">{video.judul}</p>
+                                      <p className="text-[10px] text-foreground/50">{video.channel}</p>
+                                    </div>
+                                    <span className="text-[10px] font-bold text-[var(--sci-blue)] flex-shrink-0">Cari →</span>
+                                  </a>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
-                      <p className="text-sm text-foreground/80 dark:text-gray-200 leading-relaxed italic">
-                        &ldquo;{tafsirData.hadith}&rdquo;
-                      </p>
-                    </div>
-                  )}
+                    );
+                  })()}
+
+                  {/* Section 4: Hadist Penguat — dari API Hadits (cache di Supabase) */}
+                  {(() => {
+                    const [surahId, ayatNum] = verse.verse_key.split(':').map(Number);
+                    const ayatTeks = verse.words
+                      ?.filter((w: { char_type_name: string }) => w.char_type_name !== 'end')
+                      ?.map((w: { text_uthmani?: string; text?: string }) => w.text_uthmani ?? w.text ?? '')
+                      ?.join(' ') ?? '';
+                    return (
+                      <HadistPenguatSection
+                        surahId={surahId}
+                        ayatNumber={ayatNum}
+                        ayatTeks={ayatTeks}
+                        tafsirTeks={tafsirData.tafsir_kemenag ?? ''}
+                      />
+                    );
+                  })()}
+
                 </motion.div>
               );
             })()}

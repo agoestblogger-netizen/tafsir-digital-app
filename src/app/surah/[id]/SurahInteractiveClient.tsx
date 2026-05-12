@@ -32,21 +32,30 @@ export function SurahInteractiveClient({ chapterId, surahName, verses, surah }: 
   // Relay Race State
   const [playingVerseIndex, setPlayingVerseIndex] = React.useState<number | null>(null);
   const [isFullPlayActive, setIsFullPlayActive] = React.useState(false);
-  
+
   const handleMasterSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMasterSpeed(parseFloat(e.target.value));
   };
   
-  // Bulletproof Ayah Jump (Scroll DOM Timing Fix)
+  // Scroll to ayat from URL hash (e.g. /surah/21#ayat-30)
   React.useEffect(() => {
-    if (verses && verses.length > 0 && window.location.hash) {
-      setTimeout(() => {
-        const element = document.querySelector(window.location.hash);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }, 500); // Wait 500ms for stable DOM
-    }
+    if (!verses || verses.length === 0 || !window.location.hash) return;
+    const timer = setTimeout(() => {
+      const el = document.querySelector(window.location.hash) as HTMLElement | null;
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Temporary highlight ring
+        el.style.outline = '2px solid #38BDF8';
+        el.style.outlineOffset = '4px';
+        el.style.borderRadius = '16px';
+        el.style.transition = 'outline 0.3s';
+        setTimeout(() => {
+          el.style.outline = '';
+          el.style.outlineOffset = '';
+        }, 2000);
+      }
+    }, 800);
+    return () => clearTimeout(timer);
   }, [verses]);
 
   const stopFullPlay = React.useCallback(() => {
@@ -130,16 +139,17 @@ export function SurahInteractiveClient({ chapterId, surahName, verses, surah }: 
       <div className="flex flex-col gap-2 relative z-50 w-full max-w-3xl mx-auto">
         
         {/* AREA HEADER KONTROL MUROTTAL & SPEED MASTER */}
-      <div className="flex flex-col md:flex-row items-center justify-between mt-6 mb-4 gap-4 p-4 md:p-6 bg-white dark:bg-slate-800 rounded-3xl border border-gray-200 dark:border-slate-700 shadow-sm relative overflow-hidden">
+      <div className="flex flex-col md:flex-row items-center justify-between mt-6 mb-4 gap-4 p-4 md:p-6 rounded-3xl relative overflow-hidden" style={{ background: 'rgba(10,21,32,0.9)', border: '1px solid rgba(201,163,90,0.1)', boxShadow: '0 4px 24px rgba(0,0,0,0.3)' }}>
         
         <div className="w-full flex justify-center md:justify-start">
           <button
             onClick={(e) => { e.stopPropagation(); toggleFullPlay(); }}
-            className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-sm md:text-base font-bold transition-all shadow-sm w-full md:w-auto justify-center ${
+            className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-sm md:text-base font-bold font-cairo transition-all shadow-sm w-full md:w-auto justify-center ${
               isFullPlayActive
-                ? "bg-red-600 text-white hover:bg-red-700 shadow-red-600/30"
-                : "bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-600/30"
+                ? "bg-red-600 text-white hover:bg-red-700"
+                : "text-[#E8F4EC] hover:opacity-90"
             }`}
+            style={isFullPlayActive ? {} : { background: 'linear-gradient(135deg, var(--teal-600), var(--teal-500))', boxShadow: '0 4px 16px rgba(13,79,60,0.4)' }}
           >
             {isFullPlayActive ? (
               <>
@@ -153,9 +163,9 @@ export function SurahInteractiveClient({ chapterId, surahName, verses, surah }: 
           </button>
         </div>
 
-        <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-900/50 p-3 rounded-xl border border-gray-200 dark:border-slate-600/50 w-full md:w-auto shrink-0 justify-center shadow-inner">
-          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Global Speed:</span>
-          <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400 w-8 text-center">{masterSpeed}x</span>
+        <div className="flex items-center gap-3 p-3 rounded-xl w-full md:w-auto shrink-0 justify-center" style={{ background: 'rgba(14,30,42,0.8)', border: '1px solid rgba(201,163,90,0.1)' }}>
+          <span className="text-sm font-semibold font-cairo" style={{ color: 'var(--text2)' }}>Global Speed:</span>
+          <span className="text-sm font-bold font-cairo w-8 text-center" style={{ color: 'var(--teal-200)' }}>{masterSpeed}x</span>
           <input 
             type="range" 
             min="0.25" 
@@ -171,26 +181,24 @@ export function SurahInteractiveClient({ chapterId, surahName, verses, surah }: 
 
       <TajweedLegend />
       
-      {/* TABS TOGGLE - DESAIN LEBIH PREMIUM */}
+      {/* TABS TOGGLE */}
       <div className="flex justify-center mb-8 relative z-10">
-        <div className="bg-white/50 dark:bg-slate-800/50 backdrop-blur-md p-1.5 rounded-2xl shadow-sm border border-emerald-100 dark:border-emerald-800/30 inline-flex">
+        <div className="p-1.5 rounded-2xl inline-flex" style={{ background: 'rgba(10,21,32,0.9)', border: '1px solid rgba(201,163,90,0.1)' }}>
           <button
             onClick={() => setViewMode("daftar")}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium transition-all duration-300 text-sm md:text-base ${
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-cairo font-medium transition-all duration-300 text-sm md:text-base ${
               viewMode === "daftar"
-                ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-md shadow-emerald-500/20"
-                : "text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700/50"
+                ? "text-[#E8F4EC]"
+                : "hover:opacity-80"
             }`}
+            style={viewMode === "daftar" ? { background: 'linear-gradient(135deg, var(--teal-600), var(--teal-500))', boxShadow: '0 2px 12px rgba(13,79,60,0.4)', color: '#E8F4EC' } : { color: 'var(--text2)' }}
           >
             <ListVideo className="w-4 h-4" /> Full
           </button>
           <button
             onClick={() => setViewMode("tajwid")}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium transition-all duration-300 text-sm md:text-base ${
-              viewMode === "tajwid"
-                ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-md shadow-emerald-500/20"
-                : "text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700/50"
-            }`}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-cairo font-medium transition-all duration-300 text-sm md:text-base`}
+            style={viewMode === "tajwid" ? { background: 'linear-gradient(135deg, var(--teal-600), var(--teal-500))', boxShadow: '0 2px 12px rgba(13,79,60,0.4)', color: '#E8F4EC' } : { color: 'var(--text2)' }}
           >
             <BookOpenCheck className="w-4 h-4" /> Ayat per Kata
           </button>
@@ -200,35 +208,39 @@ export function SurahInteractiveClient({ chapterId, surahName, verses, surah }: 
       <div className="mt-2">
         {viewMode === "daftar" ? (
           <>
-            <div className="flex flex-col sm:flex-row items-center justify-end p-4 mb-6 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50 rounded-2xl gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-end p-4 mb-6 rounded-2xl gap-4" style={{ background: 'rgba(10,21,32,0.7)', border: '1px solid rgba(13,143,101,0.2)' }}>
               <button
                 onClick={() => setIsInteractiveAudio(!isInteractiveAudio)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all border ${
-                  isInteractiveAudio 
-                    ? "bg-white border-emerald-200 text-emerald-700 dark:bg-slate-800 dark:border-emerald-800 dark:text-emerald-400 shadow-sm"
-                    : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50 dark:bg-slate-700 dark:border-slate-600 dark:text-gray-300"
-                }`}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-cairo font-medium transition-all border"
+                style={isInteractiveAudio
+                  ? { background: 'rgba(13,79,60,0.3)', border: '1px solid rgba(13,143,101,0.4)', color: 'var(--teal-200)' }
+                  : { background: 'rgba(14,30,42,0.6)', border: '1px solid rgba(201,163,90,0.1)', color: 'var(--text3)' }
+                }
               >
                 {isInteractiveAudio ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
                 Suara Interaktif {isInteractiveAudio ? "ON" : "OFF"}
               </button>
             </div>
 
-            {verses.map((verse, index) => (
-              <VerseCard 
-                key={verse.id} 
-                verse={verse} 
-                index={index} 
-                surahName={surahName} 
-                masterSpeed={masterSpeed}
-                isPlayingVerse={playingVerseIndex === index}
-                isInteractiveAudio={isInteractiveAudio}
-                onInteraction={handleInteraction}
-                isAutoPlaying={playingVerseIndex === index}
-                onAutoPlayEnd={() => handleVerseEnd(index)}
-                onStartContinuous={handleStartContinuous}
-              />
-            ))}
+            {verses.map((verse, index) => {
+              const verseNum = parseInt(verse.verse_key.split(':')[1], 10);
+              return (
+                <div key={verse.id} id={`ayat-${verseNum}`} className="relative scroll-mt-4">
+                  <VerseCard
+                    verse={verse}
+                    index={index}
+                    surahName={surahName}
+                    masterSpeed={masterSpeed}
+                    isPlayingVerse={playingVerseIndex === index}
+                    isInteractiveAudio={isInteractiveAudio}
+                    onInteraction={handleInteraction}
+                    isAutoPlaying={playingVerseIndex === index}
+                    onAutoPlayEnd={() => handleVerseEnd(index)}
+                    onStartContinuous={handleStartContinuous}
+                  />
+                </div>
+              );
+            })}
           </>
         ) : (
           <BelajarTajwidView verses={verses} surahName={surahName} />

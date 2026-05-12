@@ -1,11 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { Compass, Search, BookOpen } from "lucide-react";
+import { Search, BookOpen } from "lucide-react";
 import { SurahCard } from "@/components/specific/SurahCard";
 import { InputField } from "@/components/ui/InputField";
 import { Chapter } from "@/lib/api/quran";
 import { getLocalizedSurahName, getLocalizedSurahTranslation } from "@/lib/surahLocalization";
+import { hasSains } from "@/data/sains_ayat";
 
 interface SurahListClientProps {
   initialChapters: Chapter[];
@@ -26,36 +27,45 @@ export function SurahListClient({ initialChapters }: SurahListClientProps) {
   });
 
   return (
-    <main className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200 pb-24 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
-      <header className="flex flex-col gap-2 pt-6">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-secondary dark:bg-emerald-900/30 text-primary dark:text-emerald-400 mb-2 shadow-sm border border-transparent dark:border-emerald-800/50">
-          <Compass className="w-6 h-6" />
+    <main className="flex flex-col min-h-screen pb-28 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
+      {/* Header */}
+      <header className="flex flex-col gap-2 pt-6 pb-4">
+        <div
+          className="inline-flex items-center justify-center w-12 h-12 rounded-2xl mb-2"
+          style={{
+            background: "linear-gradient(135deg, var(--teal-600), var(--teal-500))",
+            boxShadow: "0 4px 16px rgba(13,79,60,0.4)",
+          }}
+        >
+          <BookOpen className="w-6 h-6" style={{ color: "var(--gold-light)" }} />
         </div>
-        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
-          Peta Surah
+        <h1 className="font-cinzel text-2xl md:text-3xl font-bold tracking-tight" style={{ color: "var(--text1)" }}>
+          Al-Qur&apos;an
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
-          Eksplorasi peta kebijakan Al-Qur&apos;an. 114 Surah, 114 panduan hidup.
+        <p className="font-cairo text-sm" style={{ color: "var(--text2)" }}>
+          114 Surah — panduan hidup abadi. Badge 🔬 menandai surah dengan kaitan sains modern.
         </p>
       </header>
 
-      <div className="relative mt-2">
+      {/* Search */}
+      <div className="relative mb-6">
         <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-          <Search className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+          <Search className="w-5 h-5" style={{ color: "var(--text3)" }} />
         </div>
-        <InputField 
-          placeholder="Cari surah, tema, atau nomor..." 
-          className="pl-12 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+        <InputField
+          placeholder="Cari surah, tema, atau nomor..."
+          className="pl-12"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5 mt-6 relative z-10 w-full">
+      {/* Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
         {filteredChapters.length > 0 ? (
           filteredChapters.map((chapter) => (
-            <SurahCard 
-              key={chapter.id} 
+            <SurahCard
+              key={chapter.id}
               surah={{
                 id: chapter.id,
                 name: getLocalizedSurahName(chapter.id, chapter.name_simple),
@@ -63,18 +73,24 @@ export function SurahListClient({ initialChapters }: SurahListClientProps) {
                 translation: getLocalizedSurahTranslation(chapter.id, chapter.translated_name.name),
                 revelation: chapter.revelation_place === "makkah" ? "Makkiyah" : "Madaniyah",
                 verses: chapter.verses_count,
-                pitch: `Surah ke-${chapter.id} dalam Al-Qur'an. Diturunkan di ${chapter.revelation_place === "makkah" ? "Makkah" : "Madinah"}.`
-              }} 
+                pitch: `Surah ke-${chapter.id} dalam Al-Qur'an.`,
+                hasSains: hasSains(chapter.id),
+              }}
             />
           ))
         ) : (
-          <div className="flex flex-col items-center justify-center text-center py-16 px-4 animate-in fade-in duration-500">
-            <div className="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center mb-4">
-              <BookOpen className="w-8 h-8 text-gold/60" />
+          <div className="col-span-full flex flex-col items-center justify-center text-center py-16 px-4">
+            <div
+              className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
+              style={{ background: "rgba(201,163,90,0.08)", border: "1px solid rgba(201,163,90,0.15)" }}
+            >
+              <BookOpen className="w-8 h-8" style={{ color: "rgba(201,163,90,0.5)" }} />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Pencarian tidak ditemukan</h3>
-            <p className="text-gray-500 dark:text-gray-400 text-sm max-w-[250px] mx-auto leading-relaxed">
-              Coba gunakan kata kunci lain, seperti nomor surah atau nama latinnya.
+            <h3 className="text-lg font-bold font-cinzel mb-2" style={{ color: "var(--text1)" }}>
+              Tidak ditemukan
+            </h3>
+            <p className="font-cairo text-sm max-w-[250px] leading-relaxed" style={{ color: "var(--text2)" }}>
+              Coba gunakan kata kunci lain, seperti nomor atau nama latin surah.
             </p>
           </div>
         )}

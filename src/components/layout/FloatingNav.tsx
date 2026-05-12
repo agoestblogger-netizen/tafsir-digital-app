@@ -9,8 +9,7 @@ import { cn } from "@/lib/utils";
 const NAV_ITEMS = [
   { id: "beranda",  icon: "🏠", label: "Beranda",  href: "/" },
   { id: "quran",   icon: "📖", label: "Al Quran", href: "/surah" },
-  { id: "doa",     icon: "🤲", label: "Doa",      href: "/doa" },
-  { id: "kultum",  icon: "🎤", label: "Kultum",   href: "/kultum" },
+  { id: "hadits",  icon: "📜", label: "Hadist",   href: "/hadits" },
   { id: "sains",   icon: "🔬", label: "Sains",    href: "/tafsir-sains" },
 ];
 

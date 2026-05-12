@@ -132,7 +132,7 @@ function buildSystemPrompt(surahNumber: number, verseNumber: number, kemenagTafs
     `  "perspektif_sains": "Fakta ilmiah SPESIFIK (nama, tahun, detail teknis) inline Kemenag — atau null",`,
     `  "perspektif_psikologi": "Analisis jiwa berbasis ulama Islam (nama+kitab) inline Kemenag — atau null",`,
     `  "perspektif_sosial": "Analisis sosial berbasis ulama Islam (nama+kitab) inline Kemenag — atau null",`,
-    `  "hadith": "1 hadist shahih yang menguatkan tema Kemenag. PENTING UNTUK HADIST: Dilarang keras menggunakan kalimat pengantar atau basa-basi (seperti \\"Hadist yang mendukung tema ini adalah...\\" atau \\"Berikut adalah hadistnya:\\"). Langsung berikan kutipan isi terjemahan hadistnya saja, diakhiri dengan perawinya di dalam kurung. Contoh format mutlak: \\"Isi terjemahan hadist.\\" (HR. Bukhari dan Muslim).",`,
+    `  "hadith": "1 hadist shahih yang menguatkan tema Kemenag. FORMAT WAJIB: Tulis isi terjemahan hadist langsung (tanpa kalimat pengantar), lalu di baris berikutnya sertakan referensi PERSIS mengikuti salah satu pola ini:\n  Pola A (satu perawi): (HR. Bukhari No. 6018)\n  Pola B (dua perawi): (HR. Bukhari No. 6018, Muslim No. 47)\n  Pola C (perawi lain): (HR. Tirmidzi No. 2516)\n  WAJIB: Selalu sertakan nomor hadits yang akurat setelah nama perawi. DILARANG KERAS: format tanpa nomor seperti (HR. Bukhari dan Muslim) atau (Muttafaq alaih) tanpa nomor. Contoh output yang benar: \"Sesungguhnya setiap amalan tergantung pada niatnya.\" (HR. Bukhari No. 1, Muslim No. 1907).",`,
     `  "todo_list": ["Aksi konkret 1 bersumber dari tema Kemenag", "Aksi konkret 2"]`,
     `}`,
     ``,

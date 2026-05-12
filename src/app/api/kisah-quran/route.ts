@@ -114,7 +114,7 @@ ATURAN KETAT:
       const completion = await Promise.race([
         aiCall,
         timeoutPromise,
-      ]) as import('openai').ChatCompletion
+      ]) as OpenAI.Chat.ChatCompletion
 
       const responseText = completion.choices[0].message.content || "{}"
 

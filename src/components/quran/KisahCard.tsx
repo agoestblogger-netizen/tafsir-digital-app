@@ -114,7 +114,7 @@ export function KisahCard({ slug, nama, nama_arab, kategori, periode, lokasi, na
               </div>
 
               {/* Ayat Utama */}
-              {Array.isArray(data.ayat_utama) && (data.ayat_utama as unknown[]).length > 0 && (
+              {Array.isArray(data.ayat_utama) && (data.ayat_utama as unknown[]).length > 0 ? (
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "var(--text3)" }}>
                     📖 Ayat Al-Qur'an
@@ -152,10 +152,10 @@ export function KisahCard({ slug, nama, nama_arab, kategori, periode, lokasi, na
                     ))}
                   </div>
                 </div>
-              )}
+              ) : null}
 
               {/* Latar Belakang */}
-              {data.latar_belakang && (
+              {data.latar_belakang ? (
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "var(--text3)" }}>
                     📜 Latar Belakang
@@ -164,10 +164,10 @@ export function KisahCard({ slug, nama, nama_arab, kategori, periode, lokasi, na
                     {data.latar_belakang as string}
                   </p>
                 </div>
-              )}
+              ) : null}
 
               {/* Kondisi Kaum */}
-              {data.kondisi_kaum && (
+              {data.kondisi_kaum ? (
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "var(--text3)" }}>
                     🏛️ Kondisi Kaum
@@ -176,7 +176,7 @@ export function KisahCard({ slug, nama, nama_arab, kategori, periode, lokasi, na
                     {data.kondisi_kaum as string}
                   </p>
                 </div>
-              )}
+              ) : null}
 
               {/* Kisah Lengkap */}
               <div>
@@ -191,7 +191,7 @@ export function KisahCard({ slug, nama, nama_arab, kategori, periode, lokasi, na
               </div>
 
               {/* Azab / Kejadian */}
-              {data.azab_atau_kejadian && (
+              {data.azab_atau_kejadian ? (
                 <div className="border rounded-xl p-4" style={{ background: "rgba(239,68,68,0.1)", borderColor: "rgba(239,68,68,0.2)" }}>
                   <h4 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "#f87171" }}>
                     ⚡ Azab / Kejadian Luar Biasa
@@ -200,7 +200,7 @@ export function KisahCard({ slug, nama, nama_arab, kategori, periode, lokasi, na
                     {data.azab_atau_kejadian as string}
                   </p>
                 </div>
-              )}
+              ) : null}
 
               {/* Pelajaran */}
               <div className="border rounded-xl p-4" style={{ background: "rgba(20,184,166,0.05)", borderColor: "rgba(20,184,166,0.2)" }}>
@@ -215,11 +215,11 @@ export function KisahCard({ slug, nama, nama_arab, kategori, periode, lokasi, na
               </div>
 
               {/* Referensi */}
-              {data.referensi && (
+              {data.referensi ? (
                 <div className="text-xs italic border-t pt-3" style={{ color: "var(--text3)", borderColor: "rgba(201,163,90,0.15)" }}>
                   📚 Referensi: {data.referensi as string}
                 </div>
-              )}
+              ) : null}
             </div>
           ) : (
             <div className="p-6 text-center">

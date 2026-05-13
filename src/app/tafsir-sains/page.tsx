@@ -533,7 +533,7 @@ function TafsirSainsContent() {
         /* Tab Sejarah Kaum Lampau */
         <div className="px-4 pt-6 max-w-4xl mx-auto w-full">
           <p className="font-cairo text-sm mb-6 text-center" style={{ color: "var(--text2)" }}>
-            Kisah dan jejak peninggalan kaum terdahulu yang disebutkan dalam Al-Qur'an sebagai ibrah (pelajaran).
+            Kisah dan jejak peninggalan kaum terdahulu yang disebutkan dalam Al-Qur&apos;an sebagai ibrah (pelajaran).
           </p>
 
           {/* Filter sub-kategori */}

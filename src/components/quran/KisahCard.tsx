@@ -100,7 +100,7 @@ export function KisahCard({ slug, nama, nama_arab, kategori, periode, lokasi, na
               <div className="h-4 rounded w-4/5" style={{ background: "rgba(255,255,255,0.05)" }} />
               <div className="h-4 rounded w-3/5" style={{ background: "rgba(255,255,255,0.05)" }} />
               <p className="text-xs text-center mt-4 italic" style={{ color: "var(--text3)" }}>
-                Sedang mengambil kisah dari Al-Qur'an...
+                Sedang mengambil kisah dari Al-Qur&apos;an...
               </p>
             </div>
           ) : data ? (
@@ -117,7 +117,7 @@ export function KisahCard({ slug, nama, nama_arab, kategori, periode, lokasi, na
               {Array.isArray(data.ayat_utama) && (data.ayat_utama as unknown[]).length > 0 ? (
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "var(--text3)" }}>
-                    📖 Ayat Al-Qur'an
+                    📖 Ayat Al-Qur&apos;an
                   </h4>
                   <div className="space-y-3">
                     {(data.ayat_utama as Array<{surah_nama: string; nomor_ayat: string; teks_arab: string; terjemah: string; link: string; surah_id: number}>).map((ayat, i) => (
@@ -145,7 +145,7 @@ export function KisahCard({ slug, nama, nama_arab, kategori, periode, lokasi, na
                             className="text-xs font-bold hover:underline"
                             style={{ color: "var(--teal-300)" }}
                           >
-                            Buka di Al-Qur'an →
+                            Buka di Al-Qur&apos;an →
                           </Link>
                         </div>
                       </div>

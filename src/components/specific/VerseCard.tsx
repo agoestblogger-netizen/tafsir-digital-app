@@ -11,6 +11,7 @@ import { Verse, VerseWord } from "@/lib/api/quran";
 import { useAudioState } from "@/lib/audioStore";
 import { getSainsForAyat } from "@/data/sains_ayat";
 import { HadistPenguatSection } from "@/components/quran/HadistPenguatSection";
+import { DOA_QURANI } from "@/data/doa_qurani";
 
 // ─── Tafsir Data Interface (v2 — nullable perspectives) ────────
 type LensKey = 'sains' | 'psikologi' | 'sosial';
@@ -142,7 +143,24 @@ export function VerseCard({
   const transliterationText = verse.translations?.find(t => t.resource_id === 57)?.text || "";
 
   // Extract verse number from verse_key (e.g. "2:286" -> "286")
+  const surahNumber = verse.verse_key.split(":")[0];
   const verseNumber = verse.verse_key.split(":")[1];
+
+  // Cari doa terkait
+  const doaRelated = React.useMemo(() => {
+    // Exact match for verseNumber (e.g., "83") or containing in range (e.g., "25-28" includes "25")
+    return DOA_QURANI.find(d => {
+      if (String(d.surah_id) !== surahNumber) return false;
+      
+      const isRange = d.nomor_ayat.includes('-');
+      if (isRange) {
+        const [start, end] = d.nomor_ayat.split('-').map(Number);
+        const vNum = Number(verseNumber);
+        return vNum >= start && vNum <= end;
+      }
+      return d.nomor_ayat === verseNumber;
+    });
+  }, [surahNumber, verseNumber]);
 
   const isActive = activeVerseKey === verse.verse_key;
   const isCurrentlyPlaying = isActive && isPlaying;
@@ -619,6 +637,15 @@ export function VerseCard({
             dangerouslySetInnerHTML={{ __html: translationText }}
           />
         </div>
+
+        {/* Link Doa Qurani */}
+        {doaRelated && (
+          <div className="mt-4 flex justify-center">
+            <Link href={`/doa/${doaRelated.id}`} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 hover:-translate-y-0.5 transition-all border border-amber-500/20 text-sm font-semibold shadow-sm">
+              <span className="text-lg leading-none">🤲</span> Lihat Doa dari Ayat Ini →
+            </Link>
+          </div>
+        )}
 
         {/* ✨ Kupas Makna Modern — AI Tafsir CTA */}
         <div className="mt-6 pt-6 border-t border-border/30 flex justify-center">

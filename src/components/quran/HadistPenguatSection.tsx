@@ -55,6 +55,7 @@ export function HadistPenguatSection({
       })
 
     return () => { clearTimeout(timeout); controller.abort() }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Loading skeleton
@@ -103,7 +104,7 @@ export function HadistPenguatSection({
 
         {/* Terjemahan */}
         <p className="text-sm italic text-[var(--text2)] leading-relaxed mb-2">
-          "{data.teks_hadist}"
+          &quot;{data.teks_hadist}&quot;
         </p>
 
         {/* Referensi */}

@@ -45,6 +45,16 @@ const TEMA_PRESET: Record<string, string[]> = {
 }
 
 
+type KultumHistory = {
+  id: string
+  judul: string
+  format: string
+  tema: string
+  is_favorit: boolean
+  sudah_digunakan: boolean
+  created_at: string
+}
+
 export default function KultumGeneratorPage() {
   const router = useRouter()
   
@@ -69,7 +79,7 @@ export default function KultumGeneratorPage() {
   const [error, setError] = useState('')
 
   const [userId, setUserId] = useState<string | null>(null)
-  const [recentHistory, setRecentHistory] = useState<Record<string, unknown>[]>([])
+  const [recentHistory, setRecentHistory] = useState<KultumHistory[]>([])
 
   const formatLabel = (() => {
     if (format.toLowerCase() === 'khotbah' && subFormat === 'khotbah_jumat') return "Khotbah Jum'at"
@@ -102,7 +112,7 @@ export default function KultumGeneratorPage() {
           .order('created_at', { ascending: false })
           .limit(3)
           .then(({ data }) => {
-            if (data) setRecentHistory(data)
+            if (data) setRecentHistory((data ?? []) as KultumHistory[])
           })
       }
     })

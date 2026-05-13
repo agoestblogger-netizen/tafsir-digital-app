@@ -87,7 +87,7 @@ export function HadistPenguatSection({
         {/* Header */}
         <div className="flex items-center gap-2 mb-3">
           <span>📜</span>
-          <span className="text-xs font-bold text-[var(--teal-300)] tracking-widest uppercase">
+          <span className="font-cinzel text-xs font-bold text-[var(--teal-300)] tracking-widest uppercase">
             Hadist Penguat
           </span>
         </div>
@@ -95,21 +95,21 @@ export function HadistPenguatSection({
         {/* Teks Arab */}
         {data.arab && (
           <div
-            className="text-xl text-right leading-loose text-[var(--gold-light)] mb-3 pb-3 border-b border-[var(--gold-border)]"
-            style={{ fontFamily: 'Amiri, serif', direction: 'rtl' }}
+            dir="rtl"
+            className="font-amiri text-2xl md:text-3xl text-right leading-loose text-[var(--gold-light)] mb-3 pb-3 border-b border-[var(--gold-border)]"
           >
             {data.arab}
           </div>
         )}
 
         {/* Terjemahan */}
-        <p className="text-sm italic text-[var(--text2)] leading-relaxed mb-2">
+        <p className="font-cairo text-sm italic text-[var(--text2)] leading-relaxed mb-2">
           &quot;{data.teks_hadist}&quot;
         </p>
 
         {/* Referensi */}
         {data.referensi_lengkap && (
-          <p className="text-xs font-bold text-[var(--gold)]">
+          <p className="font-cairo text-xs font-bold text-[var(--text3)]">
             {data.referensi_lengkap}
           </p>
         )}
@@ -117,7 +117,7 @@ export function HadistPenguatSection({
 
       {/* Link ke Hadits Center */}
       <div className="px-4 py-3 bg-[var(--dark3)] border-t border-[var(--gold-border)]">
-        <p className="text-[10px] text-[var(--text3)] uppercase tracking-wider mb-2 font-bold">
+        <p className="font-cinzel text-[10px] text-[var(--text3)] uppercase tracking-wider mb-2 font-bold">
           Baca hadits ini lengkap:
         </p>
         <div className="flex flex-wrap gap-2">
@@ -127,7 +127,7 @@ export function HadistPenguatSection({
               href={ref.nomor
                 ? `/hadits/${ref.perawi}/${ref.nomor}`
                 : `/hadits/${ref.perawi}`}
-              className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-[var(--dark2)] border border-[var(--gold-border)] text-[var(--gold)] hover:border-[var(--gold)] transition-all"
+              className="font-cairo inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-[var(--dark2)] border border-[var(--gold-border)] text-[var(--gold)] hover:border-[var(--gold)] transition-all"
             >
               📚 {ref.perawiName}
               {ref.nomor && (
@@ -142,7 +142,7 @@ export function HadistPenguatSection({
             href={`/hadits/cari?q=${encodeURIComponent(
               (data.teks_hadist || '').split(' ').slice(0,4).join(' ')
             )}`}
-            className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-[rgba(26,170,120,0.08)] border border-[rgba(26,170,120,0.2)] text-[var(--teal-300)] transition-all"
+            className="font-cairo inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-[rgba(26,170,120,0.08)] border border-[rgba(26,170,120,0.2)] text-[var(--teal-300)] transition-all"
           >
             🔍 Cari Terkait →
           </a>

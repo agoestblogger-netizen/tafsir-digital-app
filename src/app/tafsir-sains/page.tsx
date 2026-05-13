@@ -8,16 +8,16 @@ import { KisahCard } from "@/components/quran/KisahCard";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Loader2, Atom } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 interface PenemuMuslim {
   id: string;
   nama_ilmuwan: string;
   julukan: string;
+  tahun_hidup: string;
+  wilayah_peradaban: string;
   bidang_ilmu: string;
   profil_singkat: string;
-  No?: string | number;
-  no?: string | number;
-  ID?: string | number;
 }
 
 type FilterKey = "Semua" | KategoriSains;
@@ -58,13 +58,13 @@ function SainsCard({ item, index }: { item: AyatSains; index: number }) {
       >
         <div className="arabesque-bg opacity-30" />
         <p
-          className="relative z-10 font-amiri text-xl text-right leading-loose line-clamp-2"
+          className="relative z-10 font-amiri text-2xl md:text-3xl text-right leading-loose line-clamp-2"
           style={{ color: "var(--gold-light)" }}
           dir="rtl"
         >
           {item.teks_arab}
         </p>
-        <p className="relative z-10 font-cinzel text-xs mt-1" style={{ color: "rgba(201,163,90,0.6)" }}>
+        <p className="relative z-10 font-cairo text-xs mt-1" style={{ color: "var(--text3)" }}>
           QS. {item.surah_nama_latin} : {item.nomor_ayat}
         </p>
       </div>
@@ -72,7 +72,7 @@ function SainsCard({ item, index }: { item: AyatSains; index: number }) {
       {/* Body */}
       <div className="flex flex-col flex-1 p-4 gap-3">
         <span
-          className="self-start inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold font-cairo border"
+          className="self-start inline-flex items-center px-2.5 py-1 rounded-full font-cairo text-xs uppercase tracking-widest font-bold border"
           style={{
             background: "rgba(56,189,248,0.08)",
             border: "1px solid rgba(56,189,248,0.2)",
@@ -82,11 +82,11 @@ function SainsCard({ item, index }: { item: AyatSains; index: number }) {
           🔬 {item.kategori}
         </span>
 
-        <p className="font-cairo font-bold text-sm" style={{ color: "var(--text1)" }}>
+        <p className="font-cinzel text-base font-bold text-[var(--text1)]">
           {item.topik_sains}
         </p>
 
-        <p className="font-cairo text-xs leading-relaxed flex-1" style={{ color: "var(--text2)" }}>
+        <p className="font-cairo text-sm leading-relaxed flex-1 text-[var(--text2)]">
           {shortDesc}
         </p>
 
@@ -128,12 +128,12 @@ function SainsCard({ item, index }: { item: AyatSains; index: number }) {
 
             {/* Full explanation */}
             <div className="p-4" style={{ background: "rgba(6,13,18,0.6)" }}>
-              <p className="text-xs font-bold font-cairo tracking-widest mb-3" style={{ color: "#38BDF8" }}>
+              <p className="font-cinzel text-xs uppercase tracking-widest font-bold mb-3" style={{ color: "#38BDF8" }}>
                 📝 PENJELASAN ILMIAH
               </p>
               <div className="flex flex-col gap-2">
                 {item.penjelasan.split('\n\n').map((para, i) => (
-                  <p key={i} className="text-xs font-cairo leading-relaxed" style={{ color: "var(--text2)" }}>
+                  <p key={i} className="font-cairo text-sm leading-relaxed text-[var(--text2)]">
                     {para}
                   </p>
                 ))}
@@ -145,7 +145,7 @@ function SainsCard({ item, index }: { item: AyatSains; index: number }) {
               <>
                 <div className="h-px" style={{ background: "linear-gradient(to right, transparent, rgba(56,189,248,0.15), transparent)" }} />
                 <div className="p-4" style={{ background: "rgba(10,21,32,0.8)" }}>
-                  <p className="text-xs font-bold font-cairo tracking-widest mb-3" style={{ color: "#38BDF8" }}>
+                  <p className="font-cinzel text-xs uppercase tracking-widest font-bold mb-3" style={{ color: "#38BDF8" }}>
                     📹 VIDEO PENJELASAN
                   </p>
                   <div className="flex flex-col gap-2">
@@ -173,14 +173,14 @@ function SainsCard({ item, index }: { item: AyatSains; index: number }) {
                           ▶
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-bold font-cairo line-clamp-2 leading-tight" style={{ color: "var(--text1)" }}>
+                          <p className="font-cinzel text-sm font-bold line-clamp-2 leading-tight text-[var(--text1)]">
                             {video.judul}
                           </p>
-                          <p className="text-[10px] font-cairo mt-0.5" style={{ color: "var(--text3)" }}>
+                          <p className="font-cairo text-[10px] mt-0.5 text-[var(--text3)]">
                             📺 {video.channel}
                           </p>
                           <span
-                            className="inline-block mt-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full font-cairo"
+                            className="font-cairo text-xs uppercase tracking-widest font-bold px-1.5 py-0.5 rounded-full mt-1 inline-block"
                             style={{
                               background: "rgba(56,189,248,0.08)",
                               border: "1px solid rgba(56,189,248,0.2)",
@@ -190,7 +190,7 @@ function SainsCard({ item, index }: { item: AyatSains; index: number }) {
                             {video.bahasa}
                           </span>
                         </div>
-                        <span className="text-xs font-bold font-cairo flex-shrink-0" style={{ color: "#38BDF8" }}>
+                        <span className="font-cairo text-xs font-bold flex-shrink-0" style={{ color: "#38BDF8" }}>
                           Tonton →
                         </span>
                       </a>
@@ -207,7 +207,7 @@ function SainsCard({ item, index }: { item: AyatSains; index: number }) {
             >
               <a
                 href={`/surah/${item.surah_id}#ayat-${item.nomor_ayat.split('-')[0]}`}
-                className="inline-flex items-center gap-1.5 text-xs font-bold font-cairo transition-colors"
+                className="font-cairo inline-flex items-center gap-1.5 text-xs font-bold transition-colors"
                 style={{ color: "var(--teal-300)" }}
                 onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--teal-200)")}
                 onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--teal-300)")}
@@ -246,9 +246,13 @@ function TafsirSainsContent() {
   React.useEffect(() => {
     if (activeTab === "tokoh" && !tokohData) {
       setTokohLoading(true);
+      console.log('[Tokoh Sains] Fetching from API...')
       fetch("/api/penemu-muslim")
         .then(res => res.json())
-        .then(json => setTokohData(json.data))
+        .then(json => {
+          console.log('[Tokoh Sains] Data:', json.data?.length)
+          setTokohData(json.data)
+        })
         .catch(err => console.error("Gagal memuat tokoh:", err))
         .finally(() => setTokohLoading(false));
     }
@@ -304,7 +308,7 @@ function TafsirSainsContent() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="font-cinzel text-2xl md:text-3xl font-bold mb-2"
+            className="font-cinzel text-3xl md:text-4xl font-extrabold tracking-tight mb-2"
             style={{ color: "var(--text1)" }}
           >
             Al-Qur&apos;an &amp; Ilmu Pengetahuan
@@ -398,7 +402,7 @@ function TafsirSainsContent() {
               borderBottom: "1px solid rgba(201,163,90,0.08)",
             }}
           >
-            <div className="flex gap-2 overflow-x-auto pb-1 max-w-5xl mx-auto" style={{ scrollbarWidth: "none" }}>
+            <div className="flex gap-2 overflow-x-auto pb-2 max-w-5xl mx-auto pr-6 hide-scrollbar" style={{ scrollbarWidth: "none" }}>
               {FILTER_ITEMS.map(f => (
                 <button
                   key={f.key}
@@ -418,6 +422,7 @@ function TafsirSainsContent() {
                   {f.icon} {f.label}
                 </button>
               ))}
+              <div className="flex-shrink-0 w-6" />
             </div>
           </div>
 
@@ -471,7 +476,7 @@ function TafsirSainsContent() {
                 const cleanName = match ? match[1].trim() : tokoh.nama_ilmuwan;
                 const status = match ? match[2].trim() : null;
                 const isMuslim = status?.toLowerCase() === "muslim";
-                const safeId = tokoh.id || tokoh.No || tokoh.no || tokoh.ID;
+                const safeId = tokoh.id;
                 
                 return (
                   <motion.div
@@ -480,47 +485,41 @@ function TafsirSainsContent() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.05 }}
                   >
-                    <Link
-                      href={`/ensiklopedia/penemu/${safeId}`}
-                      id={`tokoh-${safeId}`}
-                      className="flex flex-col gap-3 p-5 rounded-2xl h-full transition-all group relative overflow-hidden"
-                      style={{ 
-                        background: "rgba(10,21,32,0.85)", 
-                        border: "1px solid rgba(201,163,90,0.15)",
-                        boxShadow: "0 4px 16px rgba(0,0,0,0.2)"
-                      }}
-                    >
-                      <div className="absolute top-0 right-0 w-24 h-24 rounded-full blur-2xl -mr-10 -mt-10 transition-all duration-500" style={{ background: "rgba(56,189,248,0.05)" }} />
-                      
-                      <div className="flex items-start gap-3 relative z-10">
-                        <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "linear-gradient(135deg, var(--teal-600), var(--teal-500))" }}>
-                          <Atom className="w-6 h-6 text-white" />
+                    <Link href={`/tafsir-sains/tokoh/${tokoh.id}`} key={tokoh.id}>
+                      <div className="bg-[var(--dark2)] border border-[var(--gold-border)] rounded-2xl p-5 hover:border-[var(--teal-500)] transition-all cursor-pointer h-full">
+                        {/* Header: Avatar + Nama + Badge */}
+                        <div className="flex items-start gap-3 mb-4">
+                          <div className="w-12 h-12 rounded-full bg-[var(--teal-600)] flex items-center justify-center flex-shrink-0">
+                            <span className="text-white text-lg">⚛️</span>
+                          </div>
+                          <div>
+                            <h3 className="font-bold font-cinzel text-[var(--text1)] text-base leading-tight">
+                              {tokoh.nama_ilmuwan.replace(/\s*\(.*?\)\s*/g, '').trim()}
+                            </h3>
+                            {/* Badge Muslim/Non Muslim */}
+                            {tokoh.nama_ilmuwan.includes('Muslim') ? (
+                              <span className="font-cairo text-xs uppercase tracking-widest font-bold px-2 py-0.5 rounded-full bg-[var(--teal-600)]/20 text-[var(--teal-300)] border border-[var(--teal-500)]/30 mt-1 inline-block">
+                                Muslim
+                              </span>
+                            ) : (
+                              <span className="font-cairo text-xs uppercase tracking-widest font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 mt-1 inline-block">
+                                Non Muslim
+                              </span>
+                            )}
+                          </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-cinzel text-lg font-bold leading-tight group-hover:text-teal-400 transition-colors line-clamp-2" style={{ color: "var(--text1)" }}>
-                            {cleanName}
-                          </h3>
-                          {status && (
-                            <span 
-                              className="inline-block mt-1.5 px-2 py-0.5 text-[10px] font-bold rounded-full uppercase tracking-wider font-cairo"
-                              style={isMuslim 
-                                ? { background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.2)", color: "#38BDF8" }
-                                : { background: "rgba(201,163,90,0.1)", border: "1px solid rgba(201,163,90,0.2)", color: "var(--gold)" }
-                              }
-                            >
-                              {status}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      
-                      <div className="relative z-10 mt-auto pt-2 flex flex-col gap-1">
-                        <p className="text-xs font-bold font-cairo" style={{ color: "var(--text3)" }}>
-                          {tokoh.bidang_ilmu}
-                        </p>
-                        <p className="text-sm font-cairo leading-relaxed line-clamp-2" style={{ color: "var(--text2)" }}>
-                          {tokoh.profil_singkat || tokoh.julukan}
-                        </p>
+
+                        {/* Bidang Ilmu */}
+                        {tokoh.bidang_ilmu && (
+                          <p className="font-cairo text-xs font-bold text-[var(--teal-300)] mb-2">{tokoh.bidang_ilmu}</p>
+                        )}
+
+                        {/* Deskripsi singkat — 2 baris */}
+                        {tokoh.profil_singkat && (
+                          <p className="font-cairo text-sm text-[var(--text2)] line-clamp-2 leading-relaxed">
+                            {tokoh.profil_singkat}
+                          </p>
+                        )}
                       </div>
                     </Link>
                   </motion.div>
@@ -537,7 +536,7 @@ function TafsirSainsContent() {
           </p>
 
           {/* Filter sub-kategori */}
-          <div className="flex gap-2 mb-8 overflow-x-auto pb-2 justify-start sm:justify-center" style={{ scrollbarWidth: "none" }}>
+          <div className="flex gap-2 mb-8 overflow-x-auto pb-2 justify-start sm:justify-center pr-6 hide-scrollbar" style={{ scrollbarWidth: "none" }}>
             {[
               { id: 'semua', label: 'Semua', icon: '🌍' },
               { id: 'kaum_diazab', label: 'Kaum Diazab', icon: '⚡' },
@@ -562,6 +561,7 @@ function TafsirSainsContent() {
                 <span>{tab.icon}</span> {tab.label}
               </button>
             ))}
+            <div className="flex-shrink-0 w-6" />
           </div>
 
           {/* Grid kisah */}

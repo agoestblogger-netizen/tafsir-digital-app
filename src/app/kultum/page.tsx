@@ -175,13 +175,13 @@ export default function KultumGeneratorPage() {
       <section className="relative overflow-hidden bg-gradient-to-b from-[var(--dark3)] to-[var(--dark)] pt-20 pb-12 px-4 sm:px-6 lg:px-8 border-b border-[var(--gold-border)]">
         <div className="arabesque-bg opacity-30"></div>
         <div className="relative max-w-4xl mx-auto text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[var(--gold)]/10 border border-[var(--gold-border)] rounded-full text-xs font-bold text-[var(--gold-light)] mb-2">
+          <div className="font-cairo inline-flex items-center gap-2 px-3 py-1 bg-[var(--gold)]/10 border border-[var(--gold-border)] rounded-full text-xs font-bold text-[var(--gold-light)] mb-2">
             <Sparkles className="w-4 h-4" /> Powered by AI
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold font-cinzel text-transparent bg-clip-text bg-gradient-to-r from-[var(--gold-light)] to-[var(--gold)] mb-4">
+          <h1 className="font-cinzel text-3xl md:text-4xl font-extrabold tracking-tight text-[var(--gold-light)] mb-4">
             Kultum & Khotbah Generator
           </h1>
-          <p className="text-[var(--text2)] text-base md:text-lg max-w-2xl mx-auto">
+          <p className="font-cairo text-base text-[var(--text2)] max-w-2xl mx-auto">
             Buat materi kultum yang berkualitas dan terstruktur dengan ayat Al-Qur&apos;an serta hadits shahih secara instan.
           </p>
         </div>
@@ -197,7 +197,7 @@ export default function KultumGeneratorPage() {
                 <div className="flex justify-center mb-6">
                   <div className="w-16 h-16 border-4 border-[var(--dark3)] border-t-[var(--gold)] rounded-full animate-spin"></div>
                 </div>
-                <h3 className="text-center font-bold text-xl text-[var(--gold-light)] font-cinzel mb-6">Menyusun {formatLabel}...</h3>
+                <h3 className="font-cinzel text-xl font-bold text-[var(--gold-light)] text-center mb-6">Menyusun {formatLabel}...</h3>
                 
                 <div className="space-y-4">
                   {loadingSteps.map((step, idx) => {
@@ -208,7 +208,7 @@ export default function KultumGeneratorPage() {
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${isPast ? 'bg-[var(--teal-500)]/20 text-[var(--teal-300)]' : isCurrent ? 'bg-[var(--gold)]/20 text-[var(--gold)] animate-pulse' : 'bg-[var(--dark3)] text-[var(--text3)]'}`}>
                           {isPast ? <CheckCircle className="w-5 h-5" /> : step.icon}
                         </div>
-                        <span className={`text-sm font-medium ${isCurrent ? 'text-[var(--text1)]' : 'text-[var(--text2)]'}`}>
+                        <span className={`font-cairo text-sm font-medium ${isCurrent ? 'text-[var(--text1)]' : 'text-[var(--text2)]'}`}>
                           {step.text}
                         </span>
                       </div>
@@ -228,7 +228,7 @@ export default function KultumGeneratorPage() {
 
             {/* Format Selection */}
             <div>
-              <label className="flex items-center gap-2 text-sm font-bold text-[var(--gold)] uppercase tracking-widest mb-4">
+              <label className="font-cinzel flex items-center gap-2 text-xs font-bold text-[var(--gold)] uppercase tracking-widest mb-4">
                 <Mic className="w-4 h-4" /> Format Penyampaian
               </label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -236,13 +236,13 @@ export default function KultumGeneratorPage() {
                   <button
                     key={f.id}
                     onClick={() => setFormat(f.label)}
-                    className={`p-3 rounded-xl border text-sm font-semibold transition-all ${format === f.label ? 'bg-[var(--gold)]/20 border-[var(--gold)] text-[var(--gold-light)] shadow-[0_0_15px_rgba(201,163,90,0.2)]' : 'bg-[var(--dark2)] border-[var(--gold-border)] text-[var(--text2)] hover:border-[var(--gold)]/50'}`}
+                    className={`font-cairo p-3 rounded-xl border text-sm font-bold transition-all ${format === f.label ? 'bg-[var(--gold)]/20 border-[var(--gold)] text-[var(--gold-light)] shadow-[0_0_15px_rgba(201,163,90,0.2)]' : 'bg-[var(--dark2)] border-[var(--gold-border)] text-[var(--text2)] hover:border-[var(--gold)]/50'}`}
                   >
                     <div className="flex items-center gap-2 justify-center mb-1">
                       <span className="text-xl">{f.icon}</span>
                       <span>{f.label}</span>
                     </div>
-                    <div className="text-[10px] text-[var(--text3)] font-normal">{f.durasi}</div>
+                    <div className="font-cairo text-[10px] text-[var(--text3)] font-normal">{f.durasi}</div>
                   </button>
                 ))}
               </div>
@@ -253,7 +253,7 @@ export default function KultumGeneratorPage() {
                     <button
                       key={sub.id}
                       onClick={() => setSubFormat(sub.id)}
-                      className={`p-3 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${subFormat === sub.id ? 'bg-[var(--teal-500)]/20 border-[var(--teal-500)] text-[var(--teal-200)]' : 'bg-[var(--dark3)] border-[var(--gold-border)] text-[var(--text2)] hover:border-[var(--gold)]/50'}`}
+                      className={`font-cairo p-3 rounded-xl border text-sm font-bold transition-all flex items-center justify-center gap-2 ${subFormat === sub.id ? 'bg-[var(--teal-500)]/20 border-[var(--teal-500)] text-[var(--teal-200)]' : 'bg-[var(--dark3)] border-[var(--gold-border)] text-[var(--text2)] hover:border-[var(--gold)]/50'}`}
                     >
                       <span className="text-lg">{sub.icon}</span>
                       <span>{sub.label}</span>
@@ -265,7 +265,7 @@ export default function KultumGeneratorPage() {
 
 {/* ⏱️ Durasi */}
 <div className="mb-6">
-  <p className="text-sm font-bold text-[var(--text2)] mb-3">⏱️ Durasi Target</p>
+  <p className="font-cinzel text-xs uppercase tracking-widest font-bold text-[var(--text2)] mb-3">⏱️ Durasi Target</p>
   <div className="flex items-center gap-3 flex-wrap">
     <input
       type="number"
@@ -273,16 +273,16 @@ export default function KultumGeneratorPage() {
       max={120}
       value={durasi}
       onChange={e => setDurasi(Number(e.target.value))}
-      className="w-20 text-center rounded-xl border border-[var(--gold-border)] bg-[var(--dark3)] text-[var(--text1)] p-2 text-base font-bold focus:outline-none focus:border-[var(--gold)]"
+      className="font-cairo w-20 text-center rounded-xl border border-[var(--gold-border)] bg-[var(--dark3)] text-[var(--text1)] p-2 text-base font-bold focus:outline-none focus:border-[var(--gold)]"
     />
-    <span className="text-[var(--text2)] text-sm">menit</span>
+    <span className="font-cairo text-[var(--text2)] text-sm">menit</span>
     <div className="flex gap-2 flex-wrap">
       {[5, 10, 15, 30, 45, 60].map(m => (
         <button
           key={m}
           type="button"
           onClick={() => setDurasi(m)}
-          className={`px-3 py-1 rounded-full text-xs font-bold border transition-all ${
+          className={`font-cairo px-3 py-1 rounded-full text-xs font-bold border transition-all ${
             durasi === m
               ? 'bg-[var(--teal-600)] border-[var(--teal-300)] text-white'
               : 'border-[var(--gold-border)] text-[var(--text3)] hover:border-[var(--gold)]'
@@ -297,25 +297,26 @@ export default function KultumGeneratorPage() {
 
             {/* Kategori Tema */}
             <div>
-              <label className="flex items-center gap-2 text-sm font-bold text-[var(--gold)] uppercase tracking-widest mb-4">
+              <label className="font-cinzel flex items-center gap-2 text-xs font-bold text-[var(--gold)] uppercase tracking-widest mb-4">
                 <FileText className="w-4 h-4" /> Kategori Tema
               </label>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex overflow-x-auto pb-2 gap-2 pr-6 hide-scrollbar">
                 {Object.keys(TEMA_PRESET).map(kat => (
                   <button
                     key={kat}
                     onClick={() => { setKategoriTema(kat); setTemaPreset(''); setTemaCustom('') }}
-                    className={`px-4 py-2 rounded-full text-xs font-bold transition-all border ${kategoriTema === kat ? 'bg-[var(--teal-500)]/20 border-[var(--teal-500)] text-[var(--teal-200)]' : 'bg-[var(--dark3)] border-transparent text-[var(--text2)] hover:bg-[var(--dark2)] hover:border-[var(--gold-border)]'}`}
+                    className={`font-cairo px-4 py-2 rounded-full text-xs font-bold transition-all border whitespace-nowrap ${kategoriTema === kat ? 'bg-[var(--teal-500)]/20 border-[var(--teal-500)] text-[var(--teal-200)]' : 'bg-[var(--dark3)] border-transparent text-[var(--text2)] hover:bg-[var(--dark2)] hover:border-[var(--gold-border)]'}`}
                   >
                     {kat}
                   </button>
                 ))}
+                <div className="flex-shrink-0 w-6" />
               </div>
             </div>
 
             {/* Tema Selection */}
             <div className="space-y-4">
-              <label className="flex items-center gap-2 text-sm font-bold text-[var(--gold)] uppercase tracking-widest mb-2">
+              <label className="font-cinzel flex items-center gap-2 text-xs font-bold text-[var(--gold)] uppercase tracking-widest mb-2">
                 <Sparkles className="w-4 h-4" /> Topik Bahasan
               </label>
               
@@ -324,7 +325,7 @@ export default function KultumGeneratorPage() {
                   <button
                     key={tema}
                     onClick={() => { setTemaPreset(tema); setTemaCustom('') }}
-                    className={`p-3 text-left rounded-xl border text-sm transition-all ${temaPreset === tema && !temaCustom ? 'bg-gradient-to-r from-[var(--dark2)] to-[var(--dark3)] border-[var(--gold-light)] text-[var(--gold-light)]' : 'bg-[var(--dark2)] border-[var(--gold-border)] text-[var(--text1)] hover:border-[var(--gold)]/50'}`}
+                    className={`font-cairo p-3 text-left rounded-xl text-sm font-bold border transition-all ${temaPreset === tema && !temaCustom ? 'bg-gradient-to-r from-[var(--dark2)] to-[var(--dark3)] border-[var(--gold-light)] text-[var(--gold-light)]' : 'bg-[var(--dark2)] border-[var(--gold-border)] text-[var(--text1)] hover:border-[var(--gold)]/50'}`}
                   >
                     {tema}
                   </button>
@@ -336,7 +337,7 @@ export default function KultumGeneratorPage() {
                   <div className="w-full border-t border-[var(--gold-border)]"></div>
                 </div>
                 <div className="relative flex justify-center">
-                  <span className="px-3 bg-[var(--dark2)] text-xs font-semibold text-[var(--text3)] uppercase tracking-wider rounded-full">Atau Tulis Tema Sendiri</span>
+                  <span className="font-cinzel px-3 bg-[var(--dark2)] text-xs font-bold text-[var(--text3)] uppercase tracking-widest rounded-full">Atau Tulis Tema Sendiri</span>
                 </div>
               </div>
 
@@ -346,14 +347,14 @@ export default function KultumGeneratorPage() {
                   placeholder="Misal: Pentingnya menjaga lisan di era sosial media..."
                   value={temaCustom}
                   onChange={(e) => { setTemaCustom(e.target.value); setTemaPreset('') }}
-                  className="w-full bg-[var(--dark3)] border border-[var(--gold-border)] rounded-xl px-4 py-3 text-[var(--text1)] placeholder-[var(--text3)] focus:outline-none focus:ring-2 focus:ring-[var(--gold)]/50"
+                  className="font-cairo w-full bg-[var(--dark3)] border border-[var(--gold-border)] rounded-xl px-4 py-3 text-sm text-[var(--text1)] placeholder-[var(--text3)] focus:outline-none focus:ring-2 focus:ring-[var(--gold)]/50"
                 />
               </div>
             </div>
 
             {/* Gaya Bahasa */}
             <div>
-              <label className="flex items-center gap-2 text-sm font-bold text-[var(--gold)] uppercase tracking-widest mb-4">
+              <label className="font-cinzel flex items-center gap-2 text-xs font-bold text-[var(--gold)] uppercase tracking-widest mb-4">
                 <Settings className="w-4 h-4" /> Gaya Bahasa
               </label>
               <div className="flex flex-wrap gap-3">
@@ -361,7 +362,7 @@ export default function KultumGeneratorPage() {
                   <button
                     key={gaya}
                     onClick={() => setGayaBahasa(gaya)}
-                    className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all border ${gayaBahasa === gaya ? 'bg-[var(--gold)]/10 border-[var(--gold)] text-[var(--gold-light)]' : 'bg-[var(--dark2)] border-[var(--gold-border)] text-[var(--text2)] hover:border-[var(--gold)]/50'}`}
+                    className={`font-cairo px-4 py-2 rounded-xl text-sm font-bold transition-all border ${gayaBahasa === gaya ? 'bg-[var(--gold)]/10 border-[var(--gold)] text-[var(--gold-light)]' : 'bg-[var(--dark2)] border-[var(--gold-border)] text-[var(--text2)] hover:border-[var(--gold)]/50'}`}
                   >
                     {gaya}
                   </button>
@@ -374,12 +375,12 @@ export default function KultumGeneratorPage() {
               <button
                 onClick={handleGenerate}
                 disabled={loading}
-                className="w-full py-4 rounded-2xl bg-gradient-to-r from-[var(--gold-light)] to-[var(--gold)] text-[var(--dark)] font-bold text-lg hover:shadow-[0_0_20px_rgba(201,163,90,0.4)] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="font-cairo w-full py-4 rounded-2xl bg-gradient-to-r from-[var(--gold-light)] to-[var(--gold)] text-[var(--dark)] font-bold text-lg hover:shadow-[0_0_20px_rgba(201,163,90,0.4)] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Sparkles className="w-5 h-5" /> Generate {formatLabel} Sekarang
               </button>
               {!userId && (
-                <p className="text-center text-xs text-[var(--text3)] mt-3">
+                <p className="font-cairo text-center text-xs text-[var(--text3)] mt-3">
                   Anda belum login. Kultum tidak akan tersimpan ke riwayat.
                 </p>
               )}
@@ -393,9 +394,9 @@ export default function KultumGeneratorPage() {
             <div className="flex items-center justify-between px-2">
               <div className="flex items-center gap-2 text-[var(--text1)]">
                 <History className="w-5 h-5 text-[var(--teal-300)]" />
-                <h2 className="text-lg font-bold font-cinzel">Riwayat Terakhir</h2>
+                <h2 className="font-cinzel text-xl font-bold text-[var(--text1)]">Riwayat Terakhir</h2>
               </div>
-              <Link href="/kultum/history" className="text-sm font-semibold text-[var(--teal-200)] hover:underline flex items-center gap-1">
+              <Link href="/kultum/history" className="font-cairo text-sm font-semibold text-[var(--teal-200)] hover:underline flex items-center gap-1">
                 Lihat Semua <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -405,15 +406,15 @@ export default function KultumGeneratorPage() {
                 <Link key={hist.id} href={`/kultum/hasil/${hist.id}`} className="block group">
                   <div className="glass-card p-5 rounded-2xl border-[var(--gold-border)] hover:border-[var(--teal-500)] transition-colors h-full flex flex-col">
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="px-2 py-1 bg-[var(--dark3)] border border-[var(--gold-border)] rounded-md text-[10px] font-bold text-[var(--gold)] uppercase">
+                      <span className="font-cairo px-2 py-1 bg-[var(--dark3)] border border-[var(--gold-border)] rounded-md text-xs font-bold text-[var(--gold)] uppercase tracking-widest">
                         {hist.format}
                       </span>
                     </div>
-                    <h3 className="text-sm font-bold text-[var(--text1)] mb-4 group-hover:text-[var(--teal-200)] transition-colors line-clamp-2">
+                    <h3 className="font-cinzel text-base font-bold text-[var(--text1)] mb-4 group-hover:text-[var(--teal-200)] transition-colors line-clamp-2">
                       {hist.judul}
                     </h3>
                     <div className="mt-auto flex items-center justify-between text-xs text-[var(--text3)] pt-3 border-t border-[var(--dark3)]">
-                      <div className="flex items-center gap-1">
+                      <div className="font-cairo flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {new Date(hist.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
                       </div>

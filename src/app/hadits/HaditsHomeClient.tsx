@@ -29,12 +29,12 @@ export default function HaditsHomeClient({
           borderBottom: "1px solid rgba(201,163,90,0.08)",
         }}
       >
-        <h1 className="font-cinzel text-lg font-bold" style={{ color: "var(--gold-light)" }}>
+        <h1 className="font-cinzel text-3xl md:text-4xl font-extrabold tracking-tight text-[var(--gold-light)]">
           📜 Hadits Center
         </h1>
         <Link
           href="/hadits/cari"
-          className="flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-xl transition-all"
+          className="font-cairo flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-xl transition-all"
           style={{ background: "rgba(13,79,60,0.2)", border: "1px solid rgba(13,143,101,0.25)", color: "var(--teal-200)" }}
         >
           🔍 Cari Hadits
@@ -48,7 +48,7 @@ export default function HaditsHomeClient({
       >
         <div className="arabesque-bg opacity-30" />
         <div className="relative z-10 max-w-2xl mx-auto">
-          <p className="text-xs font-bold tracking-widest mb-4 text-center" style={{ color: "rgba(201,163,90,0.7)" }}>
+          <p className="font-cinzel text-xs font-bold tracking-widest mb-4 text-center uppercase" style={{ color: "rgba(201,163,90,0.7)" }}>
             ✦ HADITS HARI INI ✦
           </p>
           {haditsHariIni ? (
@@ -61,25 +61,24 @@ export default function HaditsHomeClient({
             >
               {/* Arab text */}
               <p
-                className="font-amiri text-3xl text-right leading-loose mb-3"
+                className="font-amiri text-2xl md:text-3xl text-right leading-loose mb-3 text-[var(--gold-light)]"
                 dir="rtl"
-                style={{ color: "var(--gold-light)", fontFamily: "'Amiri', serif" }}
               >
                 {haditsHariIni.arab}
               </p>
               {/* Divider */}
               <div className="h-px my-3" style={{ background: "linear-gradient(to right, transparent, rgba(201,163,90,0.3), transparent)" }} />
               {/* Terjemahan */}
-              <p className="text-sm leading-relaxed mb-4" style={{ color: "var(--text2)" }}>
+              <p className="font-cairo text-base leading-relaxed text-[var(--text1)] mb-4">
                 {haditsHariIni.id}
               </p>
               {/* Footer */}
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold" style={{ color: "var(--gold)" }}>
+                <span className="font-cairo text-xs font-bold text-[var(--text3)]">
                   HR. Bukhari No. {haditsHariIni.number}
                 </span>
                 <span
-                  className="text-[10px] font-bold px-2 py-1 rounded-full"
+                  className="font-cairo text-xs font-bold px-2 py-1 rounded-full uppercase tracking-widest"
                   style={{ background: "rgba(201,163,90,0.1)", border: "1px solid rgba(201,163,90,0.3)", color: "var(--gold-light)" }}
                 >
                   ✓ Shahih
@@ -87,7 +86,7 @@ export default function HaditsHomeClient({
               </div>
               <Link
                 href={`/hadits/bukhari/${haditsHariIni.number}`}
-                className="mt-3 flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-bold transition-all"
+                className="font-cairo mt-3 flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-bold transition-all"
                 style={{ background: "rgba(13,79,60,0.25)", border: "1px solid rgba(13,143,101,0.3)", color: "var(--teal-200)" }}
               >
                 Baca Selengkapnya →
@@ -95,7 +94,7 @@ export default function HaditsHomeClient({
             </motion.div>
           ) : (
             <div className="rounded-2xl p-5 text-center" style={{ background: "rgba(10,21,32,0.7)", border: "1px solid rgba(201,163,90,0.1)" }}>
-              <p style={{ color: "var(--text3)" }}>Memuat hadits hari ini...</p>
+              <p className="font-cairo text-sm text-[var(--text3)]">Memuat hadits hari ini...</p>
             </div>
           )}
         </div>
@@ -114,14 +113,14 @@ export default function HaditsHomeClient({
             style={{ background: "rgba(10,21,32,0.7)", border: "1px solid rgba(201,163,90,0.1)" }}
           >
             <span className="font-cinzel text-lg font-bold" style={{ color: "var(--gold-light)" }}>{s.n}</span>
-            <span className="text-xs" style={{ color: "var(--text3)" }}>{s.label}</span>
+            <span className="font-cairo text-xs uppercase tracking-widest text-[var(--text3)]">{s.label}</span>
           </div>
         ))}
       </div>
 
       {/* ── Grid 9 Perawi ──────────────────────────────────── */}
       <section className="px-4 max-w-3xl mx-auto w-full">
-        <p className="font-cinzel text-sm font-bold mb-4" style={{ color: "var(--gold)" }}>
+        <p className="font-cinzel text-xl font-bold text-[var(--text1)] mb-4">
           ✦ Pilih Kitab Hadits
         </p>
         <div className="grid grid-cols-3 gap-3">
@@ -144,20 +143,20 @@ export default function HaditsHomeClient({
                 }}
               >
                 {/* Arabic name */}
-                <p className="font-amiri text-3xl text-right leading-normal text-yellow-400 font-bold mb-3" style={{ fontFamily: 'Amiri, serif', direction: 'rtl' }}>
+                <p dir="rtl" className="font-amiri text-2xl md:text-3xl text-right leading-loose text-[var(--gold-light)] font-bold mb-3">
                   {p.arabName}
                 </p>
                 {/* Latin name */}
-                <p className="font-cinzel text-base md:text-lg font-bold leading-tight" style={{ color: "var(--text1)" }}>
+                <p className="font-cinzel text-base font-bold leading-tight" style={{ color: "var(--text1)" }}>
                   {p.name}
                 </p>
                 {/* Total */}
-                <p className="text-base md:text-lg" style={{ color: "var(--text3)" }}>
+                <p className="font-cairo text-sm text-[var(--text2)]">
                   {p.available.toLocaleString('id-ID')} hadits
                 </p>
                 {/* Level badge */}
                 <span
-                  className="self-start text-sm font-bold px-4 py-1.5 rounded-full mt-auto"
+                  className="font-cairo self-start text-xs uppercase tracking-widest font-bold px-4 py-1.5 rounded-full mt-auto"
                   style={{
                     background: "rgba(0,0,0,0.3)",
                     border: `1px solid ${LEVEL_COLOR[p.level] ?? '#4a6a5a'}`,
@@ -172,11 +171,10 @@ export default function HaditsHomeClient({
         </div>
       </section>
 
-      {/* ── Cari Hadits CTA ────────────────────────────────── */}
       <div className="px-4 mt-6 max-w-3xl mx-auto w-full">
         <Link
           href="/hadits/cari"
-          className="flex items-center justify-center gap-3 py-4 rounded-2xl font-bold text-sm transition-all"
+          className="font-cairo flex items-center justify-center gap-3 py-4 rounded-2xl font-bold text-sm transition-all"
           style={{
             background: "linear-gradient(135deg, var(--teal-600), var(--teal-500))",
             boxShadow: "0 4px 20px rgba(13,79,60,0.4)",

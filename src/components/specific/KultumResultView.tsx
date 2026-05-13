@@ -95,7 +95,7 @@ export function KultumResultView({
     <div className="min-h-screen pb-24 font-cairo">
       {/* Action Bar Float */}
       <div className="sticky top-0 z-50 bg-[var(--dark)]/80 backdrop-blur-xl border-b border-[var(--gold-border)] p-4 shadow-xl">
-        <div className="max-w-4xl mx-auto flex items-center justify-between gap-2 overflow-x-auto hide-scrollbar">
+        <div className="max-w-4xl mx-auto flex items-center justify-between gap-2 overflow-x-auto hide-scrollbar pr-6">
           <div className="flex gap-2 shrink-0">
             <button onClick={() => router.push('/kultum')} className="flex items-center gap-2 px-4 py-2 bg-[var(--dark3)] rounded-xl text-sm font-semibold hover:bg-[var(--dark2)] transition-colors">
               <ArrowLeft className="w-4 h-4" /> Kembali
@@ -123,6 +123,7 @@ export function KultumResultView({
               <RefreshCcw className="w-4 h-4" /> Buat Baru
             </button>
           </div>
+          <div className="flex-shrink-0 w-6" />
         </div>
       </div>
 

@@ -25,21 +25,21 @@ export default function DoaPage() {
       <section className="relative overflow-hidden bg-gradient-to-b from-[var(--dark3)] to-[var(--dark)] pt-20 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="arabesque-bg opacity-30"></div>
         <div className="relative max-w-4xl mx-auto text-center space-y-6">
-          <h1 className="text-4xl md:text-5xl font-bold font-cinzel text-transparent bg-clip-text bg-gradient-to-r from-[var(--gold-light)] to-[var(--gold)] mb-4">
+          <h1 className="font-cinzel text-2xl md:text-3xl font-bold text-[var(--gold-light)] mb-4">
             Doa dari Al-Qur&apos;an
           </h1>
           
           <div className="max-w-2xl mx-auto glass-card p-6 md:p-8 rounded-3xl relative">
-            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-[var(--dark)] border border-[var(--gold)] px-4 py-1 rounded-full text-xs font-bold text-[var(--gold-light)] tracking-widest">
+            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-[var(--dark)] border border-[var(--gold)] px-4 py-1 rounded-full font-cinzel text-xs uppercase tracking-widest font-bold text-[var(--gold-light)]">
               QS. Ghafir : 60
             </div>
-            <p className="text-2xl md:text-3xl font-amiri text-[var(--gold-light)] leading-loose mb-4 mt-2" dir="rtl">
+            <p className="font-amiri text-2xl md:text-3xl leading-loose text-[var(--gold-light)] mb-4 mt-2" dir="rtl">
               وَقَالَ رَبُّكُمُ ادْعُونِي أَسْتَجِبْ لَكُمْ
             </p>
-            <p className="text-[var(--text2)] text-sm md:text-base italic mb-2">
+            <p className="font-cairo text-sm italic text-[var(--teal-200)] text-right mb-2">
               Wa qāla rabbukumud&apos;ūnī astajib lakum
             </p>
-            <p className="text-[var(--text1)] text-sm md:text-base font-medium">
+            <p className="font-cairo text-base leading-relaxed text-[var(--text1)] font-medium">
               &quot;Dan Tuhanmu berfirman: Berdoalah kepada-Ku, niscaya akan Kuperkenankan bagimu.&quot;
             </p>
           </div>
@@ -47,15 +47,15 @@ export default function DoaPage() {
           <div className="flex flex-wrap justify-center gap-4 mt-8">
             <div className="glass-card px-4 py-2 rounded-2xl flex items-center gap-2 border-[var(--gold-border)]">
               <span className="text-[var(--gold-light)] font-bold">{DOA_QURANI.length}</span>
-              <span className="text-xs text-[var(--text2)] uppercase tracking-wider">Total Doa</span>
+              <span className="font-cinzel text-xs uppercase tracking-widest text-[var(--text2)]">Total Doa</span>
             </div>
             <div className="glass-card px-4 py-2 rounded-2xl flex items-center gap-2 border-[var(--gold-border)]">
               <span className="text-[var(--gold-light)] font-bold">{NABI_LIST.length}</span>
-              <span className="text-xs text-[var(--text2)] uppercase tracking-wider">Doa Nabi</span>
+              <span className="font-cinzel text-xs uppercase tracking-widest text-[var(--text2)]">Doa Nabi</span>
             </div>
             <div className="glass-card px-4 py-2 rounded-2xl flex items-center gap-2 border-[var(--gold-border)]">
               <span className="text-[var(--gold-light)] font-bold">{Object.keys(HAJAT_INFO).length}</span>
-              <span className="text-xs text-[var(--text2)] uppercase tracking-wider">Kategori Hajat</span>
+              <span className="font-cinzel text-xs uppercase tracking-widest text-[var(--text2)]">Kategori Hajat</span>
             </div>
           </div>
         </div>
@@ -68,7 +68,7 @@ export default function DoaPage() {
           <section>
             <div className="flex items-center gap-2 mb-6">
               <Sparkles className="w-5 h-5 text-rose-400" />
-              <h2 className="text-xl md:text-2xl font-bold font-cinzel text-[var(--text1)]">Doa Pilihan Hari Ini</h2>
+              <h2 className="font-cinzel text-xl font-bold text-[var(--text1)]">Doa Pilihan Hari Ini</h2>
             </div>
             
             <Link href={`/doa/${doaHariIni.id}`} className="block group">
@@ -79,31 +79,31 @@ export default function DoaPage() {
                 <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
                   <div className="flex-1 space-y-4 w-full">
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
-                      <span className="px-3 py-1 bg-rose-500/20 border border-rose-500/30 rounded-full text-xs font-semibold text-rose-300">
+                      <span className="font-cairo text-xs uppercase tracking-widest px-3 py-1 bg-rose-500/20 border border-rose-500/30 rounded-full font-semibold text-rose-300">
                         Mustajab
                       </span>
                       {doaHariIni.nabi && (
-                        <span className="px-3 py-1 bg-amber-500/20 border border-amber-500/30 rounded-full text-xs font-semibold text-amber-300">
+                        <span className="font-cairo text-xs uppercase tracking-widest px-3 py-1 bg-amber-500/20 border border-amber-500/30 rounded-full font-semibold text-amber-300">
                           {doaHariIni.nabi}
                         </span>
                       )}
                     </div>
                     
-                    <h3 className="text-lg md:text-xl font-bold text-[var(--text1)] mb-2 group-hover:text-[var(--gold-light)] transition-colors">
+                    <h3 className="font-cinzel text-base font-bold text-[var(--text1)] mb-2 group-hover:text-[var(--gold-light)] transition-colors">
                       {doaHariIni.judul}
                     </h3>
                     
-                    <div className="text-2xl md:text-3xl leading-loose text-right text-[var(--gold-light)] font-amiri my-6" dir="rtl">
+                    <div className="font-amiri text-2xl md:text-3xl leading-loose text-[var(--gold-light)] my-6" dir="rtl">
                       {doaHariIni.arab}
                     </div>
                     
-                    <p className="text-[var(--text1)] text-sm md:text-base leading-relaxed line-clamp-2">
+                    <p className="font-cairo text-base leading-relaxed text-[var(--text1)] line-clamp-2">
                       {doaHariIni.terjemah}
                     </p>
                     
                     <div className="pt-4 mt-4 border-t border-[var(--gold-border)] flex items-center justify-between">
-                      <span className="text-xs font-bold text-[var(--gold)]">{doaHariIni.referensi}</span>
-                      <span className="flex items-center gap-1 text-sm font-semibold text-[var(--teal-200)] group-hover:translate-x-1 transition-transform">
+                      <span className="font-cairo text-xs text-[var(--text3)] font-bold">{doaHariIni.referensi}</span>
+                      <span className="font-cairo text-sm font-semibold flex items-center gap-1 text-[var(--teal-200)] group-hover:translate-x-1 transition-transform">
                         Baca Selengkapnya <ArrowRight className="w-4 h-4" />
                       </span>
                     </div>
@@ -118,7 +118,7 @@ export default function DoaPage() {
         <section>
           <div className="flex items-center gap-2 mb-6">
             <BookOpen className="w-5 h-5 text-[var(--teal-200)]" />
-            <h2 className="text-xl md:text-2xl font-bold font-cinzel text-[var(--text1)]">Kategori Doa</h2>
+            <h2 className="font-cinzel text-xl font-bold text-[var(--text1)]">Kategori Doa</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -128,10 +128,10 @@ export default function DoaPage() {
                   <div className="w-12 h-12 rounded-2xl bg-[var(--dark2)] border border-[var(--gold-border)] flex items-center justify-center text-[var(--gold-light)] mb-4 shadow-inner group-hover:scale-110 transition-transform">
                     {cat.icon}
                   </div>
-                  <h3 className="text-lg font-bold text-[var(--text1)] mb-2">{cat.title}</h3>
-                  <p className="text-sm text-[var(--text2)] mb-4">{cat.desc}</p>
+                  <h3 className="font-cinzel text-base font-bold text-[var(--text1)] mb-2">{cat.title}</h3>
+                  <p className="font-cairo text-sm text-[var(--text2)] mb-4">{cat.desc}</p>
                   <div className="flex items-center justify-between mt-auto">
-                    <span className="text-xs font-bold bg-[var(--dark)] px-3 py-1 rounded-full text-[var(--gold)] border border-[var(--gold-border)]">
+                    <span className="font-cairo text-xs uppercase tracking-widest font-bold bg-[var(--dark)] px-3 py-1 rounded-full text-[var(--gold)] border border-[var(--gold-border)]">
                       {cat.count} Doa
                     </span>
                     <ArrowRight className="w-4 h-4 text-[var(--teal-200)] group-hover:translate-x-1 transition-transform" />
@@ -147,28 +147,28 @@ export default function DoaPage() {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
               <Search className="w-5 h-5 text-[var(--gold)]" />
-              <h2 className="text-xl md:text-2xl font-bold font-cinzel text-[var(--text1)]">Cari Berdasarkan Hajat</h2>
+              <h2 className="font-cinzel text-xl font-bold text-[var(--text1)]">Cari Berdasarkan Hajat</h2>
             </div>
-            <Link href="/doa/hajat" className="text-sm font-semibold text-[var(--teal-200)] hover:text-[var(--teal-100)] flex items-center gap-1">
+            <Link href="/doa/hajat" className="font-cairo text-sm font-semibold text-[var(--teal-200)] hover:text-[var(--teal-100)] flex items-center gap-1">
               Lihat Semua <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
           
-          <div className="flex overflow-x-auto pb-4 gap-3 snap-x hide-scrollbar">
+          <div className="flex overflow-x-auto pb-4 gap-3 snap-x hide-scrollbar pr-6">
             {Object.entries(HAJAT_INFO).map(([key, info]) => (
               <Link 
                 key={key} 
                 href={`/doa/hajat/${key}`}
                 className="flex-shrink-0 snap-start"
               >
-                <div className="glass-card px-5 py-3 rounded-2xl border-[var(--gold-border)] hover:border-[var(--gold-light)] hover:bg-[var(--dark3)] transition-all flex items-center gap-3">
+                <div className="glass-card px-5 py-3 rounded-2xl border-[var(--gold-border)] hover:border-[var(--gold-light)] hover:bg-[var(--dark3)] transition-all flex items-center gap-3 min-w-max">
                   <span className="text-xl">{info.icon}</span>
-                  <span className="font-semibold text-sm whitespace-nowrap text-[var(--text1)]">{info.label}</span>
+                  <span className="font-cairo text-sm font-semibold whitespace-nowrap text-[var(--text1)]">{info.label}</span>
                 </div>
               </Link>
             ))}
             {/* Spacer agar chip terakhir tidak terpotong */}
-            <div className="flex-shrink-0 w-4" />
+            <div className="flex-shrink-0 w-6" />
           </div>
         </section>
 

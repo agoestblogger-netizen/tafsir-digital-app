@@ -52,17 +52,17 @@ export default function DoaByHajatPage() {
       <section className="relative overflow-hidden bg-gradient-to-b from-[var(--dark3)] to-[var(--dark)] pt-16 pb-8 px-4 sm:px-6 lg:px-8 border-b border-[var(--gold-border)]">
         <div className="arabesque-bg opacity-30"></div>
         <div className="relative max-w-4xl mx-auto">
-          <button onClick={() => router.push('/doa/hajat')} className="flex items-center gap-2 text-[var(--text2)] hover:text-[var(--gold-light)] mb-6 transition-colors w-fit">
+          <button onClick={() => router.push('/doa/hajat')} className="font-cairo flex items-center gap-2 text-[var(--text2)] hover:text-[var(--gold-light)] mb-6 transition-colors w-fit">
             <ArrowLeft className="w-4 h-4" /> Kembali ke Kategori Hajat
           </button>
           
           <div className="flex items-center gap-3 mb-2">
             <span className="text-3xl md:text-4xl">{info.icon}</span>
-            <h1 className="text-3xl md:text-4xl font-bold font-cinzel text-transparent bg-clip-text bg-gradient-to-r from-[var(--gold-light)] to-[var(--gold)]">
+            <h1 className="font-cinzel text-2xl md:text-3xl font-bold text-[var(--gold-light)]">
               {info.label}
             </h1>
           </div>
-          <p className="text-[var(--text2)] mb-8 text-sm md:text-base max-w-2xl">
+          <p className="font-cairo text-sm text-[var(--text2)] mb-8 max-w-2xl">
             Menampilkan {doaList.length} doa dari Al-Qur&apos;an yang berkaitan dengan tema {info.label}.
           </p>
 
@@ -76,7 +76,7 @@ export default function DoaByHajatPage() {
               placeholder={`Cari dalam kategori ${info.label}...`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="block w-full pl-11 pr-4 py-3 bg-[var(--dark2)] border border-[var(--gold-border)] rounded-2xl text-[var(--text1)] placeholder-[var(--text2)] focus:ring-2 focus:ring-[var(--teal-500)] focus:border-transparent transition-all outline-none"
+              className="font-cairo block w-full pl-11 pr-4 py-3 bg-[var(--dark2)] border border-[var(--gold-border)] rounded-2xl text-[var(--text1)] placeholder-[var(--text2)] focus:ring-2 focus:ring-[var(--teal-500)] focus:border-transparent transition-all outline-none"
             />
           </div>
         </div>
@@ -94,43 +94,43 @@ export default function DoaByHajatPage() {
                   {/* Badges */}
                   <div className="flex items-center gap-2 mb-3 flex-wrap">
                     {doa.mustajab && (
-                      <span className="px-2.5 py-0.5 bg-rose-500/20 border border-rose-500/30 rounded-full text-[10px] uppercase tracking-wider font-bold text-rose-300">
+                      <span className="font-cairo px-2.5 py-0.5 bg-rose-500/20 border border-rose-500/30 rounded-full text-[10px] uppercase tracking-widest font-bold text-rose-300">
                         Mustajab
                       </span>
                     )}
-                    <span className="px-2.5 py-0.5 bg-[var(--dark3)] border border-[var(--gold-border)] rounded-full text-[10px] uppercase tracking-wider font-bold text-[var(--gold)]">
+                    <span className="font-cairo px-2.5 py-0.5 bg-[var(--dark3)] border border-[var(--gold-border)] rounded-full text-[10px] uppercase tracking-widest font-bold text-[var(--gold)]">
                       {doa.kategori}
                     </span>
                     {doa.nabi && (
-                      <span className="px-2.5 py-0.5 bg-amber-500/20 border border-amber-500/30 rounded-full text-[10px] uppercase tracking-wider font-bold text-amber-300">
+                      <span className="font-cairo px-2.5 py-0.5 bg-amber-500/20 border border-amber-500/30 rounded-full text-[10px] uppercase tracking-widest font-bold text-amber-300">
                         {doa.nabi}
                       </span>
                     )}
                   </div>
 
-                  <h3 className="text-lg font-bold text-[var(--text1)] mb-4 group-hover:text-[var(--gold-light)] transition-colors">
+                  <h3 className="font-cinzel text-base font-bold text-[var(--text1)] mb-4 group-hover:text-[var(--gold-light)] transition-colors">
                     {doa.judul}
                   </h3>
 
-                  <div className="text-2xl md:text-3xl leading-loose text-right text-[var(--gold-light)] font-amiri mb-4" dir="rtl">
+                  <div className="font-amiri text-2xl md:text-3xl leading-loose text-right text-[var(--gold-light)] mb-4" dir="rtl">
                     {doa.arab}
                   </div>
 
-                  <div className="text-[var(--teal-200)] text-sm italic text-right mb-4">
+                  <div className="font-cairo text-sm italic text-right text-[var(--teal-200)] mb-4">
                     {doa.latin}
                   </div>
 
                   <div className="w-full h-px bg-gradient-to-r from-transparent via-[var(--gold-border)] to-transparent my-4"></div>
 
-                  <p className="text-[var(--text1)] text-sm md:text-base leading-relaxed line-clamp-2 text-opacity-90">
+                  <p className="font-cairo text-base leading-relaxed text-[var(--text1)] line-clamp-2 text-opacity-90">
                     {doa.terjemah}
                   </p>
 
                   <div className="mt-5 pt-4 border-t border-[var(--dark3)] flex flex-wrap items-center justify-between gap-4">
-                    <span className="text-xs font-bold bg-[var(--dark3)] px-3 py-1 rounded-lg text-[var(--gold)] border border-[var(--gold-border)]">
+                    <span className="font-cairo text-xs uppercase tracking-widest font-bold bg-[var(--dark3)] px-3 py-1 rounded-lg text-[var(--text3)] border border-[var(--gold-border)]">
                       {doa.referensi}
                     </span>
-                    <button className="text-sm font-semibold text-[var(--teal-200)] group-hover:text-[var(--teal-100)] flex items-center gap-1 transition-colors">
+                    <button className="font-cairo text-sm font-semibold text-[var(--teal-200)] group-hover:text-[var(--teal-100)] flex items-center gap-1 transition-colors">
                       Baca Selengkapnya <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </button>
                   </div>
@@ -141,8 +141,8 @@ export default function DoaByHajatPage() {
         ) : (
           <div className="text-center py-12 glass-card rounded-3xl">
             <Search className="w-12 h-12 text-[var(--text2)] mx-auto mb-4 opacity-50" />
-            <h3 className="text-lg font-semibold text-[var(--text1)] mb-2">Tidak ada doa ditemukan</h3>
-            <p className="text-[var(--text2)]">Coba gunakan kata kunci pencarian yang lain.</p>
+            <h3 className="font-cinzel text-xl font-bold text-[var(--text1)] mb-2">Tidak ada doa ditemukan</h3>
+            <p className="font-cairo text-sm text-[var(--text2)]">Coba gunakan kata kunci pencarian yang lain.</p>
           </div>
         )}
       </div>

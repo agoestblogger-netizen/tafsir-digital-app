@@ -69,9 +69,9 @@ export default function KultumHasilPage() {
   if (error || !konten) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center font-cairo text-center px-4">
-        <h2 className="text-2xl font-bold text-[var(--gold)] mb-4">Waduh!</h2>
-        <p className="text-[var(--text2)] mb-6">{error}</p>
-        <button onClick={() => router.push('/kultum')} className="px-6 py-2 bg-[var(--gold)] text-[var(--dark)] rounded-full font-bold">
+        <h2 className="font-cinzel text-3xl md:text-4xl font-extrabold tracking-tight text-[var(--gold-light)] mb-4">Waduh!</h2>
+        <p className="font-cairo text-sm text-[var(--text2)] mb-6">{error}</p>
+        <button onClick={() => router.push('/kultum')} className="font-cairo px-6 py-2 bg-[var(--gold)] text-[var(--dark)] rounded-full font-bold">
           Kembali ke Generator
         </button>
       </div>

@@ -55,12 +55,14 @@ export function KisahCard({ slug, nama, nama_arab, kategori, periode, lokasi, na
           <div className="flex items-center gap-3">
             <span className="text-3xl">{icon}</span>
             <div>
-              <div className="font-amiri text-xl mb-1"
-                   style={{ color: "var(--gold-light)", fontFamily: 'Amiri, serif', direction: 'rtl' }}>
+              <div 
+                dir="rtl"
+                className="font-amiri text-2xl md:text-3xl text-right leading-loose text-[var(--gold-light)] mb-1"
+              >
                 {nama_arab}
               </div>
-              <div className="font-bold text-base" style={{ color: "var(--text1)" }}>{nama}</div>
-              <div className="text-xs mt-1" style={{ color: "var(--gold)" }}>{kategoriLabel[kategori] || kategori}</div>
+              <div className="font-bold font-cinzel text-[var(--text1)] text-base leading-tight">{nama}</div>
+              <div className="font-cairo text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider mt-1 text-[var(--gold)] inline-block border border-[var(--gold-border)] bg-[var(--gold-pale)]">{kategoriLabel[kategori] || kategori}</div>
             </div>
           </div>
           <span className="transition-transform" style={{ color: "var(--text3)", transform: expanded ? "rotate(180deg)" : "none" }}>
@@ -71,20 +73,20 @@ export function KisahCard({ slug, nama, nama_arab, kategori, periode, lokasi, na
         {/* Meta info */}
         <div className="flex flex-wrap gap-3 mt-3">
           {periode && (
-            <span className="text-xs" style={{ color: "var(--text3)" }}>📅 {periode}</span>
+            <span className="text-xs text-[var(--text3)] font-cairo">📅 {periode}</span>
           )}
           {lokasi && (
-            <span className="text-xs" style={{ color: "var(--text3)" }}>📍 {lokasi}</span>
+            <span className="text-xs text-[var(--text3)] font-cairo">📍 {lokasi}</span>
           )}
           {nabi_diutus && nabi_diutus !== '-' && (
-            <span className="text-xs font-bold" style={{ color: "var(--teal-300)" }}>🕌 {nabi_diutus}</span>
+            <span className="text-xs font-bold text-[var(--teal-300)] font-cairo">🕌 {nabi_diutus}</span>
           )}
         </div>
 
         {/* Surah tags */}
         <div className="flex flex-wrap gap-2 mt-3">
           {surah_utama.slice(0, 3).map((s, i) => (
-            <span key={i} className="text-[10px] px-2 py-1 rounded-full border" style={{ background: "rgba(201,163,90,0.08)", color: "var(--gold)", borderColor: "rgba(201,163,90,0.2)" }}>
+            <span key={i} className="text-[10px] px-2 py-1 rounded-full bg-[var(--gold-pale)] border border-[var(--gold-border)] text-[var(--gold)] font-cairo">
               QS. {s.surah_nama}: {s.ayat_range}
             </span>
           ))}
@@ -108,7 +110,7 @@ export function KisahCard({ slug, nama, nama_arab, kategori, periode, lokasi, na
 
               {/* Ringkasan */}
               <div className="border rounded-xl p-4" style={{ background: "rgba(201,163,90,0.05)", borderColor: "rgba(201,163,90,0.2)" }}>
-                <p className="text-sm leading-relaxed italic" style={{ color: "var(--text1)" }}>
+                <p className="text-base text-[var(--text1)] leading-relaxed italic font-cairo">
                   {data.ringkasan as string}
                 </p>
               </div>
@@ -116,34 +118,35 @@ export function KisahCard({ slug, nama, nama_arab, kategori, periode, lokasi, na
               {/* Ayat Utama */}
               {Array.isArray(data.ayat_utama) && (data.ayat_utama as unknown[]).length > 0 ? (
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "var(--text3)" }}>
+                  <h4 className="text-xs font-bold text-[var(--text3)] uppercase tracking-widest mb-2 font-cinzel">
                     📖 Ayat Al-Qur&apos;an
                   </h4>
                   <div className="space-y-3">
                     {(data.ayat_utama as Array<{surah_nama: string; nomor_ayat: string; teks_arab: string; terjemah: string; link: string; surah_id: number}>).map((ayat, i) => (
                       <div key={i} className="rounded-xl p-4 border" style={{ background: "rgba(0,0,0,0.2)", borderColor: "rgba(201,163,90,0.15)" }}>
                         {ayat.teks_arab ? (
-                          <div className="font-amiri text-lg text-right leading-loose mb-2"
-                               style={{ color: "var(--gold-light)", fontFamily: 'Amiri, serif', direction: 'rtl' }}>
+                          <div 
+                            dir="rtl"
+                            className="font-amiri text-2xl md:text-3xl text-right leading-loose text-[var(--gold-light)] mb-2"
+                          >
                             {ayat.teks_arab}
                           </div>
                         ) : (
-                          <div className="text-xs italic mb-2 text-right" style={{ color: "var(--text3)" }}>
+                          <div className="text-xs italic mb-2 text-right text-[var(--text3)] font-cairo">
                             Teks Arab tidak tersedia
                           </div>
                         )}
                         <div className="h-px bg-gradient-to-r from-transparent via-transparent to-transparent my-2" style={{ backgroundImage: "linear-gradient(to right, transparent, rgba(201,163,90,0.3), transparent)" }} />
-                        <p className="text-sm italic leading-relaxed" style={{ color: "var(--text2)" }}>
+                        <p className="text-base text-[var(--text1)] leading-relaxed italic font-cairo">
                           {ayat.terjemah}
                         </p>
-                        <div className="flex items-center justify-between mt-2">
-                          <span className="text-xs font-bold" style={{ color: "var(--gold)" }}>
+                        <div className="flex items-center justify-between mt-2 font-cairo">
+                          <span className="text-xs font-bold text-[var(--gold)]">
                             QS. {ayat.surah_nama}: {ayat.nomor_ayat}
                           </span>
                           <Link
                             href={`/surah/${ayat.surah_id}#ayat-${ayat.nomor_ayat}`}
-                            className="text-xs font-bold hover:underline"
-                            style={{ color: "var(--teal-300)" }}
+                            className="text-xs font-bold hover:underline text-[var(--teal-300)]"
                           >
                             Buka di Al-Qur&apos;an →
                           </Link>
@@ -157,10 +160,10 @@ export function KisahCard({ slug, nama, nama_arab, kategori, periode, lokasi, na
               {/* Latar Belakang */}
               {data.latar_belakang ? (
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "var(--text3)" }}>
+                  <h4 className="text-xs font-bold text-[var(--text3)] uppercase tracking-widest mb-2 font-cinzel">
                     📜 Latar Belakang
                   </h4>
-                  <p className="text-sm leading-relaxed" style={{ color: "var(--text2)" }}>
+                  <p className="text-base text-[var(--text1)] leading-relaxed font-cairo">
                     {data.latar_belakang as string}
                   </p>
                 </div>
@@ -169,10 +172,10 @@ export function KisahCard({ slug, nama, nama_arab, kategori, periode, lokasi, na
               {/* Kondisi Kaum */}
               {data.kondisi_kaum ? (
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "var(--text3)" }}>
+                  <h4 className="text-xs font-bold text-[var(--text3)] uppercase tracking-widest mb-2 font-cinzel">
                     🏛️ Kondisi Kaum
                   </h4>
-                  <p className="text-sm leading-relaxed" style={{ color: "var(--text2)" }}>
+                  <p className="text-base text-[var(--text1)] leading-relaxed font-cairo">
                     {data.kondisi_kaum as string}
                   </p>
                 </div>
@@ -180,10 +183,10 @@ export function KisahCard({ slug, nama, nama_arab, kategori, periode, lokasi, na
 
               {/* Kisah Lengkap */}
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "var(--text3)" }}>
+                <h4 className="text-xs font-bold text-[var(--text3)] uppercase tracking-widest mb-2 font-cinzel">
                   📖 Kisah Lengkap
                 </h4>
-                <div className="text-sm leading-relaxed space-y-3" style={{ color: "var(--text2)" }}>
+                <div className="text-base text-[var(--text1)] leading-relaxed space-y-3 font-cairo">
                   {(data.kisah_lengkap as string).split('\n\n').map((p, i) => (
                     <p key={i}>{p}</p>
                   ))}
@@ -193,10 +196,10 @@ export function KisahCard({ slug, nama, nama_arab, kategori, periode, lokasi, na
               {/* Azab / Kejadian */}
               {data.azab_atau_kejadian ? (
                 <div className="border rounded-xl p-4" style={{ background: "rgba(239,68,68,0.1)", borderColor: "rgba(239,68,68,0.2)" }}>
-                  <h4 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "#f87171" }}>
+                  <h4 className="text-xs font-bold uppercase tracking-widest mb-2 font-cinzel text-red-400">
                     ⚡ Azab / Kejadian Luar Biasa
                   </h4>
-                  <p className="text-sm leading-relaxed" style={{ color: "var(--text2)" }}>
+                  <p className="text-base text-[var(--text1)] leading-relaxed font-cairo">
                     {data.azab_atau_kejadian as string}
                   </p>
                 </div>
@@ -204,10 +207,10 @@ export function KisahCard({ slug, nama, nama_arab, kategori, periode, lokasi, na
 
               {/* Pelajaran */}
               <div className="border rounded-xl p-4" style={{ background: "rgba(20,184,166,0.05)", borderColor: "rgba(20,184,166,0.2)" }}>
-                <h4 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "var(--teal-300)" }}>
+                <h4 className="text-xs font-bold uppercase tracking-widest mb-2 font-cinzel text-[var(--teal-300)]">
                   💡 Pelajaran & Hikmah
                 </h4>
-                <div className="text-sm leading-relaxed space-y-2" style={{ color: "var(--text2)" }}>
+                <div className="text-base text-[var(--text1)] leading-relaxed space-y-2 font-cairo">
                   {(data.pelajaran as string).split('\n').filter(Boolean).map((p, i) => (
                     <p key={i}>{p}</p>
                   ))}

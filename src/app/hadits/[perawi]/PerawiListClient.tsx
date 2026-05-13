@@ -62,10 +62,10 @@ export default function PerawiListClient() {
         className="sticky top-0 z-30 flex items-center gap-3 px-4 py-3"
         style={{ background: "rgba(6,13,18,0.95)", backdropFilter: "blur(16px)", borderBottom: "1px solid rgba(201,163,90,0.08)" }}
       >
-        <button onClick={() => router.back()} className="text-lg" style={{ color: "var(--text2)" }}>←</button>
-        <span className="font-cinzel text-sm font-bold flex-1" style={{ color: "var(--gold-light)" }}>{perawi.name}</span>
+        <button onClick={() => router.back()} className="text-lg font-cairo" style={{ color: "var(--text2)" }}>←</button>
+        <span className="font-cinzel text-base md:text-xl font-bold flex-1" style={{ color: "var(--gold-light)" }}>{perawi.name}</span>
         {totalHadits > 0 && (
-          <span className="text-xs" style={{ color: "var(--text3)" }}>{totalHadits.toLocaleString('id-ID')} hadits</span>
+          <span className="font-cairo text-xs uppercase tracking-widest text-[var(--text3)]">{totalHadits.toLocaleString('id-ID')} hadits</span>
         )}
       </div>
 
@@ -75,10 +75,10 @@ export default function PerawiListClient() {
         style={{ background: "linear-gradient(145deg, var(--teal-900), var(--dark2))" }}
       >
         <div className="relative z-10 text-center">
-          <p className="font-amiri text-4xl mb-2 leading-loose" dir="rtl" style={{ color: "var(--gold-light)", fontFamily: "'Amiri', serif" }}>{perawi.arabName}</p>
-          <p className="font-cinzel text-base font-bold mb-2" style={{ color: "var(--text1)" }}>{perawi.name}</p>
+          <p dir="rtl" className="font-amiri text-2xl md:text-3xl mb-2 leading-loose text-[var(--gold-light)]">{perawi.arabName}</p>
+          <p className="font-cinzel text-3xl md:text-4xl font-extrabold tracking-tight mb-2 text-[var(--gold-light)]">{perawi.name}</p>
           <span
-            className="inline-block text-xs font-bold px-3 py-1 rounded-full"
+            className="font-cairo inline-block text-xs uppercase tracking-widest font-bold px-3 py-1 rounded-full"
             style={{ background: "rgba(201,163,90,0.1)", border: "1px solid rgba(201,163,90,0.3)", color: "var(--gold)" }}
           >
             ✓ {perawi.level}
@@ -136,33 +136,33 @@ export default function PerawiListClient() {
                   {/* Top row */}
                   <div className="flex items-center justify-between">
                     <span
-                      className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                      className="font-cairo text-xs uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
                       style={{ background: "rgba(13,79,60,0.2)", border: "1px solid rgba(13,143,101,0.2)", color: "var(--teal-200)" }}
                     >
                       #{h.number}
                     </span>
-                    <span className="text-[10px] font-bold" style={{ color: "var(--gold)" }}>✓ {perawi.level}</span>
+                    <span className="font-cairo text-xs uppercase tracking-widest font-bold" style={{ color: "var(--gold)" }}>✓ {perawi.level}</span>
                   </div>
                   {/* Arab */}
-                  <p className="font-amiri text-3xl md:text-4xl lg:text-5xl text-right leading-loose line-clamp-3" dir="rtl" style={{ color: "var(--gold-light)", fontFamily: "Amiri, serif" }}>
+                  <p dir="rtl" className="font-amiri text-2xl md:text-3xl text-right leading-loose line-clamp-3 text-[var(--gold-light)]">
                     {h.arab}
                   </p>
                   {/* Transliterasi — hanya tampil jika tersedia dari API */}
                   {(h as { transliteration?: string }).transliteration && (
-                    <p className="text-base italic text-right text-teal-400 leading-relaxed opacity-85 mt-2 line-clamp-2">
+                    <p className="font-cairo text-sm italic text-right text-[var(--teal-200)] leading-relaxed mt-2 line-clamp-2">
                       {(h as { transliteration?: string }).transliteration}
                     </p>
                   )}
                   {/* Divider */}
                   <div className="h-px bg-gradient-to-r from-transparent via-yellow-400/20 to-transparent my-3" />
                   {/* Terjemahan */}
-                  <p className="text-base md:text-lg leading-relaxed line-clamp-2" style={{ color: "var(--text2)" }}>
+                  <p className="font-cairo text-base leading-relaxed text-[var(--text1)] line-clamp-2">
                     {h.id}
                   </p>
                   {/* Footer */}
                   <div className="flex items-center justify-between pt-1">
-                    <span className="text-[10px]" style={{ color: "var(--text3)" }}>{perawi.name} · No. {h.number}</span>
-                    <span style={{ color: "var(--teal-300)" }}>→</span>
+                    <span className="font-cairo text-xs text-[var(--text3)]">{perawi.name} · No. {h.number}</span>
+                    <span className="font-cairo text-sm font-semibold text-[var(--teal-200)]">→</span>
                   </div>
                 </Link>
               </motion.div>

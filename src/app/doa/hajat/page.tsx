@@ -15,17 +15,17 @@ export default function HajatIndexPage() {
       <section className="relative overflow-hidden bg-gradient-to-b from-[var(--dark3)] to-[var(--dark)] pt-16 pb-8 px-4 sm:px-6 lg:px-8 border-b border-[var(--gold-border)]">
         <div className="arabesque-bg opacity-30"></div>
         <div className="relative max-w-4xl mx-auto">
-          <button onClick={() => router.push('/doa')} className="flex items-center gap-2 text-[var(--text2)] hover:text-[var(--gold-light)] mb-6 transition-colors w-fit">
+          <button onClick={() => router.push('/doa')} className="font-cairo flex items-center gap-2 text-[var(--text2)] hover:text-[var(--gold-light)] mb-6 transition-colors w-fit">
             <ArrowLeft className="w-4 h-4" /> Kembali
           </button>
           
           <div className="flex items-center gap-3 mb-2">
             <Search className="w-6 h-6 text-[var(--gold)]" />
-            <h1 className="text-3xl md:text-4xl font-bold font-cinzel text-transparent bg-clip-text bg-gradient-to-r from-[var(--gold-light)] to-[var(--gold)]">
+            <h1 className="font-cinzel text-2xl md:text-3xl font-bold text-[var(--gold-light)]">
               Doa Berdasarkan Hajat
             </h1>
           </div>
-          <p className="text-[var(--text2)] text-sm md:text-base max-w-2xl">
+          <p className="font-cairo text-sm text-[var(--text2)] max-w-2xl">
             Pilih tema atau keperluan Anda untuk menemukan doa-doa yang sesuai dari Al-Qur&apos;an.
           </p>
         </div>
@@ -47,12 +47,12 @@ export default function HajatIndexPage() {
                     <div className="w-12 h-12 rounded-2xl bg-[var(--dark3)] flex items-center justify-center text-2xl shadow-inner border border-[var(--gold-border)]">
                       {info.icon}
                     </div>
-                    <span className="text-xs font-bold bg-[var(--dark)] px-3 py-1 rounded-full text-[var(--gold)] border border-[var(--gold-border)]">
+                    <span className="font-cairo text-xs uppercase tracking-widest font-bold bg-[var(--dark)] px-3 py-1 rounded-full text-[var(--gold)] border border-[var(--gold-border)]">
                       {count} Doa
                     </span>
                   </div>
                   
-                  <h3 className="text-lg font-bold text-[var(--text1)] mb-1 group-hover:text-[var(--teal-200)] transition-colors">
+                  <h3 className="font-cinzel text-base font-bold text-[var(--text1)] mb-1 group-hover:text-[var(--teal-200)] transition-colors">
                     {info.label}
                   </h3>
                   

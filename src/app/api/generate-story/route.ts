@@ -4,7 +4,7 @@ import { getSupabaseAdmin } from "@/lib/supabase";
 import OpenAI from "openai";
 
 const SYSTEM_INSTRUCTION = [
-  "Kamu adalah asisten penulis Ensiklopedia.",
+  "Kamu adalah asisten penulis Tafsir Digital.",
   "Ubah teks mentah ke Markdown.",
   "PISAHKAN sains dan hikmah.",
   "OUTPUT WAJIB JSON: { 'refleksi_md': '...', 'renungan_md': '...' }.",

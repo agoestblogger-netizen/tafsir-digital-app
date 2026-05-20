@@ -1,6 +1,8 @@
 'use client'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { createClient } from '@/lib/supabase/client'
 
 interface KisahCardProps {
   slug: string
@@ -15,10 +17,16 @@ interface KisahCardProps {
 }
 
 export function KisahCard({ slug, nama, nama_arab, kategori, periode, lokasi, nabi_diutus, icon, surah_utama }: KisahCardProps) {
+  const router = useRouter()
   const [expanded, setExpanded] = useState(false)
   const [data, setData] = useState<Record<string, unknown> | null>(null)
   const [loading, setLoading] = useState(false)
   const [fetched, setFetched] = useState(false)
+
+  // State for "Buat Kultum" button
+  const [loadingKultum, setLoadingKultum] = useState(false)
+  const [toastError, setToastError] = useState('')
+  const [toastVisible, setToastVisible] = useState(false)
 
   const handleExpand = async () => {
     if (!expanded && !fetched) {
@@ -35,6 +43,53 @@ export function KisahCard({ slug, nama, nama_arab, kategori, periode, lokasi, na
       }
     }
     setExpanded(!expanded)
+  }
+
+  const handleBuatKultum = async () => {
+    setLoadingKultum(true)
+    setToastVisible(false)
+    setToastError('')
+
+    try {
+      // Ambil user_id dari supabase session (opsional)
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      const userId = user?.id ?? null
+
+      const res = await fetch('/api/kultum-generator', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          format: 'Kultum',
+          durasi_menit: 10,
+          gaya_bahasa: 'Semi-Formal',
+          tema: nama,
+          kategori_tema: "Kisah Al-Qur'an",
+          user_id: userId,
+        }),
+      })
+
+      const resData = await res.json()
+
+      if (!res.ok || !resData.success) {
+        throw new Error(resData.error || 'Gagal membuat kultum')
+      }
+
+      if (resData.id) {
+        router.push(`/kultum/hasil/${resData.id}`)
+      } else {
+        // Not logged in — store in sessionStorage and go to preview
+        sessionStorage.setItem('kultum_result', JSON.stringify(resData.konten))
+        router.push('/kultum/hasil/preview')
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Terjadi kesalahan'
+      setToastError(msg)
+      setToastVisible(true)
+      setTimeout(() => setToastVisible(false), 4000)
+    } finally {
+      setLoadingKultum(false)
+    }
   }
 
   const kategoriLabel: Record<string, string> = {
@@ -223,6 +278,45 @@ export function KisahCard({ slug, nama, nama_arab, kategori, periode, lokasi, na
                   📚 Referensi: {data.referensi as string}
                 </div>
               ) : null}
+
+              {/* ─── Buat Kultum dari Kisah Ini ─── */}
+              <div className="border-t pt-4 mt-2" style={{ borderColor: "rgba(201,163,90,0.15)" }}>
+                {/* Toast Error */}
+                {toastVisible && (
+                  <div className="mb-3 flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-cairo font-semibold text-rose-300 border border-rose-500/30 bg-rose-500/10 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <span className="text-lg">⚠️</span>
+                    {toastError}
+                  </div>
+                )}
+                <button
+                  onClick={handleBuatKultum}
+                  disabled={loadingKultum}
+                  className="w-full flex items-center justify-center gap-2 py-3 px-5 rounded-2xl font-cairo font-bold text-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                  style={{
+                    background: loadingKultum
+                      ? "rgba(201,163,90,0.15)"
+                      : "linear-gradient(135deg, rgba(201,163,90,0.25) 0%, rgba(201,163,90,0.1) 100%)",
+                    border: "1.5px solid rgba(201,163,90,0.4)",
+                    color: "var(--gold-light)",
+                    boxShadow: loadingKultum ? "none" : "0 2px 16px rgba(201,163,90,0.12)",
+                  }}
+                >
+                  {loadingKultum ? (
+                    <>
+                      <span className="inline-block w-4 h-4 border-2 border-[var(--gold)] border-t-transparent rounded-full animate-spin" />
+                      Sedang membuat kultum...
+                    </>
+                  ) : (
+                    <>
+                      ✨ Buat Kultum dari Kisah Ini
+                    </>
+                  )}
+                </button>
+                <p className="text-center text-[10px] mt-2 font-cairo" style={{ color: "var(--text3)" }}>
+                  Kultum ~10 menit · Gaya Semi-Formal · Powered by AI
+                </p>
+              </div>
+
             </div>
           ) : (
             <div className="p-6 text-center">

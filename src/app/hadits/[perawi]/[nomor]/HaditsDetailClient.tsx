@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import type { Hadits } from "@/lib/api/hadits";
+import { BackButton } from "@/components/ui/BackButton";
 
 interface PerawiInfo {
   id: string;
@@ -25,6 +26,12 @@ export default function HaditsDetailClient({
 }) {
   const router = useRouter();
   const [copied, setCopied] = React.useState(false);
+  const [resume, setResume] = React.useState<string | null>(null);
+  const [loadingResume, setLoadingResume] = React.useState(false);
+  const [penjelasan, setPenjelasan] = React.useState<string | null>(null);
+  const [loadingPenjelasan, setLoadingPenjelasan] = React.useState(false);
+  const [showPenjelasan, setShowPenjelasan] = React.useState(false);
+
 
   const handleCopy = () => {
     const text = `${hadits.arab}\n\n${hadits.id}\n\n(HR. ${perawiInfo.name} No. ${nomor})`;
@@ -44,6 +51,37 @@ export default function HaditsDetailClient({
     }
   };
 
+  React.useEffect(() => {
+    setLoadingResume(true)
+    fetch('/api/hadits-ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        perawi: perawiInfo.id,
+        nomor,
+        arab: hadits.arab,
+        terjemah: hadits.id,
+        mode: 'resume',
+      }),
+    })
+      .then(async r => {
+        if (!r.ok) {
+          const err = await r.text()
+          console.error('hadits-ai error:', r.status, err)
+          return null
+        }
+        return r.json()
+      })
+      .then(json => {
+        console.log('hadits-ai response:', json)
+        if (json?.result) setResume(json.result)
+      })
+      .catch(err => console.error('fetch error:', err))
+      .finally(() => setLoadingResume(false))
+  }, [perawiInfo.id, nomor, hadits.arab, hadits.id])
+
+
+
   return (
     <main className="flex flex-col min-h-screen pb-28 font-cairo">
       {/* ── Topbar ──────────────────────────── */}
@@ -55,8 +93,8 @@ export default function HaditsDetailClient({
           borderBottom: "1px solid rgba(201,163,90,0.08)",
         }}
       >
-        <button onClick={() => router.back()} className="text-lg font-cairo" style={{ color: "var(--text2)" }}>←</button>
-        <span className="font-cinzel text-xl font-bold flex-1 text-[var(--gold-light)]">Detail Hadits</span>
+        <BackButton label="" />
+        <span className="font-cinzel text-xl font-bold flex-1 text-[var(--gold-light)] ml-2">Detail Hadits</span>
         <button onClick={handleCopy} className="font-cairo text-sm font-bold px-2 py-1 rounded-lg transition-all" style={{ color: "var(--teal-200)", background: "rgba(13,79,60,0.15)" }}>
           {copied ? "✓ Disalin" : "📋"}
         </button>
@@ -89,6 +127,35 @@ export default function HaditsDetailClient({
             )}
           </div>
         </motion.div>
+
+        {/* ── Resume AI ──────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="rounded-2xl p-5"
+          style={{ background: "rgba(20,184,166,0.05)", border: "1px solid rgba(20,184,166,0.2)" }}
+        >
+          <p className="font-cairo text-xs uppercase tracking-widest font-bold mb-3 text-[var(--teal-300)]">
+            ✦ INTISARI HADITS
+          </p>
+          {loadingResume ? (
+            <div className="space-y-2 animate-pulse">
+              <div className="h-3 rounded w-full" style={{ background: 'rgba(255,255,255,0.05)' }} />
+              <div className="h-3 rounded w-4/5" style={{ background: 'rgba(255,255,255,0.05)' }} />
+              <div className="h-3 rounded w-3/5" style={{ background: 'rgba(255,255,255,0.05)' }} />
+            </div>
+          ) : resume ? (
+            <p className="font-cairo text-base leading-relaxed text-[var(--text1)]">
+              {resume}
+            </p>
+          ) : (
+            <p className="font-cairo text-sm text-[var(--text3)] italic">
+              Intisari tidak tersedia
+            </p>
+          )}
+        </motion.div>
+
 
         {/* ── Teks Arab ───────────────────────── */}
         <motion.div
@@ -149,6 +216,93 @@ export default function HaditsDetailClient({
             &ldquo;{hadits.id}&rdquo;
           </p>
         </motion.div>
+
+        {/* ── Penjelasan Ulama ────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+        >
+          <button
+            onClick={async () => {
+              setShowPenjelasan(!showPenjelasan)
+              if (!penjelasan && !loadingPenjelasan) {
+                setLoadingPenjelasan(true)
+                try {
+                  const res = await fetch('/api/hadits-ai', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      perawi: perawiInfo.id,
+                      nomor,
+                      arab: hadits.arab,
+                      terjemah: hadits.id,
+                      mode: 'penjelasan',
+                    }),
+                  })
+                  const json = await res.json()
+                  setPenjelasan(json.result)
+                } catch {
+                  setPenjelasan(null)
+                } finally {
+                  setLoadingPenjelasan(false)
+                }
+              }
+            }}
+            className="w-full font-cairo text-sm font-bold py-3 px-4 rounded-xl flex items-center justify-between transition-all"
+            style={{
+              background: showPenjelasan ? 'rgba(201,163,90,0.08)' : 'rgba(10,21,32,0.7)',
+              border: '1px solid rgba(201,163,90,0.15)',
+              color: 'var(--gold)',
+            }}
+          >
+            <span>📚 Penjelasan Ulama</span>
+            <span>{showPenjelasan ? '▲' : '▼'}</span>
+          </button>
+
+          {showPenjelasan && (
+            <div
+              className="mt-2 rounded-2xl p-5"
+              style={{ background: "rgba(10,21,32,0.85)", border: "1px solid rgba(201,163,90,0.15)" }}
+            >
+              {/* Disclaimer WAJIB */}
+              <div
+                className="rounded-xl p-3 mb-4"
+                style={{ background: 'rgba(201,163,90,0.08)', border: '1px solid rgba(201,163,90,0.2)' }}
+              >
+                <p className="font-cairo text-xs text-[var(--gold)] leading-relaxed">
+                  ⚠️ <strong>Catatan:</strong> Penjelasan ini adalah rangkuman AI berdasarkan kitab-kitab syarah hadits.
+                  Bukan kutipan langsung. Untuk rujukan akademis dan fatwa, konsultasikan dengan ulama atau lembaga resmi.
+                </p>
+              </div>
+
+              {loadingPenjelasan ? (
+                <div className="space-y-3 animate-pulse">
+                  {[1,2,3].map(i => (
+                    <div key={i} className="space-y-1">
+                      <div className="h-3 rounded w-full" style={{ background: 'rgba(255,255,255,0.05)' }} />
+                      <div className="h-3 rounded w-5/6" style={{ background: 'rgba(255,255,255,0.05)' }} />
+                      <div className="h-3 rounded w-4/5" style={{ background: 'rgba(255,255,255,0.05)' }} />
+                    </div>
+                  ))}
+                </div>
+              ) : penjelasan ? (
+                <div className="space-y-3">
+                  {penjelasan.split('\n\n').filter(Boolean).map((p, i) => (
+                    <p key={i} className="font-cairo text-sm leading-relaxed text-[var(--text1)]">
+                      {p}
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                <p className="font-cairo text-sm text-[var(--text3)] italic text-center">
+                  Penjelasan tidak tersedia
+                </p>
+              )}
+            </div>
+          )}
+        </motion.div>
+
 
         {/* ── Info Grid ───────────────────────── */}
         <motion.div
@@ -220,13 +374,9 @@ export default function HaditsDetailClient({
         </div>
 
         {/* ── Kembali ke Hadits Center ─────────── */}
-        <Link
-          href="/hadits"
-          className="font-cairo flex items-center justify-center gap-2 py-4 rounded-xl text-sm font-bold transition-all"
-          style={{ background: "rgba(201,163,90,0.05)", border: "1px solid rgba(201,163,90,0.15)", color: "var(--gold)" }}
-        >
-          📜 Kembali ke Hadits Center
-        </Link>
+        <div className="flex justify-center">
+          <BackButton label="Kembali ke Daftar Hadits" />
+        </div>
 
       </div>
     </main>

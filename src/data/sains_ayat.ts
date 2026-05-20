@@ -6,6 +6,12 @@ export type KategoriSains =
   | 'Kedokteran & Neurosains'
   | 'Zoologi'
   | 'Geologi'
+  | 'Meteorologi'
+  | 'Astronomi'
+  | 'Biologi'
+  | 'Embriologi'
+  | 'Fisika'
+  | 'Botani'
 
 export interface VideoYoutube {
   judul: string
@@ -25,6 +31,7 @@ export interface AyatSains {
   topik_sains: string
   kategori: KategoriSains
   penjelasan: string
+  tags?: string[]
   videos: VideoYoutube[]
 }
 
@@ -181,7 +188,483 @@ export const AYAT_SAINS: AyatSains[] = [
     videos: [
       { judul: 'Reseptor Rasa Sakit pada Kulit dalam Al-Quran', url: 'https://www.youtube.com/results?search_query=reseptor+kulit+rasa+sakit+Al-Quran+mukjizat+neurosains', channel: 'Yufid.TV', bahasa: 'Indonesia' }
     ]
-  }
+  },
+  {
+    "id": 16,
+    "surah_id": 3,
+    "surah_nama": "آلِ عِمْرَان",
+    "surah_nama_latin": "Ali 'Imran",
+    "nomor_ayat": "190",
+    "teks_arab": "إِنَّ فِي خَلْقِ السَّمَاوَاتِ وَالْأَرْضِ وَاخْتِلَافِ اللَّيْلِ وَالنَّهَارِ لَآيَاتٍ لِأُولِي الْأَلْبَابِ",
+    "terjemahan": "Sesungguhnya dalam penciptaan langit dan bumi serta pergantian malam dan siang, terdapat tanda-tanda (kebesaran Allah) bagi orang-orang yang berakal.",
+    "topik_sains": "Penciptaan Alam Semesta dan Pergantian Siang Malam",
+    "kategori": "Kosmologi",
+    "penjelasan": "Ayat ini menegaskan adanya tanda-tanda kebesaran Allah dalam penciptaan alam semesta, yang mencakup struktur langit dan bumi serta siklus siang dan malam. Penelitian modern menunjukkan bahwa siklus ini berhubungan dengan rotasi bumi dan revolusi bumi mengelilingi matahari. Hal ini memperkuat pemahaman kita tentang keteraturan alam yang diciptakan Allah.",
+    "tags": [
+      "Kebesaran Allah",
+      "Menuntut Ilmu"
+    ],
+    "videos": []
+  },
+  {
+    "id": 17,
+    "surah_id": 14,
+    "surah_nama": "إبْرَاهِيم",
+    "surah_nama_latin": "Ibrahim",
+    "nomor_ayat": "32",
+    "teks_arab": "الَّذِي خَلَقَ لَكُمُ الْأَرْضَ فِي فَرَاشٍ وَالسَّمَاءَ بِنَاءً",
+    "terjemahan": "Dialah yang telah menciptakan untuk kalian bumi sebagai hamparan dan langit sebagai atap.",
+    "topik_sains": "Struktur Bumi dan Atmosfer",
+    "kategori": "Geologi",
+    "penjelasan": "Ayat ini menggambarkan bumi sebagai tempat tinggal yang nyaman dan langit sebagai pelindung. Dalam ilmu geologi, bumi memang memiliki struktur yang memungkinkan kehidupan, sementara atmosfer berfungsi melindungi kita dari radiasi berbahaya. Penemuan ilmiah tentang lapisan atmosfer menunjukkan betapa pentingnya perlindungan ini bagi kelangsungan hidup di bumi.",
+    "tags": [
+      "Kebesaran Allah",
+      "Syukur"
+    ],
+    "videos": []
+  },
+  {
+    "id": 19,
+    "surah_id": 30,
+    "surah_nama": "الرُّوم",
+    "surah_nama_latin": "Ar-Rum",
+    "nomor_ayat": "48",
+    "teks_arab": "اللَّهُ الَّذِي يُرْسِلُ الرِّيَاحَ فَتُثِيرُ سَحَابًا فَسُقْنَاهُ إِلَى بَلَدٍ مَّيِتٍ فَأَحْيَيْنَا بِهِ الْأَرْضَ بَعْدَ مَوْتِهَا",
+    "terjemahan": "Allah Dialah yang mengirimkan angin, lalu angin itu mengangkat awan, lalu Kami hantarkan ke negeri yang mati, lalu Kami hidupkan bumi setelah matinya.",
+    "topik_sains": "Siklus Air dan Proses Hujan",
+    "kategori": "Meteorologi",
+    "penjelasan": "Ayat ini menjelaskan proses meteorologi di mana angin menggerakkan awan untuk membawa hujan. Dalam ilmu atmosfer, siklus air adalah proses penting yang mendukung kehidupan di bumi. Proses ini dimulai dari evaporasi, pembentukan awan, hingga presipitasi, yang memberikan nutrisi bagi tanah dan tanaman.",
+    "tags": [
+      "Kebesaran Allah",
+      "Syukur"
+    ],
+    "videos": []
+  },
+  {
+    "id": 20,
+    "surah_id": 36,
+    "surah_nama": "يس",
+    "surah_nama_latin": "Ya-Sin",
+    "nomor_ayat": "38",
+    "teks_arab": "وَالشَّمْسُ تَجْرِي لِمُسْتَقَرٍّ لَّهَا",
+    "terjemahan": "Dan matahari berjalan pada tempat peredarannya.",
+    "topik_sains": "Orbit Matahari dan Gerak Planet",
+    "kategori": "Astronomi",
+    "penjelasan": "Ayat ini mengisyaratkan tentang gerak matahari dan orbitnya. Dalam astronomi, matahari memang bergerak dalam galaksi kita, dan ini mengindikasikan sistem yang teratur dalam semesta. Penemuan modern tentang gerakan galaksi dan pergerakan bintang memberikan bukti lebih lanjut tentang keteraturan yang diciptakan Allah.",
+    "tags": [
+      "Kebesaran Allah",
+      "Menuntut Ilmu"
+    ],
+    "videos": []
+  },
+  {
+    "id": 21,
+    "surah_id": 51,
+    "surah_nama": "الذَّارِيَات",
+    "surah_nama_latin": "Ad-Dhariyat",
+    "nomor_ayat": "47",
+    "teks_arab": "وَالسَّمَاءَ بَنَيْنَاهَا بِأَيْدٍ وَإِنَّا لَمُوسِعُونَ",
+    "terjemahan": "Dan langit itu Kami bangun dengan kekuatan (Kami) dan sesungguhnya Kami benar-benar memperluasnya.",
+    "topik_sains": "Ekspansi Alam Semesta",
+    "kategori": "Kosmologi",
+    "penjelasan": "Ayat ini merujuk pada penciptaan langit dan ekspansi yang terus berlangsung. Dalam kosmologi modern, teori Big Bang menunjukkan bahwa alam semesta terus mengembang. Hal ini sejalan dengan penjelasan ilmiah tentang kekuatan yang mendasari pembentukan dan perluasan alam semesta yang diciptakan Allah.",
+    "tags": [
+      "Kebesaran Allah",
+      "Tafsir & Tadabur"
+    ],
+    "videos": []
+  },
+  {
+    "id": 22,
+    "surah_id": 55,
+    "surah_nama": "الرَّحْمَـٰن",
+    "surah_nama_latin": "Ar-Rahman",
+    "nomor_ayat": "13",
+    "teks_arab": "فَبِأَيِّ آلَاءِ رَبِّكُمَا تُكَذِّبَانِ",
+    "terjemahan": "Maka nikmat Tuhanmu yang manakah yang kamu dustakan?",
+    "topik_sains": "Nikmat Alam dan Keberagaman Hayati",
+    "kategori": "Biologi",
+    "penjelasan": "Ayat ini mengajak kita untuk merenungkan nikmat Allah yang ada di alam, termasuk keberagaman hayati. Dalam biologi, keberagaman spesies sangat penting untuk ekosistem yang sehat. Penelitian tentang keanekaragaman hayati menunjukkan bahwa setiap makhluk memiliki perannya masing-masing dalam menjaga keseimbangan alam.",
+    "tags": [
+      "Syukur",
+      "Kebesaran Allah"
+    ],
+    "videos": []
+  },
+  {
+    "id": 23,
+    "surah_id": 78,
+    "surah_nama": "النبأ",
+    "surah_nama_latin": "An-Naba",
+    "nomor_ayat": "6",
+    "teks_arab": "أَلَمْ نَجْعَلِ الْأَرْضَ مِرَاسًۭا",
+    "terjemahan": "Bukankah Kami telah menjadikan bumi sebagai hamparan?",
+    "topik_sains": "Fungsi dan Struktur Bumi",
+    "kategori": "Geologi",
+    "penjelasan": "Ayat ini menunjukkan bahwa bumi diciptakan sebagai tempat yang layak untuk dihuni. Dalam ilmu geologi, struktur bumi, termasuk lapisan tanah dan mineral, sangat penting untuk mendukung kehidupan. Penelitian modern membuktikan bahwa kondisi geologis ini berkontribusi pada habitat yang mendukung keanekaragaman kehidupan.",
+    "tags": [
+      "Kebesaran Allah",
+      "Iman kepada Allah"
+    ],
+    "videos": []
+  },
+  {
+    "id": 24,
+    "surah_id": 23,
+    "surah_nama": "المؤمنون",
+    "surah_nama_latin": "Al-Mu'minun",
+    "nomor_ayat": "13",
+    "teks_arab": "ثُمَّ أَنشَأْنَاهُ خَلْقًۭا آخرَ",
+    "terjemahan": "Kemudian Kami menjadikannya makhluk yang lain.",
+    "topik_sains": "Proses Perkembangan Embrio",
+    "kategori": "Embriologi",
+    "penjelasan": "Ayat ini menggambarkan tahap-tahap perkembangan manusia dari embrio menjadi makhluk yang sempurna. Dalam embriologi, proses ini adalah hasil dari pembelahan sel dan diferensiasi yang kompleks. Penelitian ilmiah mendukung pemahaman bahwa setiap tahap perkembangan memiliki peranan penting dalam membentuk individu yang utuh.",
+    "tags": [
+      "Menuntut Ilmu",
+      "Tafsir & Tadabur"
+    ],
+    "videos": []
+  },
+  {
+    "id": 25,
+    "surah_id": 39,
+    "surah_nama": "الزُّمَر",
+    "surah_nama_latin": "Az-Zumar",
+    "nomor_ayat": "21",
+    "teks_arab": "أَلَمْ تَرَ أَنَّ اللَّهَ أَنزَلَ مِنَ السَّمَاءِ مَاءًۭ فَسَكَبْنَاهُ فِي الْأَرْضِ عُيُونًۭا",
+    "terjemahan": "Tidakkah kamu melihat bahwa Allah menurunkan air dari langit, lalu Kami mengalirkannya di bumi dalam bentuk mata air?",
+    "topik_sains": "Siklus Air dan Pengairan",
+    "kategori": "Oseanografi",
+    "penjelasan": "Ayat ini menjelaskan proses pengairan yang terjadi di bumi melalui siklus air. Penelitian ilmiah tentang hidrologi menunjukkan bagaimana air dari atmosfer jatuh ke bumi sebagai hujan dan kemudian mengalir menjadi sumber air. Ini sangat penting untuk kehidupan dan pertanian, memperlihatkan kecermatan ciptaan Allah.",
+    "tags": [
+      "Kebesaran Allah",
+      "Syukur"
+    ],
+    "videos": []
+  },
+  {
+    "id": 26,
+    "surah_id": 3,
+    "surah_nama": "آلِ عِمْرَان",
+    "surah_nama_latin": "Aali 'Imran",
+    "nomor_ayat": "191",
+    "teks_arab": "إِنَّ فِي خَلْقِ السَّمَاوَاتِ وَالْأَرْضِ وَاخْتِلَافِ اللَّيْلِ وَالنَّهَارِ لَآيَاتٍ لِأُولِي الْأَلْبَابِ",
+    "terjemahan": "Sesungguhnya dalam penciptaan langit dan bumi serta pergantian malam dan siang terdapat tanda-tanda (kekuasaan Allah) bagi orang-orang yang berakal.",
+    "topik_sains": "Penciptaan alam semesta dan pergantian waktu",
+    "kategori": "Kosmologi",
+    "penjelasan": "Ayat ini menyoroti keajaiban penciptaan langit dan bumi serta pergantian malam dan siang. Dalam ilmu kosmologi, fenomena ini berkaitan dengan rotasi bumi dan orbitnya mengelilingi matahari. Penelitian modern menunjukkan bahwa struktur alam semesta sangat kompleks dan teratur, mencerminkan kebesaran penciptaan Allah.",
+    "tags": [
+      "Kebesaran Allah",
+      "Tafsir & Tadabur"
+    ],
+    "videos": []
+  },
+  {
+    "id": 27,
+    "surah_id": 6,
+    "surah_nama": "الْأَنْعَام",
+    "surah_nama_latin": "Al-An'am",
+    "nomor_ayat": "38",
+    "teks_arab": "وَمَا مِن دَابَّةٍ فِي الْأَرْضِ وَلَا طَائِرٍ يَطِيرُ بِجَنَاحَيْهِ إِلَّا أُمَمٌ أَمْثَالُكُمْ",
+    "terjemahan": "Dan tidak ada binatang melata di bumi dan tidak pula burung yang terbang dengan kedua sayapnya, melainkan umat-umat (seperti kalian).",
+    "topik_sains": "Keanekaragaman hayati dan ekosistem",
+    "kategori": "Zoologi",
+    "penjelasan": "Ayat ini mengisyaratkan tentang keanekaragaman spesies di bumi. Ilmu zoologi modern mengkaji berbagai spesies dan ekosistem yang ada, serta interaksi antara mereka. Ini menunjukkan pentingnya memahami dan menjaga keanekaragaman hayati sebagai bagian dari ciptaan Allah.",
+    "tags": [
+      "Kebesaran Allah",
+      "Menuntut Ilmu"
+    ],
+    "videos": []
+  },
+  {
+    "id": 29,
+    "surah_id": 31,
+    "surah_nama": "لُقْمَان",
+    "surah_nama_latin": "Luqman",
+    "nomor_ayat": "10",
+    "teks_arab": "خَلَقَ السَّمَاوَاتِ بِغَيْرِ عَمَدٍ تَرَوْنَهَا وَأَلْقَى فِي الْأَرْضِ رَوَاسِيَ أَنْ تَمِيدَ بِكُمْ",
+    "terjemahan": "Dia menciptakan langit tanpa tiang yang kamu lihat dan Dia meletakkan di bumi gunung-gunung agar bumi tidak goyang bersama kamu.",
+    "topik_sains": "Stabilitas geologis dan pembentukan gunung",
+    "kategori": "Geologi",
+    "penjelasan": "Ayat ini menggambarkan bagaimana gunung-gunung berfungsi sebagai penyangga stabilitas bagi bumi. Dalam ilmu geologi, gunung terbentuk melalui proses tektonik yang kompleks, dan keberadaannya mencegah terjadinya gempa bumi yang merusak. Ini menunjukkan kehebatan ciptaan Allah dalam menstabilkan bumi.",
+    "tags": [
+      "Kebesaran Allah",
+      "Tafsir & Tadabur"
+    ],
+    "videos": []
+  },
+  {
+    "id": 30,
+    "surah_id": 51,
+    "surah_nama": "الذَّارِيَات",
+    "surah_nama_latin": "Adh-Dhariyat",
+    "nomor_ayat": "47",
+    "teks_arab": "وَالسَّمَاءَ بَنَيْنَاهَا بِأَيْدٍ وَإِنَّا لَمُوسِعُونَ",
+    "terjemahan": "Dan langit itu Kami bangun dengan kekuatan (Kami) dan sesungguhnya Kami benar-benar memperluas (langit).",
+    "topik_sains": "Ekspansi alam semesta",
+    "kategori": "Kosmologi",
+    "penjelasan": "Ayat ini mencerminkan fenomena ekspansi alam semesta yang telah dibuktikan oleh astrofisika modern. Penemuan bahwa alam semesta terus berkembang menjelaskan bagaimana galaksi menjauh satu sama lain, yang sejalan dengan apa yang disebut sebagai hukum Hubble.",
+    "tags": [
+      "Kebesaran Allah",
+      "Menuntut Ilmu"
+    ],
+    "videos": []
+  },
+  {
+    "id": 31,
+    "surah_id": 78,
+    "surah_nama": "النبأ",
+    "surah_nama_latin": "An-Naba",
+    "nomor_ayat": "6",
+    "teks_arab": "أَلَمْ نَجْعَلِ الْأَرْضَ مِرَاسًۭا",
+    "terjemahan": "Bukankah Kami telah menjadikan bumi sebagai hamparan?",
+    "topik_sains": "Struktur dan fungsi bumi",
+    "kategori": "Geologi",
+    "penjelasan": "Ayat ini berbicara tentang bumi sebagai hamparan yang luas dan stabil. Dalam ilmu geologi, struktur bumi dan lapisan-lapisannya dijelaskan dengan baik, serta bagaimana proses geologis membentuk permukaan bumi yang kita kenal. Ini menunjukkan persesuaian antara wahyu dan pengetahuan ilmiah tentang bumi.",
+    "tags": [
+      "Kebesaran Allah",
+      "Tafsir & Tadabur"
+    ],
+    "videos": []
+  },
+  {
+    "id": 32,
+    "surah_id": 39,
+    "surah_nama": "الزُّمَر",
+    "surah_nama_latin": "Az-Zumar",
+    "nomor_ayat": "21",
+    "teks_arab": "أَلَمْ تَرَ أَنَّ اللَّهَ أَنزَلَ مِنَ السَّمَاء مَاءً فَسَكَّنَاهُ فِي الْأَرْضِ",
+    "terjemahan": "Tidakkah kamu melihat bahwa Allah menurunkan air dari langit lalu Dia menyimpannya di bumi?",
+    "topik_sains": "Siklus air dan penyimpanan air",
+    "kategori": "Meteorologi",
+    "penjelasan": "Ayat ini menggambarkan proses turunnya air dari langit yang merupakan bagian dari siklus hidrologi. Ilmu meteorologi menyatakan bagaimana air evaporasi, membentuk awan, dan akhirnya jatuh sebagai hujan, yang kemudian disimpan di dalam tanah, mendukung kehidupan di bumi.",
+    "tags": [
+      "Kebesaran Allah",
+      "Menuntut Ilmu"
+    ],
+    "videos": []
+  },
+  {
+    "id": 33,
+    "surah_id": 30,
+    "surah_nama": "الرُّوم",
+    "surah_nama_latin": "Ar-Rum",
+    "nomor_ayat": "48",
+    "teks_arab": "وَهُوَ الَّذِي يُرْسِلُ الرِّيَاحَ بُشْرًۭى بَيْنَ يَدَي رَحْمَتِهِ",
+    "terjemahan": "Dan Dia-lah yang mengirimkan angin sebagai pembawa berita gembira sebelum datangnya rahmat-Nya.",
+    "topik_sains": "Peran angin dalam cuaca dan iklim",
+    "kategori": "Meteorologi",
+    "penjelasan": "Ayat ini menunjukkan bagaimana angin berperan penting dalam proses cuaca dan iklim. Dalam meteorologi, angin berfungsi sebagai pengatur transportasi udara dan kelembapan, yang memengaruhi pola cuaca dan curah hujan, serta dapat menjadi tanda perubahan iklim.",
+    "tags": [
+      "Kebesaran Allah",
+      "Tafsir & Tadabur"
+    ],
+    "videos": []
+  },
+  {
+    "id": 34,
+    "surah_id": 24,
+    "surah_nama": "النُّور",
+    "surah_nama_latin": "An-Nur",
+    "nomor_ayat": "35",
+    "teks_arab": "اللَّهُ نُورُ السَّماواتِ وَالْأَرْضِ",
+    "terjemahan": "Allah adalah cahaya langit dan bumi.",
+    "topik_sains": "Cahaya dan energi",
+    "kategori": "Fisika",
+    "penjelasan": "Ayat ini mengisyaratkan tentang pentingnya cahaya sebagai sumber kehidupan. Dalam fisika, cahaya merupakan bentuk energi yang sangat penting untuk fotosintesis, proses yang memungkinkan tanaman menghasilkan makanan. Ini menunjukkan hubungan antara ilmu pengetahuan dan ajaran spiritual tentang cahaya.",
+    "tags": [
+      "Kebesaran Allah",
+      "Syukur"
+    ],
+    "videos": []
+  },
+  {
+    "id": 35,
+    "surah_id": 23,
+    "surah_nama": "المؤمنون",
+    "surah_nama_latin": "Al-Mu'minun",
+    "nomor_ayat": "13",
+    "teks_arab": "ثُمَّ أَنْشَأْنَاهُ خَلْقًۭا آخَرَ",
+    "terjemahan": "Kemudian Kami menjadikannya makhluk yang lain.",
+    "topik_sains": "Proses perkembangan embrio",
+    "kategori": "Embriologi",
+    "penjelasan": "Ayat ini menggambarkan fase perkembangan embrio manusia. Dalam embriologi modern, proses ini melibatkan banyak tahap kompleks yang mempengaruhi pertumbuhan dan perkembangan individu. Ini menunjukkan keselarasan antara pengetahuan ilmiah tentang kehidupan dan wahyu Ilahi.",
+    "tags": [
+      "Kebesaran Allah",
+      "Tafsir & Tadabur"
+    ],
+    "videos": []
+  },
+  {
+    "id": 36,
+    "surah_id": 3,
+    "surah_nama": "آلِ عِمْرَان",
+    "surah_nama_latin": "Aali Imran",
+    "nomor_ayat": "190",
+    "teks_arab": "إِنَّ فِي خَلْقِ السَّمَاوَاتِ وَالْأَرْضِ وَاخْتِلَافِ اللَّيْلِ وَالنَّهَارِ لَآيَاتٍ لِأُولِي الْأَلْبَابِ",
+    "terjemahan": "Sesungguhnya dalam penciptaan langit dan bumi serta perbedaan malam dan siang terdapat tanda-tanda (kebesaran Allah) bagi orang-orang yang berakal.",
+    "topik_sains": "Penciptaan Alam Semesta",
+    "kategori": "Kosmologi",
+    "penjelasan": "Ayat ini mengajak kita untuk merenungkan penciptaan langit dan bumi yang merupakan objek kajian utama dalam kosmologi. Ilmu pengetahuan modern menunjukkan bahwa alam semesta memiliki struktur yang sangat kompleks dan diatur oleh hukum-hukum fisika yang jelas. Perbedaan malam dan siang juga berkaitan dengan rotasi bumi yang menyebabkan siklus waktu yang berulang, yang menggambarkan keteraturan ciptaan Allah.",
+    "tags": [
+      "Kebesaran Allah",
+      "Menuntut Ilmu"
+    ],
+    "videos": []
+  },
+  {
+    "id": 37,
+    "surah_id": 16,
+    "surah_nama": "النَّحْل",
+    "surah_nama_latin": "An-Nahl",
+    "nomor_ayat": "68",
+    "teks_arab": "وَأَوْحَى رَبُّكَ إِلَى النَّحْلِ أَنِ اتَّخِذِي مِنَ الْجِبَالِ بُيُوتًا وَمِنَ الشُّجَرِ وَمِمَّا يَعْرِشُونَ",
+    "terjemahan": "Dan Tuhanmu mewahyukan kepada lebah, 'Ambillah rumahmu di gunung-gunung, di pohon-pohon, dan di tempat-tempat yang mereka buat.'",
+    "topik_sains": "Perilaku Lebah",
+    "kategori": "Zoologi",
+    "penjelasan": "Ayat ini menunjukkan bagaimana Allah menginspirasi lebah untuk membangun sarangnya di tempat-tempat yang aman. Penelitian biologi modern menunjukkan bahwa lebah memiliki kemampuan luar biasa dalam beradaptasi dengan lingkungan dan berkolaborasi dalam koloni mereka. Ini mencerminkan kecerdasan dan organisasi yang luar biasa, yang merupakan bagian dari ciptaan Allah yang sempurna.",
+    "tags": [
+      "Kebesaran Allah",
+      "Menuntut Ilmu"
+    ],
+    "videos": []
+  },
+  {
+    "id": 38,
+    "surah_id": 30,
+    "surah_nama": "الرُّوم",
+    "surah_nama_latin": "Ar-Rum",
+    "nomor_ayat": "48",
+    "teks_arab": "اللَّهُ الَّذِي يُرْسِلُ الرِّيَاحَ فَتُثِيرُ سَحَابًا فَتَبْسُطُهُ فِي السَّمَاءِ كَمَا يَشَاءُ",
+    "terjemahan": "Allah-lah yang mengirimkan angin, lalu angin itu menggerakkan awan, kemudian Allah membentangkannya di langit sesuai dengan kehendak-Nya.",
+    "topik_sains": "Proses Pembentukan Awan",
+    "kategori": "Meteorologi",
+    "penjelasan": "Ayat ini menjelaskan tentang proses meteorologi di mana angin berfungsi sebagai penggerak awan. Dalam ilmu meteorologi modern, angin berperan penting dalam transportasi massa udara dan kelembapan, yang kemudian membentuk awan dan memicu hujan. Ini adalah contoh bagaimana fenomena alam diatur dengan sangat tepat oleh Allah.",
+    "tags": [
+      "Kebesaran Allah",
+      "Tafsir & Tadabur"
+    ],
+    "videos": []
+  },
+  {
+    "id": 39,
+    "surah_id": 51,
+    "surah_nama": "الذَّارِيَات",
+    "surah_nama_latin": "Adh-Dhariyat",
+    "nomor_ayat": "47",
+    "teks_arab": "وَالسَّمَاءَ بَنَيْنَاهَا بِأَيْدٍ وَإِنَّا لَمُوسِعُونَ",
+    "terjemahan": "Dan langit, Kami bangun dengan kekuatan (Kami) dan sesungguhnya Kami benar-benar memperluas (nya).",
+    "topik_sains": "Ekspansi Alam Semesta",
+    "kategori": "Kosmologi",
+    "penjelasan": "Ayat ini menggambarkan proses ekspansi langit atau alam semesta. Teori Big Bang dalam kosmologi modern mengungkapkan bahwa alam semesta terus mengembang dari titik awal yang sangat kecil. Ini menunjukkan bahwa pengetahuan Al-Qur'an tentang penciptaan dan keadaan alam semesta sesuai dengan penemuan ilmiah yang ada saat ini.",
+    "tags": [
+      "Kebesaran Allah",
+      "Menuntut Ilmu"
+    ],
+    "videos": []
+  },
+  {
+    "id": 40,
+    "surah_id": 78,
+    "surah_nama": "النبأ",
+    "surah_nama_latin": "An-Naba",
+    "nomor_ayat": "6",
+    "teks_arab": "أَلَمْ نَجْعَلِ الْأَرْضَ مِرَاسًا",
+    "terjemahan": "Bukankah Kami telah menjadikan bumi sebagai hamparan?",
+    "topik_sains": "Bentuk dan Struktur Bumi",
+    "kategori": "Geologi",
+    "penjelasan": "Ayat ini mengungkapkan bahwa bumi memiliki bentuk dan struktur yang dirancang untuk mendukung kehidupan. Ilmu geologi modern menunjukkan bahwa bumi memiliki lapisan-lapisan yang berbeda dan proses geologi yang membentuk permukaan bumi, seperti tektonik lempeng. Ini menunjukkan betapa sempurnanya ciptaan Allah dalam menyiapkan bumi untuk makhluk hidup.",
+    "tags": [
+      "Kebesaran Allah",
+      "Tafsir & Tadabur"
+    ],
+    "videos": []
+  },
+  {
+    "id": 41,
+    "surah_id": 23,
+    "surah_nama": "المؤمنون",
+    "surah_nama_latin": "Al-Mu'minun",
+    "nomor_ayat": "13",
+    "teks_arab": "ثُمَّ أَنشَأْنَاهُ خَلْقًا آخَرَ",
+    "terjemahan": "Kemudian Kami ciptakan dia (manusia) dalam bentuk yang lain.",
+    "topik_sains": "Proses Perkembangan Janin",
+    "kategori": "Embriologi",
+    "penjelasan": "Ayat ini merujuk pada proses penciptaan manusia yang melalui berbagai tahap perkembangan. Ilmu embriologi modern menjelaskan bahwa manusia mengalami beberapa fase perkembangan dari sel telur yang dibuahi hingga menjadi janin yang sempurna. Ini menunjukkan betapa detailnya proses penciptaan yang telah Allah tetapkan.",
+    "tags": [
+      "Kebesaran Allah",
+      "Tafsir & Tadabur"
+    ],
+    "videos": []
+  },
+  {
+    "id": 42,
+    "surah_id": 36,
+    "surah_nama": "يس",
+    "surah_nama_latin": "Yasin",
+    "nomor_ayat": "40",
+    "teks_arab": "لَن تَجِدَ لَهَا تَحَوُّلًا",
+    "terjemahan": "Dan tidak akan ada bagi matahari itu suatu tempat berpaling.",
+    "topik_sains": "Stabilitas Matahari",
+    "kategori": "Astronomi",
+    "penjelasan": "Ayat ini menekankan stabilitas matahari dan posisinya dalam tata surya. Dalam astronomi, matahari adalah pusat dari sistem tata surya dan memiliki peran yang vital dalam menjaga orbit planet-planet. Stabilitas ini sangat penting bagi kehidupan di bumi karena mempengaruhi iklim dan kondisi lingkungan.",
+    "tags": [
+      "Kebesaran Allah",
+      "Menuntut Ilmu"
+    ],
+    "videos": []
+  },
+  {
+    "id": 43,
+    "surah_id": 39,
+    "surah_nama": "الزمر",
+    "surah_nama_latin": "Az-Zumar",
+    "nomor_ayat": "21",
+    "teks_arab": "أَلَمْ تَرَ أَنَّ اللَّـهَ أَنزَلَ مِنَ السَّمَاءِ مَاءً فَأَخْرَجَ بِهِ ثَمَرَاتٍ مُخْتَلِفًا أَلْوَانُهَا",
+    "terjemahan": "Tidakkah kamu melihat bahwa Allah menurunkan air dari langit lalu mengeluarkan dengan air itu buah-buahan yang bermacam-macam warnanya?",
+    "topik_sains": "Proses Evaporasi dan Presipitasi",
+    "kategori": "Meteorologi",
+    "penjelasan": "Ayat ini menggambarkan siklus air, di mana air yang diturunkan dari langit berperan penting dalam pertumbuhan tanaman. Proses evaporasi dan presipitasi dalam siklus hidrologi menunjukkan bagaimana air berperan dalam menghasilkan berbagai jenis buah-buahan dengan warna yang berbeda-beda, yang merupakan bagian dari keberagaman ciptaan Allah.",
+    "tags": [
+      "Kebesaran Allah",
+      "Syukur"
+    ],
+    "videos": []
+  },
+  {
+    "id": 44,
+    "surah_id": 16,
+    "surah_nama": "النَّحْل",
+    "surah_nama_latin": "An-Nahl",
+    "nomor_ayat": "10",
+    "teks_arab": "وَأَنزَلَ مِنَ السَّمَاءِ مَاءً فَأَحْيَا بِهِ الْأَرْضَ بَعْدَ مَوْتِهَا",
+    "terjemahan": "Dan Dia menurunkan air dari langit, lalu menghidupkan bumi setelah matinya.",
+    "topik_sains": "Hidrologi dan Kehidupan Tanaman",
+    "kategori": "Botani",
+    "penjelasan": "Ayat ini menjelaskan hubungan antara air dan kehidupan, di mana air yang diturunkan dari langit menghidupkan bumi. Dalam ilmu botani, air adalah unsur penting bagi pertumbuhan tanaman. Tanpa air, tanah akan mati dan tidak mampu mendukung kehidupan, menunjukkan kekuasaan Allah dalam menciptakan siklus kehidupan.",
+    "tags": [
+      "Kebesaran Allah",
+      "Syukur"
+    ],
+    "videos": []
+  },
+  {
+    "id": 45,
+    "surah_id": 2,
+    "surah_nama": "الْبَقَرَة",
+    "surah_nama_latin": "Al-Baqarah",
+    "nomor_ayat": "164",
+    "teks_arab": "إِنَّ فِي خَلْقِ السَّمَاوَاتِ وَالْأَرْضِ وَاخْتِلَافِ اللَّيْلِ وَالنَّهَارِ لَآيَاتٍ لِأُولِي الْأَلْبَابِ",
+    "terjemahan": "Sesungguhnya dalam penciptaan langit dan bumi serta perbedaan malam dan siang terdapat tanda-tanda (kebesaran Allah) bagi orang-orang yang berakal.",
+    "topik_sains": "Penciptaan Alam Semesta",
+    "kategori": "Kosmologi",
+    "penjelasan": "Ayat ini mengajak kita untuk merenungkan penciptaan langit dan bumi yang merupakan objek kajian utama dalam kosmologi. Ilmu pengetahuan modern menunjukkan bahwa alam semesta memiliki struktur yang sangat kompleks dan diatur oleh hukum-hukum fisika yang jelas. Perbedaan malam dan siang juga berkaitan dengan rotasi bumi yang menyebabkan siklus waktu yang berulang, yang menggambarkan keteraturan ciptaan Allah.",
+    "tags": [
+      "Kebesaran Allah",
+      "Menuntut Ilmu"
+    ],
+    "videos": []
+  },
 ]
 
 export function getSainsForAyat(surahId: number, nomorAyat: number): AyatSains | null {

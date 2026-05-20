@@ -5,10 +5,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AYAT_SAINS, KategoriSains, AyatSains } from "@/data/sains_ayat";
 import { KISAH_LIST } from "@/data/kaum_lampau_list";
 import { KisahCard } from "@/components/quran/KisahCard";
+import { KisahDetailModal } from "@/components/quran/KisahDetailModal";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Loader2, Atom } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { useRestoreScroll } from "@/hooks/useScrollRestore";
 
 interface PenemuMuslim {
   id: string;
@@ -18,6 +21,7 @@ interface PenemuMuslim {
   wilayah_peradaban: string;
   bidang_ilmu: string;
   profil_singkat: string;
+  agama?: string;
 }
 
 type FilterKey = "Semua" | KategoriSains;
@@ -35,6 +39,22 @@ const FILTER_ITEMS: { key: FilterKey; icon: string; label: string }[] = [
 
 function SainsCard({ item, index }: { item: AyatSains; index: number }) {
   const [expanded, setExpanded] = React.useState(false);
+  const [arabResmi, setArabResmi] = React.useState(item.teks_arab);
+  const [terjemahResmi, setTerjemahResmi] = React.useState(item.terjemahan);
+
+  React.useEffect(() => {
+    // Only fetch if expanded to save API calls, or fetch immediately. Let's fetch immediately for accurate arab text.
+    fetch(`/api/ayat-resmi?surah=${item.surah_id}&ayat=${item.nomor_ayat.split('-')[0]}`)
+      .then(r => r.json())
+      .then(json => {
+        if (json.data) {
+          if (json.data.arab) setArabResmi(json.data.arab);
+          if (json.data.terjemah) setTerjemahResmi(json.data.terjemah);
+        }
+      })
+      .catch(() => {});
+  }, [item.surah_id, item.nomor_ayat]);
+
   const firstPara = item.penjelasan.split('\n\n')[0];
   const shortDesc = firstPara.length > 120 ? firstPara.slice(0, 120) + "…" : firstPara;
 
@@ -62,7 +82,7 @@ function SainsCard({ item, index }: { item: AyatSains; index: number }) {
           style={{ color: "var(--gold-light)" }}
           dir="rtl"
         >
-          {item.teks_arab}
+          {arabResmi}
         </p>
         <p className="relative z-10 font-cairo text-xs mt-1" style={{ color: "var(--text3)" }}>
           QS. {item.surah_nama_latin} : {item.nomor_ayat}
@@ -125,6 +145,15 @@ function SainsCard({ item, index }: { item: AyatSains; index: number }) {
           >
             {/* Divider */}
             <div className="h-px" style={{ background: "linear-gradient(to right, transparent, rgba(56,189,248,0.2), transparent)" }} />
+
+            {/* Translation */}
+            <div className="p-4" style={{ background: "rgba(10,21,32,0.6)" }}>
+              <p className="font-cairo text-sm leading-relaxed italic text-[var(--text1)]">
+                &quot;{terjemahResmi}&quot;
+              </p>
+            </div>
+
+            <div className="h-px" style={{ background: "linear-gradient(to right, transparent, rgba(201,163,90,0.15), transparent)" }} />
 
             {/* Full explanation */}
             <div className="p-4" style={{ background: "rgba(6,13,18,0.6)" }}>
@@ -223,6 +252,7 @@ function SainsCard({ item, index }: { item: AyatSains; index: number }) {
 }
 
 function TafsirSainsContent() {
+  useRestoreScroll();
   const searchParams = useSearchParams();
   const router = useRouter();
   
@@ -232,8 +262,10 @@ function TafsirSainsContent() {
   
   const [tokohData, setTokohData] = React.useState<PenemuMuslim[] | null>(null);
   const [tokohLoading, setTokohLoading] = React.useState(false);
+  const [filterAgama, setFilterAgama] = React.useState<'semua' | 'muslim' | 'non_muslim'>('semua');
 
   const [subKatSejarah, setSubKatSejarah] = React.useState<string>('semua');
+  const [selectedKisah, setSelectedKisah] = React.useState<any | null>(null);
 
   const filtered = activeFilter === "Semua"
     ? AYAT_SAINS
@@ -451,9 +483,27 @@ function TafsirSainsContent() {
       ) : activeTab === "tokoh" ? (
         /* Grid Tokoh Sains */
         <div className="px-4 pt-6 max-w-5xl mx-auto w-full">
-          <p className="font-cairo text-sm mb-6" style={{ color: "var(--text2)" }}>
-            Ilmuwan dan pemikir besar dalam peradaban Islam dan kaitannya dengan ayat-ayat alam semesta.
-          </p>
+          <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
+            <p className="font-cairo text-sm text-[var(--text2)] max-w-xl">
+              Ilmuwan dan pemikir besar dalam peradaban Islam dan kaitannya dengan ayat-ayat alam semesta.
+            </p>
+            <div className="flex gap-2">
+              {(['semua', 'muslim', 'non_muslim'] as const).map(f => (
+                <button
+                  key={f}
+                  onClick={() => setFilterAgama(f)}
+                  className="font-cairo text-xs font-bold px-3 py-1.5 rounded-full transition-all border whitespace-nowrap"
+                  style={{
+                    background: filterAgama === f ? 'rgba(201,163,90,0.15)' : 'rgba(10,21,32,0.5)',
+                    border: filterAgama === f ? '1px solid rgba(201,163,90,0.4)' : '1px solid rgba(201,163,90,0.1)',
+                    color: filterAgama === f ? 'var(--gold)' : 'var(--text3)',
+                  }}
+                >
+                  {f === 'semua' ? '🌐 Semua' : f === 'muslim' ? '☪️ Muslim' : '✦ Non Muslim'}
+                </button>
+              ))}
+            </div>
+          </div>
           
           {tokohLoading ? (
             <div className="flex flex-col items-center justify-center py-20">
@@ -465,67 +515,95 @@ function TafsirSainsContent() {
               <p>Tidak ada data tokoh yang tersedia.</p>
             </div>
           ) : (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.4 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-            >
-              {tokohData.map((tokoh, idx) => {
-                const match = tokoh.nama_ilmuwan.match(/^(.*?)\s*\((.*?)\)$/);
-                const cleanName = match ? match[1].trim() : tokoh.nama_ilmuwan;
-                const status = match ? match[2].trim() : null;
-                const isMuslim = status?.toLowerCase() === "muslim";
-                const safeId = tokoh.id;
-                
+            <>
+              {(() => {
+                const tokohFiltered = (tokohData || []).filter(t => {
+                  if (filterAgama === 'semua') return true;
+                  const match = t.nama_ilmuwan.match(/^(.*?)\s*\((.*?)\)$/);
+                  const status = match ? match[2].trim().toLowerCase() : '';
+                  const agama = (t.agama || status || '').toLowerCase();
+                  
+                  if (filterAgama === 'muslim') return agama === 'muslim' || agama === '';
+                  if (filterAgama === 'non_muslim') return agama !== 'muslim' && agama !== '';
+                  return true;
+                });
+
+                if (tokohFiltered.length === 0) {
+                  return (
+                    <div className="text-center py-10" style={{ color: "var(--text3)" }}>
+                      <p>Tidak ada tokoh yang sesuai dengan filter.</p>
+                    </div>
+                  );
+                }
+
                 return (
                   <motion.div
-                    key={safeId || idx}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.05 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.4 }}
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
                   >
-                    <Link href={`/tafsir-sains/tokoh/${tokoh.id}`} key={tokoh.id}>
-                      <div className="bg-[var(--dark2)] border border-[var(--gold-border)] rounded-2xl p-5 hover:border-[var(--teal-500)] transition-all cursor-pointer h-full">
-                        {/* Header: Avatar + Nama + Badge */}
-                        <div className="flex items-start gap-3 mb-4">
-                          <div className="w-12 h-12 rounded-full bg-[var(--teal-600)] flex items-center justify-center flex-shrink-0">
-                            <span className="text-white text-lg">⚛️</span>
-                          </div>
-                          <div>
-                            <h3 className="font-bold font-cinzel text-[var(--text1)] text-base leading-tight">
-                              {tokoh.nama_ilmuwan.replace(/\s*\(.*?\)\s*/g, '').trim()}
-                            </h3>
-                            {/* Badge Muslim/Non Muslim */}
-                            {tokoh.nama_ilmuwan.includes('Muslim') ? (
-                              <span className="font-cairo text-xs uppercase tracking-widest font-bold px-2 py-0.5 rounded-full bg-[var(--teal-600)]/20 text-[var(--teal-300)] border border-[var(--teal-500)]/30 mt-1 inline-block">
-                                Muslim
-                              </span>
-                            ) : (
-                              <span className="font-cairo text-xs uppercase tracking-widest font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 mt-1 inline-block">
-                                Non Muslim
-                              </span>
-                            )}
-                          </div>
-                        </div>
+                    {tokohFiltered.map((tokoh, idx) => {
+                      const match = tokoh.nama_ilmuwan.match(/^(.*?)\s*\((.*?)\)$/);
+                      const status = match ? match[2].trim() : null;
+                      const safeId = tokoh.id;
+                      
+                      return (
+                        <motion.div
+                          key={safeId || idx}
+                          initial={{ opacity: 0, y: 15 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: idx * 0.05 }}
+                        >
+                          <Link href={`/tafsir-sains/tokoh/${tokoh.id}`} key={tokoh.id}>
+                            <div className="bg-[var(--dark2)] border border-[var(--gold-border)] rounded-2xl p-5 hover:border-[var(--teal-500)] transition-all cursor-pointer h-full">
+                              {/* Header: Avatar + Nama + Badge */}
+                              <div className="flex items-start gap-3 mb-4">
+                                <div className="w-12 h-12 rounded-full bg-[var(--teal-600)] flex items-center justify-center flex-shrink-0">
+                                  <span className="text-white text-lg">⚛️</span>
+                                </div>
+                                <div>
+                                  <h3 className="font-bold font-cinzel text-[var(--text1)] text-base leading-tight">
+                                    {tokoh.nama_ilmuwan.replace(/\s*\(.*?\)\s*/g, '').trim()}
+                                  </h3>
+                                  {/* Badge Agama */}
+                                  <span className="font-cairo text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider"
+                                        style={{
+                                          background: (tokoh.agama === 'Muslim' || status === 'Muslim')
+                                            ? 'rgba(26,170,120,0.15)'
+                                            : 'rgba(201,163,90,0.15)',
+                                          border: (tokoh.agama === 'Muslim' || status === 'Muslim')
+                                            ? '1px solid rgba(26,170,120,0.3)'
+                                            : '1px solid rgba(201,163,90,0.3)',
+                                          color: (tokoh.agama === 'Muslim' || status === 'Muslim')
+                                            ? 'var(--teal-200)'
+                                            : 'var(--gold)',
+                                        }}>
+                                    {tokoh.agama || status || 'Muslim'}
+                                  </span>
+                                </div>
+                              </div>
 
-                        {/* Bidang Ilmu */}
-                        {tokoh.bidang_ilmu && (
-                          <p className="font-cairo text-xs font-bold text-[var(--teal-300)] mb-2">{tokoh.bidang_ilmu}</p>
-                        )}
+                              {/* Bidang Ilmu */}
+                              {tokoh.bidang_ilmu && (
+                                <p className="font-cairo text-xs font-bold text-[var(--teal-300)] mb-2">{tokoh.bidang_ilmu}</p>
+                              )}
 
-                        {/* Deskripsi singkat — 2 baris */}
-                        {tokoh.profil_singkat && (
-                          <p className="font-cairo text-sm text-[var(--text2)] line-clamp-2 leading-relaxed">
-                            {tokoh.profil_singkat}
-                          </p>
-                        )}
-                      </div>
-                    </Link>
+                              {/* Deskripsi singkat — 2 baris */}
+                              {tokoh.profil_singkat && (
+                                <p className="font-cairo text-sm text-[var(--text2)] line-clamp-2 leading-relaxed">
+                                  {tokoh.profil_singkat}
+                                </p>
+                              )}
+                            </div>
+                          </Link>
+                        </motion.div>
+                      );
+                    })}
                   </motion.div>
                 );
-              })}
-            </motion.div>
+              })()}
+            </>
           )}
         </div>
       ) : (
@@ -541,7 +619,8 @@ function TafsirSainsContent() {
               { id: 'semua', label: 'Semua', icon: '🌍' },
               { id: 'kaum_diazab', label: 'Kaum Diazab', icon: '⚡' },
               { id: 'kisah_pilihan', label: 'Kisah Pilihan', icon: '⭐' },
-              { id: 'kisah_nabi', label: 'Kisah Nabi', icon: '🌟' }
+              { id: 'kisah_nabi', label: 'Kisah Nabi', icon: '🌟' },
+              { id: 'sirah_nabawiyah', label: 'Sirah Nabawiyah', icon: '🌙' }
             ].map(tab => (
               <button 
                 key={tab.id}
@@ -565,24 +644,36 @@ function TafsirSainsContent() {
           </div>
 
           {/* Grid kisah */}
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <AnimatePresence mode="popLayout">
               {KISAH_LIST
-                .filter(k => subKatSejarah === 'semua' || k.kategori === subKatSejarah)
+                .filter(k => subKatSejarah === 'semua' || 
+                  k.kategori === subKatSejarah ||
+                  k.tipe_kisah === subKatSejarah)
                 .map((kisah, idx) => (
                   <motion.div
                     key={kisah.slug}
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ delay: idx * 0.05 }}
+                    transition={{ delay: idx * 0.03 }}
                   >
-                    <KisahCard {...kisah} />
+                    <KisahCard {...kisah} onClick={() => setSelectedKisah(kisah)} />
                   </motion.div>
                 ))
               }
             </AnimatePresence>
           </div>
+
+          {/* Modal overlay */}
+          <AnimatePresence>
+            {selectedKisah && (
+              <KisahDetailModal 
+                selectedKisah={selectedKisah}
+                onClose={() => setSelectedKisah(null)}
+              />
+            )}
+          </AnimatePresence>
         </div>
       )}
     </main>
@@ -597,7 +688,9 @@ export default function TafsirSainsPage() {
         <p className="font-cairo text-sm font-bold" style={{ color: "var(--gold-light)" }}>Memuat Halaman Sains...</p>
       </div>
     }>
-      <TafsirSainsContent />
+      <ErrorBoundary>
+        <TafsirSainsContent />
+      </ErrorBoundary>
     </React.Suspense>
   );
 }

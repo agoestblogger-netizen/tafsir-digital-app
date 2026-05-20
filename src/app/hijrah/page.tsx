@@ -5,6 +5,7 @@ import { CheckCircle2, Loader2 } from "lucide-react";
 import { PohonIman } from "@/components/specific/PohonIman";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { useRestoreScroll } from "@/hooks/useScrollRestore";
 
 // ─── Konstanta ────────────────────────────────────────────────────
 const TOTAL_DAYS = 21;
@@ -49,6 +50,7 @@ function getPlantLevel(progress: number): { emoji: string; label: string } {
 // ─── Page Component ───────────────────────────────────────────────
 export default function HijrahPage() {
   const router = useRouter();
+  useRestoreScroll();
   const [userId, setUserId] = React.useState<string>("");
   const [currentDay, setCurrentDay] = React.useState<number>(1);
   const [completedIds, setCompletedIds] = React.useState<Set<string>>(new Set());

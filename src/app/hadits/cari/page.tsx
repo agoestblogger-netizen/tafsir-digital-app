@@ -88,7 +88,7 @@ function CariHaditsInner() {
         className="sticky top-0 z-30 flex items-center gap-3 px-4 py-3"
         style={{ background: "rgba(6,13,18,0.95)", backdropFilter: "blur(16px)", borderBottom: "1px solid rgba(201,163,90,0.08)" }}
       >
-        <button onClick={() => router.back()} className="text-lg" style={{ color: "var(--text2)" }}>←</button>
+        <Link href="/hadits" className="text-lg" style={{ color: "var(--text2)" }}>←</Link>
         <span className="font-cinzel text-sm font-bold flex-1" style={{ color: "var(--gold-light)" }}>🔍 Cari Hadits</span>
       </div>
 

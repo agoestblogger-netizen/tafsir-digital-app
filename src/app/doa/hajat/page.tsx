@@ -5,9 +5,12 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Search, ArrowRight } from 'lucide-react'
 import { HAJAT_INFO, TemaHajat, getByHajat } from '@/data/doa_qurani'
+import { BackButton } from '@/components/ui/BackButton'
+import { useRestoreScroll } from '@/hooks/useScrollRestore'
 
 export default function HajatIndexPage() {
   const router = useRouter()
+  useRestoreScroll()
 
   return (
     <div className="min-h-screen pb-24 font-cairo">
@@ -15,9 +18,9 @@ export default function HajatIndexPage() {
       <section className="relative overflow-hidden bg-gradient-to-b from-[var(--dark3)] to-[var(--dark)] pt-16 pb-8 px-4 sm:px-6 lg:px-8 border-b border-[var(--gold-border)]">
         <div className="arabesque-bg opacity-30"></div>
         <div className="relative max-w-4xl mx-auto">
-          <button onClick={() => router.push('/doa')} className="font-cairo flex items-center gap-2 text-[var(--text2)] hover:text-[var(--gold-light)] mb-6 transition-colors w-fit">
-            <ArrowLeft className="w-4 h-4" /> Kembali
-          </button>
+          <div className="mb-6">
+            <BackButton />
+          </div>
           
           <div className="flex items-center gap-3 mb-2">
             <Search className="w-6 h-6 text-[var(--gold)]" />

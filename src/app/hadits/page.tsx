@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { getHaditsHariIni } from '@/lib/api/hadits';
 import HaditsHomeClient from './HaditsHomeClient';
 
@@ -8,5 +9,9 @@ export const metadata = {
 
 export default async function HaditsPage() {
   const haditsHariIni = await getHaditsHariIni();
-  return <HaditsHomeClient haditsHariIni={haditsHariIni} />;
+  return (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <HaditsHomeClient haditsHariIni={haditsHariIni} />
+    </React.Suspense>
+  );
 }

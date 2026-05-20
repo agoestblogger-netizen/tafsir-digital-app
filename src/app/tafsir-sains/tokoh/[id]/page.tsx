@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
+import { BackButton } from "@/components/ui/BackButton";
 // ─── Interfaces ─────────────────────────────────────────────────
 interface PenemuMuslim {
   id: string;
@@ -28,6 +29,7 @@ interface PenemuMuslim {
   renungan: string | null;
   renungan_kosmetik: string | null;
   created_at: string;
+  agama?: string;
 }
 
 // ─── Helper Functions ───────────────────────────────────────────
@@ -208,6 +210,7 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
           renungan: raw.Renungan || raw.renungan,
           renungan_kosmetik: raw.renungan_kosmetik || null,
           created_at: raw.created_at,
+          agama: raw.agama,
         };
 
         setData(mappedData);
@@ -316,12 +319,7 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
     return (
       <main className="min-h-screen bg-slate-50/50 flex flex-col items-center justify-center p-6 text-center">
         <p className="text-red-500 mb-4">{error || "Data tidak ditemukan."}</p>
-        <button
-          onClick={() => router.back()}
-          className="px-6 py-2 rounded-full bg-primary text-primary-foreground font-medium"
-        >
-          Kembali
-        </button>
+        <BackButton />
       </main>
     );
   }
@@ -335,12 +333,7 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
       {/* ─── Navigation Bar ─── */}
       <nav className="px-6 pt-12 pb-4 sticky top-0 bg-background/80 dark:bg-gray-900/90 backdrop-blur-md z-30 border-b border-gold/20 dark:border-gray-700">
         <div className="flex items-center justify-between">
-          <button
-            onClick={() => router.back()}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 dark:bg-gray-800 border border-border/50 dark:border-gray-700 shadow-sm text-sm font-semibold text-foreground/80 dark:text-gray-200 hover:bg-white dark:hover:bg-gray-700 transition-all"
-          >
-            <ArrowLeft className="w-4 h-4" /> Jejak Al-Qur&apos;an di Alam Semesta
-          </button>
+          <BackButton label="Jejak Al-Qur'an di Alam Semesta" />
         </div>
       </nav>
 
@@ -352,44 +345,51 @@ export default function PenemuDetailPage({ params }: { params: Promise<{ id: str
           transition={{ duration: 0.5 }}
           className="flex flex-col gap-4"
         >
-          {(() => {
-            const match = data.nama_ilmuwan.match(/^(.*?)\s*\((.*?)\)$/);
-            const cleanName = match ? match[1].trim() : data.nama_ilmuwan;
-            const status = match ? match[2].trim() : null;
-            const isMuslim = status?.toLowerCase() === "muslim";
+                  {(() => {
+                    const match = data.nama_ilmuwan.match(/^(.*?)\s*\((.*?)\)$/);
+                    const cleanName = match ? match[1].trim() : data.nama_ilmuwan;
+                    const status = match ? match[2].trim() : null;
+                    const isMuslim = data.agama === 'Muslim' || status === 'Muslim';
 
-            return (
-              <>
-                {/* Badge Kategori & Status */}
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="inline-flex max-w-max items-center gap-1.5 px-3 py-1 rounded-full bg-gold/10 border border-gold/20 text-gold text-xs font-bold uppercase tracking-widest">
-                    <Atom className="w-3.5 h-3.5" />
-                    {data.bidang_ilmu}
-                  </div>
-                  
-                  {status && (
-                    <div className={`inline-flex max-w-max items-center px-3 py-1 rounded-full border text-xs font-bold uppercase tracking-widest ${
-                      isMuslim ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-50 text-slate-600 border-slate-200"
-                    }`}>
-                      {status}
-                    </div>
-                  )}
-                </div>
+                    return (
+                      <>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <div className="inline-flex max-w-max items-center gap-1.5 px-3 py-1 rounded-full bg-gold/10 border border-gold/20 text-gold text-xs font-bold uppercase tracking-widest">
+                            <Atom className="w-3.5 h-3.5" />
+                            {data.bidang_ilmu}
+                          </div>
+                          
+                          {/* Badge Agama */}
+                          <div className="inline-flex max-w-max items-center px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-widest"
+                                style={{
+                                  background: isMuslim
+                                    ? 'rgba(26,170,120,0.15)'
+                                    : 'rgba(201,163,90,0.15)',
+                                  border: isMuslim
+                                    ? '1px solid rgba(26,170,120,0.3)'
+                                    : '1px solid rgba(201,163,90,0.3)',
+                                  color: isMuslim
+                                    ? 'var(--teal-200)'
+                                    : 'var(--gold)',
+                                }}>
+                            {data.agama || status || 'Muslim'}
+                          </div>
+                        </div>
 
-                <div>
-                  <h1 
-                    onClick={() => fetchWikipediaData(cleanName, 'tokoh')}
-                    className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight mb-1 hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer transition-colors"
-                  >
-                    {cleanName}
-                  </h1>
-                  <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 italic mb-6">
-                    {data.julukan}
-                  </p>
-                </div>
-              </>
-            );
-          })()}
+                        <div>
+                          <h1 
+                            onClick={() => fetchWikipediaData(cleanName, 'tokoh')}
+                            className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight mb-1 hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer transition-colors"
+                          >
+                            {cleanName}
+                          </h1>
+                          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 italic mb-6">
+                            {data.julukan}
+                          </p>
+                        </div>
+                      </>
+                    );
+                  })()}
 
           <div className="flex flex-wrap gap-3 mt-2">
             {data.tahun_hidup && (

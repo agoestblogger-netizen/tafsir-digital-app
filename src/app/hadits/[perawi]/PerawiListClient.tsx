@@ -5,8 +5,9 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { PERAWI_LIST, getHaditsList, type Hadits } from "@/lib/api/hadits";
+import { ekstrakInti } from "@/lib/ekstrak-inti-hadits";
 
-const LIMIT = 20;
+const LIMIT = 50;
 
 export default function PerawiListClient() {
   const params = useParams();
@@ -62,7 +63,7 @@ export default function PerawiListClient() {
         className="sticky top-0 z-30 flex items-center gap-3 px-4 py-3"
         style={{ background: "rgba(6,13,18,0.95)", backdropFilter: "blur(16px)", borderBottom: "1px solid rgba(201,163,90,0.08)" }}
       >
-        <button onClick={() => router.back()} className="text-lg font-cairo" style={{ color: "var(--text2)" }}>←</button>
+        <Link href="/hadits?tab=perawi" className="text-lg font-cairo" style={{ color: "var(--text2)" }}>←</Link>
         <span className="font-cinzel text-base md:text-xl font-bold flex-1" style={{ color: "var(--gold-light)" }}>{perawi.name}</span>
         {totalHadits > 0 && (
           <span className="font-cairo text-xs uppercase tracking-widest text-[var(--text3)]">{totalHadits.toLocaleString('id-ID')} hadits</span>
@@ -128,43 +129,38 @@ export default function PerawiListClient() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(i * 0.03, 0.3) }}
               >
-                <Link
-                  href={`/hadits/${perawiId}/${h.number}`}
-                  className="flex flex-col gap-2 p-4 rounded-2xl block transition-all"
-                  style={{ background: "rgba(10,21,32,0.85)", border: "1px solid rgba(201,163,90,0.08)" }}
-                >
-                  {/* Top row */}
-                  <div className="flex items-center justify-between">
-                    <span
-                      className="font-cairo text-xs uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
-                      style={{ background: "rgba(13,79,60,0.2)", border: "1px solid rgba(13,143,101,0.2)", color: "var(--teal-200)" }}
-                    >
-                      #{h.number}
+                <div className="rounded-2xl border p-4 transition-all hover:border-[rgba(201,163,90,0.3)]"
+                     style={{ background: 'rgba(10,21,32,0.85)', borderColor: 'rgba(201,163,90,0.15)' }}>
+
+                  {/* Nomor + badge */}
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-cairo text-[10px] font-bold px-2 py-0.5 rounded-full border border-[var(--gold-border)] text-[var(--gold)] bg-[var(--gold-pale)] uppercase tracking-wider">
+                      {perawi.name}
                     </span>
-                    <span className="font-cairo text-xs uppercase tracking-widest font-bold" style={{ color: "var(--gold)" }}>✓ {perawi.level}</span>
+                    <span className="font-cairo text-xs text-[var(--text3)]">No. {h.number}</span>
                   </div>
-                  {/* Arab */}
-                  <p dir="rtl" className="font-amiri text-2xl md:text-3xl text-right leading-loose line-clamp-3 text-[var(--gold-light)]">
+
+                  {/* Teks Arab — 2 baris */}
+                  <p className="font-amiri text-lg text-right leading-loose text-[var(--gold-light)] mb-2 line-clamp-2" dir="rtl">
                     {h.arab}
                   </p>
-                  {/* Transliterasi — hanya tampil jika tersedia dari API */}
-                  {(h as { transliteration?: string }).transliteration && (
-                    <p className="font-cairo text-sm italic text-right text-[var(--teal-200)] leading-relaxed mt-2 line-clamp-2">
-                      {(h as { transliteration?: string }).transliteration}
-                    </p>
-                  )}
-                  {/* Divider */}
-                  <div className="h-px bg-gradient-to-r from-transparent via-yellow-400/20 to-transparent my-3" />
-                  {/* Terjemahan */}
-                  <p className="font-cairo text-base leading-relaxed text-[var(--text1)] line-clamp-2">
-                    {h.id}
-                  </p>
-                  {/* Footer */}
-                  <div className="flex items-center justify-between pt-1">
-                    <span className="font-cairo text-xs text-[var(--text3)]">{perawi.name} · No. {h.number}</span>
-                    <span className="font-cairo text-sm font-semibold text-[var(--teal-200)]">→</span>
-                  </div>
-                </Link>
+
+                  {/* Intisari */}
+                  {(() => {
+                    const inti = ekstrakInti(h.id)
+                    return inti ? (
+                      <p className="font-cairo text-sm text-[var(--text2)] leading-relaxed italic mb-3 line-clamp-3">
+                        &ldquo;{inti}&rdquo;
+                      </p>
+                    ) : null
+                  })()}
+
+                  {/* Link detail */}
+                  <Link href={`/hadits/${perawiId}/${h.number}`}
+                     className="font-cairo text-xs font-bold text-[var(--teal-300)] hover:underline">
+                    Lihat Detail →
+                  </Link>
+                </div>
               </motion.div>
             ))}
           </AnimatePresence>

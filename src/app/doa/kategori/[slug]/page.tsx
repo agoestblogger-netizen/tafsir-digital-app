@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Search, BookOpen, Filter, ArrowRight } from 'lucide-react'
 import { KategoriDoa, getByKategori, DOA_QURANI, NABI_LIST } from '@/data/doa_qurani'
+import { BackButton } from '@/components/ui/BackButton'
+import { useRestoreScroll } from '@/hooks/useScrollRestore'
 
 const KATEGORI_TITLE: Record<string, string> = {
   rabbana: 'Doa Rabbana',
@@ -16,6 +18,7 @@ const KATEGORI_TITLE: Record<string, string> = {
 export default function KategoriDoaPage() {
   const params = useParams()
   const router = useRouter()
+  useRestoreScroll()
   const slug = params.slug as string
   
   const [searchQuery, setSearchQuery] = useState('')
@@ -51,9 +54,7 @@ export default function KategoriDoaPage() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
         <h1 className="text-2xl text-[var(--gold)] mb-4">Kategori tidak ditemukan</h1>
-        <button onClick={() => router.push('/doa')} className="text-[var(--teal-200)] flex items-center gap-2">
-          <ArrowLeft className="w-4 h-4" /> Kembali ke Beranda Doa
-        </button>
+        <BackButton label="Kembali ke Beranda Doa" />
       </div>
     )
   }
@@ -66,9 +67,9 @@ export default function KategoriDoaPage() {
       <section className="relative overflow-hidden bg-gradient-to-b from-[var(--dark3)] to-[var(--dark)] pt-16 pb-8 px-4 sm:px-6 lg:px-8 border-b border-[var(--gold-border)]">
         <div className="arabesque-bg opacity-30"></div>
         <div className="relative max-w-4xl mx-auto">
-          <button onClick={() => router.push('/doa')} className="font-cairo flex items-center gap-2 text-[var(--text2)] hover:text-[var(--gold-light)] mb-6 transition-colors w-fit">
-            <ArrowLeft className="w-4 h-4" /> Kembali
-          </button>
+          <div className="mb-6">
+            <BackButton />
+          </div>
           
           <div className="flex items-center gap-3 mb-2">
             <BookOpen className="w-6 h-6 text-[var(--gold)]" />

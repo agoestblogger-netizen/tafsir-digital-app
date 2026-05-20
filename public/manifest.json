@@ -1,12 +1,12 @@
 {
-  "name": "Tafsir Digital",
-  "short_name": "Tafsir Digital",
-  "description": "Aplikasi panduan spiritual dan tafsir Al-Qur'an eksklusif dari PT Sinergi Adhi Inovasi Digital",
+  "name": "Quranic Life Hacking",
+  "short_name": "Quranic LH",
+  "description": "Tafsir Al-Qur'an digital, kultum generator, hijrah tracker, dan lebih banyak lagi",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#ffffff",
-  "theme_color": "#10b981",
+  "background_color": "#060d12",
+  "theme_color": "#060d12",
   "lang": "id",
   "scope": "/",
   "icons": [

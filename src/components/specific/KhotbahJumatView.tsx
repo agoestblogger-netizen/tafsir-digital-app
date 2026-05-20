@@ -3,18 +3,13 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Copy, Share2, Star, CheckCircle, RefreshCcw, ArrowLeft, BookOpen, ScrollText } from 'lucide-react'
+import { TEMPLATE_KHOTBAH_JUMAT } from '@/lib/template-khotbah-jumat'
 
 // Interface based on generateKhotbahJumat output
 export interface KhotbahJumatOutput {
   judul: string;
   format: string;
   tema: string;
-  durasi_estimasi?: string;
-  durasi_per_bagian?: {
-    khotbah_pertama: number;
-    duduk_antara: number;
-    khotbah_kedua: number;
-  };
   persiapan_khatib: {
     catatan: string;
     salam_naik_mimbar: string;
@@ -44,6 +39,7 @@ export interface KhotbahJumatOutput {
   catatan_pelaksanaan: string[];
 }
 
+
 interface KhotbahJumatViewProps {
   konten: KhotbahJumatOutput
   recordId?: string
@@ -52,10 +48,44 @@ interface KhotbahJumatViewProps {
   isUsed?: boolean
   onToggleFavorite?: () => void
   onToggleUsed?: () => void
+  referensiDipilih?: any[]
+  metricsSection?: React.ReactNode
 }
 
+const DoaCard = ({ arab, latin, terjemah, sumber, label, color = '#C9A84C' }: any) => (
+  <div className="mt-4 p-6 sm:p-8 rounded-3xl" style={{ background: '#0a1624', border: '1px solid #1a2c42' }}>
+    {label && (
+      <p className="font-cairo text-xs uppercase tracking-widest text-white/40 mb-6 text-center font-semibold">
+        {label}
+      </p>
+    )}
+    {arab && (
+      <p className="font-amiri text-3xl sm:text-4xl leading-[2.2] sm:leading-[2.5] text-center" 
+         dir="rtl" style={{ color }}>
+        {arab}
+      </p>
+    )}
+    {latin && (
+      <p className="font-cairo text-sm sm:text-[15px] italic text-center mt-8 text-[#10b981]">
+        {latin}
+      </p>
+    )}
+    {terjemah && (
+      <p className="font-cairo text-sm sm:text-[15px] text-white/90 text-center mt-5 leading-relaxed">
+        "{terjemah}"
+      </p>
+    )}
+    {sumber && (
+      <p className="font-cairo text-xs uppercase tracking-[0.2em] text-center mt-8 font-semibold"
+         style={{ color: '#C9A84C' }}>
+        {sumber}
+      </p>
+    )}
+  </div>
+)
+
 export function KhotbahJumatView({
-  konten, recordId, isSaved, isFavorite = false, isUsed = false, onToggleFavorite, onToggleUsed
+  konten, recordId, isSaved, isFavorite = false, isUsed = false, onToggleFavorite, onToggleUsed, referensiDipilih, metricsSection
 }: KhotbahJumatViewProps) {
   const router = useRouter()
   const [copied, setCopied] = useState(false)
@@ -65,37 +95,132 @@ export function KhotbahJumatView({
   const isValidText = (text?: string) =>
     !!text && text.trim() !== '' && text.trim() !== '"""' && text.trim() !== '"'
 
+  const toStr = (val: any) => {
+    if (!val) return ''
+    if (typeof val === 'string') return val
+    return val.teks || val.arab || val.indonesia || val.terjemah || JSON.stringify(val)
+  }
+
   const handleCopyAll = () => {
-    // Basic copy implementation for Khotbah
     let fullText = `${konten.judul}\n(Khotbah Jum'at)\n\n`
     
-    fullText += `[Persiapan]\n${konten.persiapan_khatib?.catatan}\n${konten.persiapan_khatib?.salam_naik_mimbar}\n\n`
+    // Salam Persiapan
+    const salam = (konten as any).catatan_khatib?.salam ?? 
+                  (konten as any).pembuka?.salam ??
+                  konten.persiapan_khatib?.salam_naik_mimbar ??
+                  'Assalamu\'alaikum warahmatullahi wabarakatuh'
+    const salamStr = typeof salam === 'string' ? salam : 
+                     (salam as any)?.teks ?? JSON.stringify(salam)
+                     
+    fullText += `[Persiapan]\n${(konten as any).catatan_khatib?.catatan ?? konten.persiapan_khatib?.catatan ?? 'Pastikan untuk menyiapkan diri dengan baik...'}\nSalam: "${salamStr}"\n\n`
     
     // Khotbah 1
     fullText += `--- KHOTBAH PERTAMA ---\n`
-    fullText += `${konten.khotbah_pertama?.pembuka_hamdalah?.arab}\n${konten.khotbah_pertama?.syahadat?.arab}\n${konten.khotbah_pertama?.shalawat?.arab}\n\n`
-    fullText += `${konten.khotbah_pertama?.wasiat_taqwa}\n\n`
     
-    ;(konten.khotbah_pertama?.ayat_quran ?? []).forEach(a => {
-      fullText += `${a.arab}\n${a.latin}\nArtinya: ${a.terjemah}\n(${a.referensi})\n\n`
-    })
+    // Khutbatul Hajah
+    fullText += `[Khutbatul Hajah]\n${TEMPLATE_KHOTBAH_JUMAT.khutbatul_hajah.arab}\n${TEMPLATE_KHOTBAH_JUMAT.khutbatul_hajah.latin}\nArtinya: ${TEMPLATE_KHOTBAH_JUMAT.khutbatul_hajah.terjemah}\n\n`
+    
+    // Syahadat
+    fullText += `[Syahadat]\n${TEMPLATE_KHOTBAH_JUMAT.syahadat.arab}\n${TEMPLATE_KHOTBAH_JUMAT.syahadat.latin}\nArtinya: ${TEMPLATE_KHOTBAH_JUMAT.syahadat.terjemah}\n\n`
+    
+    // Shalawat Pembuka
+    fullText += `[Shalawat Pembuka]\n${TEMPLATE_KHOTBAH_JUMAT.shalawat_pembuka.arab}\n${TEMPLATE_KHOTBAH_JUMAT.shalawat_pembuka.latin}\nArtinya: ${TEMPLATE_KHOTBAH_JUMAT.shalawat_pembuka.terjemah}\n\n`
+    
+    // Wasiat Taqwa
+    fullText += `[Wasiat Taqwa]\n${toStr(konten.khotbah_pertama?.wasiat_taqwa)}\n\n`
+    
+    // Ayat Pendukung
+    const ayatList = (konten.khotbah_pertama as any)?.ayat_pendukung ?? konten.khotbah_pertama?.ayat_quran ?? []
+    if (ayatList.length > 0) {
+      fullText += `[Ayat Pendukung]\n`
+      ayatList.forEach((a: any) => {
+        fullText += `${a.arab ?? a.teks_arab}\n${a.latin ?? a.teks_latin ?? ''}\nArtinya: ${a.terjemah ?? a.arti}\n(${a.referensi ?? a.sumber ?? `QS. ${a.surah_nama}: ${a.nomor_ayat}`})\n\n`
+      })
+    }
 
-    fullText += `${konten.khotbah_pertama?.isi_khotbah}\n\n`
-    fullText += `${konten.khotbah_pertama?.penutup_khotbah_pertama?.arab}\n\n`
+    // Isi Utama
+    fullText += `[Isi Khotbah Utama]\n${toStr((konten.khotbah_pertama as any)?.isi_utama ?? konten.khotbah_pertama?.isi_khotbah)}\n\n`
+    
+    // Penutup & Istighfar
+    const penutup = (konten.khotbah_pertama as any)?.penutup ?? konten.khotbah_pertama?.penutup_khotbah_pertama
+    if (penutup) {
+      fullText += `[Penutup Khotbah Pertama]\n${toStr(penutup)}\n\n`
+    }
+    fullText += `أَقُولُ قَوْلِي هَذَا وَأَسْتَغْفِرُ اللَّهَ الْعَظِيمَ لِي وَلَكُمْ وَلِسَائِرِ الْمُسْلِمِينَ وَالْمُسْلِمَاتِ فَاسْتَغْفِرُوهُ إِنَّهُ هُوَ الْغَفُورُ الرَّحِيمُ\n`
+    fullText += `Aquulu qawlii haadzaa wa astaghfirullaahal 'azhiima lii wa lakum wa lisaa'iril muslimiina wal muslimaati fastaghfiruuhu innahuu huwal ghafuurur rahiim.\n`
+    fullText += `Artinya: Aku katakan perkataanku ini, dan aku memohon ampunan kepada Allah Yang Maha Agung untukku dan untukmu serta seluruh umat Islam laki-laki dan perempuan, maka mohonlah ampunan kepada-Nya, sesungguhnya Dia Maha Pengampun lagi Maha Penyayang.\n\n`
 
     // Duduk
     fullText += `--- DUDUK ANTARA DUA KHOTBAH ---\n`
-    fullText += `${konten.duduk_antara_dua_khotbah?.doa_duduk?.arab}\n\n`
+    fullText += `Khatib duduk sejenak ± 1-2 menit. Jamaah dianjurkan membaca istighfar dan shalawat dalam hati.\n`
+    fullText += `اللَّهُمَّ اغْفِرْ لِي وَارْحَمْنِي وَاجْبُرْنِي وَارْفَعْنِي وَارْزُقْنِي وَاهْدِنِي وَعَافِنِي\n`
+    fullText += `Allaahummaghfir lii warhamnii wajburnii warfa'nii warzuqnii wahdinii wa 'aafinii\n`
+    fullText += `Artinya: Ya Allah ampunilah aku, rahmatilah aku, perbaikilah keadaanku, angkatlah derajatku, berilah aku rezeki, tunjukkanlah aku, dan sehatkanlah aku.\n\n`
 
     // Khotbah 2
     fullText += `--- KHOTBAH KEDUA ---\n`
-    fullText += `${konten.khotbah_kedua?.pembuka?.arab}\n\n`
-    fullText += `${konten.khotbah_kedua?.wasiat_taqwa_2}\n\n`
-    fullText += `${konten.khotbah_kedua?.isi_khotbah_2}\n\n`
-    fullText += `${konten.khotbah_kedua?.shalawat_ibrahim?.arab}\n\n`
-    fullText += `${konten.khotbah_kedua?.doa_kaum_muslimin?.arab}\n\n`
-    fullText += `${konten.khotbah_kedua?.doa_penutup_khotbah?.arab}\n\n`
-    fullText += `${konten.khotbah_kedua?.penutup_khotbah?.arab}\n`
+    
+    // 2. Pembuka arab khotbah kedua
+    fullText += `[Pembuka]\n${TEMPLATE_KHOTBAH_JUMAT.pembuka_khotbah_kedua.arab}\n${TEMPLATE_KHOTBAH_JUMAT.pembuka_khotbah_kedua.latin}\nArtinya: ${TEMPLATE_KHOTBAH_JUMAT.pembuka_khotbah_kedua.terjemah}\n\n`
+    
+    // 3. Wasiat taqwa ringkas
+    const wasiatTaqwa = (konten.khotbah_kedua as any)?.wasiat_taqwa_ringkas || konten.khotbah_kedua?.wasiat_taqwa_2 || "Marilah kita senantiasa meningkatkan ketakwaan kita kepada Allah SWT di mana pun kita berada, dengan menjalankan segala perintah-Nya dan menjauhi segala larangan-Nya."
+    fullText += `[Wasiat Taqwa Ringkas]\n${toStr(wasiatTaqwa)}\n\n`
+    
+    // 4. Isi ringkas
+    const isiRingkasText = (konten.khotbah_kedua as any)?.isi_ringkas || konten.khotbah_kedua?.isi_khotbah_2 || "Semoga dengan khotbah yang singkat ini, kita dapat mengambil pelajaran berharga dan mengamalkannya dalam kehidupan sehari-hari demi kebaikan di dunia dan akhirat."
+    fullText += `[Isi Ringkas]\n${toStr(isiRingkasText)}\n\n`
+    
+    // 5. Shalawat Ibrahimiyah
+    fullText += `[Shalawat Ibrahimiyah]\n`
+    fullText += `${TEMPLATE_KHOTBAH_JUMAT.shalawat_ibrahimiyah.ayat.arab}\n`
+    fullText += `${TEMPLATE_KHOTBAH_JUMAT.shalawat_ibrahimiyah.ayat.latin}\n`
+    fullText += `Artinya: ${TEMPLATE_KHOTBAH_JUMAT.shalawat_ibrahimiyah.ayat.terjemah}\n\n`
+    fullText += `${TEMPLATE_KHOTBAH_JUMAT.shalawat_ibrahimiyah.doa.arab}\n`
+    fullText += `${TEMPLATE_KHOTBAH_JUMAT.shalawat_ibrahimiyah.doa.latin}\n`
+    fullText += `Artinya: ${TEMPLATE_KHOTBAH_JUMAT.shalawat_ibrahimiyah.doa.terjemah}\n\n`
+
+    // 6. Doa Pilihan Jamaah
+    const doaUser = (referensiDipilih ?? [])
+      .filter((r: any) => r.type === 'doa_quran')
+      
+    if (doaUser.length > 0) {
+      fullText += `[Doa Pilihan Jamaah]\n`
+      doaUser.forEach(r => {
+        const d = r.data ?? r
+        fullText += `${d.judul ?? r.judul ?? 'Doa'}\n`
+        if (d.arab || d.teks_arab) fullText += `${d.arab ?? d.teks_arab}\n`
+        if (d.latin || d.teks_latin) fullText += `${d.latin ?? d.teks_latin}\n`
+        if (d.terjemah) fullText += `Artinya: ${d.terjemah}\n`
+        fullText += `\n`
+      })
+    } else {
+      fullText += `[Doa Pilihan Jamaah]\n`
+      fullText += `رَبَّنَا تَقَبَّلْ مِنَّا إِنَّكَ أَنتَ السَّمِيعُ الْعَلِيمُ\n`
+      fullText += `Rabbana taqabbal minna innaka antas-Sami'ul 'Alim\n`
+      fullText += `Artinya: "Ya Tuhan kami, terimalah (amal) dari kami, sesungguhnya Engkaulah Yang Maha Mendengar lagi Maha Mengetahui."\n\n`
+    }
+
+    // 7. Doa Kaum Muslimin
+    fullText += `[Doa Untuk Kaum Muslimin]\n`
+    fullText += `${TEMPLATE_KHOTBAH_JUMAT.doa_kaum_muslimin.arab}\n`
+    fullText += `${TEMPLATE_KHOTBAH_JUMAT.doa_kaum_muslimin.latin}\n`
+    fullText += `Artinya: ${TEMPLATE_KHOTBAH_JUMAT.doa_kaum_muslimin.terjemah}\n\n`
+
+    // 8. Doa Sapu Jagad
+    fullText += `[Doa Penutup (Sapu Jagad)]\n`
+    fullText += `رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ وَأَدْخِلْنَا الْجَنَّةَ مَعَ الْأَبْرَارِ يَا عَزِيزُ يَا غَفَّارُ يَا رَبَّ الْعَالَمِينَ\n`
+    fullText += `Rabbaanaa aatinaa fid dunyaa hasanatan wa fil aakhirati hasanatan wa qinaa 'adzaabaan naar. Wa adkhilnal jannata ma'al abroor, yaa 'aziizu yaa ghaffaar yaa rabbal 'aalamiin\n`
+    fullText += `Artinya: "Ya Tuhan kami, berilah kami kebaikan di dunia dan kebaikan di akhirat, dan lindungilah kami dari azab neraka. Masukkan kami dalam surga bersama orang-orang yang baik, wahai Zat Yang Maha Mulia, Maha Pengampun, Tuhan semesta alam."\n\n`
+
+    // 9. Dzikir Penutup
+    fullText += `[Dzikir Penutup]\n`
+    fullText += `اذْكُرُوا اللَّهَ الْعَظِيمَ يَذْكُرْكُمْ وَاشْكُرُوهُ عَلَى نِعَمِهِ يَزِدْكُمْ وَلَذِكْرُ اللَّهِ أَكْبَرُ وَاللَّهُ يَعْلَمُ مَا تَصْنَعُونَ\n`
+    fullText += `Udzkurullaahal 'azhiima yadzkurkum wasyukruuhu 'alaa ni'amihii yazidkum wa ladzikrullaahi akbar, wallaahu ya'lamu maa tashna'uun\n`
+    fullText += `Artinya: Ingatlah Allah Yang Maha Agung niscaya Dia akan mengingatmu, syukurilah nikmat-Nya niscaya Dia akan menambahkannya, dan dzikirlah adalah yang terbesar. Allah mengetahui apa yang kalian kerjakan.\n\n`
+    
+    // 10. Instruksi Turun Mimbar
+    fullText += `[Setelah membaca ini, khatib turun dari mimbar. Muadzin segera mengumandangkan iqamat untuk shalat Jum'at dua rakaat.]\n`
 
     navigator.clipboard.writeText(fullText)
     setCopied(true)
@@ -170,176 +295,291 @@ export function KhotbahJumatView({
         </div>
 
         {/* 1. Persiapan Khatib */}
-        <section className="bg-sky-500/10 border border-sky-500/20 rounded-2xl p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-10">
-            <ScrollText className="w-24 h-24 text-sky-500" />
+        <section className="p-5 sm:p-6 rounded-2xl relative overflow-hidden"
+                 style={{ background: 'rgba(13, 31, 53, 0.8)', border: '1px solid rgba(30, 58, 95, 0.6)' }}>
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-[0.08] pointer-events-none">
+            <ScrollText className="w-24 h-24" style={{ color: '#4a9eda' }} />
           </div>
-          <div className="text-xs font-bold uppercase tracking-widest text-sky-400 mb-4">📋 Catatan Persiapan Khatib</div>
-          <div className="relative z-10 space-y-3">
-            <p className="text-[var(--text1)] text-sm">{cleanText(konten.persiapan_khatib?.catatan)}</p>
-            <div className="p-3 bg-sky-900/30 rounded-lg border border-sky-500/30">
-              <p className="font-bold text-sky-200">Salam: &quot;{cleanText(konten.persiapan_khatib?.salam_naik_mimbar)}&quot;</p>
-            </div>
+          <div className="relative z-10">
+            <p className="font-cairo text-sm uppercase tracking-wide mb-4 font-bold flex items-center gap-2"
+               style={{ color: '#4a9eda' }}>
+              <span className="text-base">📋</span> CATATAN PERSIAPAN KHATIB
+            </p>
+            <p className="font-cairo text-[15px] sm:text-base text-white/90 leading-relaxed text-justify mb-5">
+              {(konten as any).catatan_khatib?.catatan ?? 
+               konten.persiapan_khatib?.catatan ??
+               'Pastikan untuk menyiapkan diri dengan baik, ingatkan jamaah untuk tetap khusyu dan fokus. Sampaikan dengan nada yang lembut dan penuh keyakinan.'}
+            </p>
+            {(() => {
+              const salam = (konten as any).catatan_khatib?.salam ?? 
+                            (konten as any).pembuka?.salam ??
+                            konten.persiapan_khatib?.salam_naik_mimbar ??
+                            'Assalamu\'alaikum warahmatullahi wabarakatuh'
+              const salamStr = typeof salam === 'string' ? salam : 
+                               (salam as any)?.teks ?? JSON.stringify(salam)
+              return (
+                <div className="px-5 py-4 rounded-xl"
+                     style={{ background: 'rgba(10, 25, 45, 0.8)', border: '1px solid rgba(74, 158, 218, 0.3)' }}>
+                  <p className="font-cairo text-[15px] sm:text-base font-bold text-white/95" style={{ fontWeight: 700 }}>
+                    Salam: "{salamStr}"
+                  </p>
+                </div>
+              )
+            })()}
           </div>
         </section>
 
         {/* 2. Khotbah Pertama */}
-        <section className="border-l-4 border-[var(--teal-500)] bg-[var(--dark2)] rounded-r-2xl p-6 md:p-8 space-y-8 shadow-lg relative overflow-hidden">
-          <div className="text-sm font-bold tracking-widest text-[var(--teal-400)] mb-6 border-b border-[var(--teal-500)]/30 pb-4 flex items-center justify-between">
-            <span>━━━━ KHOTBAH PERTAMA ━━━━</span>
-            {konten.durasi_per_bagian?.khotbah_pertama && (
-              <span className="font-cairo text-xs text-[var(--text3)] font-normal normal-case flex items-center gap-1 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md">
-                ⏱ ~{konten.durasi_per_bagian.khotbah_pertama} menit
-              </span>
-            )}
+        <section className="border-l-4 border-[var(--teal-500)] bg-[var(--dark2)] rounded-r-2xl p-6 md:p-8 space-y-6 shadow-lg relative overflow-hidden">
+          <div className="font-cairo text-lg sm:text-xl font-bold uppercase tracking-[0.15em] text-[#10b981] mb-6 border-b border-[var(--teal-500)]/30 pb-4 flex items-center justify-center gap-3">
+            <span>━━━━</span> 
+            <span>KHOTBAH PERTAMA</span> 
+            <span>━━━━</span>
           </div>
           
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Hamdalah */}
-            <div className="space-y-2">
-              <div style={{ fontFamily: 'Amiri, serif', direction: 'rtl' }} className="text-2xl leading-loose text-[var(--text1)] text-right">{cleanText(konten.khotbah_pertama?.pembuka_hamdalah?.arab)}</div>
-              <p className="italic text-right text-[var(--teal-300)] text-sm">{cleanText(konten.khotbah_pertama?.pembuka_hamdalah?.latin)}</p>
-              <p className="text-sm text-[var(--text2)] leading-relaxed">{cleanText(konten.khotbah_pertama?.pembuka_hamdalah?.terjemah)}</p>
-            </div>
+            <DoaCard 
+              arab={cleanText(TEMPLATE_KHOTBAH_JUMAT.khutbatul_hajah.arab)}
+              latin={cleanText(TEMPLATE_KHOTBAH_JUMAT.khutbatul_hajah.latin)}
+              terjemah={cleanText(TEMPLATE_KHOTBAH_JUMAT.khutbatul_hajah.terjemah)}
+            />
             
             {/* Syahadat */}
-            <div className="space-y-2">
-              <div style={{ fontFamily: 'Amiri, serif', direction: 'rtl' }} className="text-2xl leading-loose text-[var(--text1)] text-right">{cleanText(konten.khotbah_pertama?.syahadat?.arab)}</div>
-              <p className="italic text-right text-[var(--teal-300)] text-sm">{cleanText(konten.khotbah_pertama?.syahadat?.latin)}</p>
-              <p className="text-sm text-[var(--text2)] leading-relaxed">{cleanText(konten.khotbah_pertama?.syahadat?.terjemah)}</p>
-            </div>
+            <DoaCard 
+              arab={cleanText(TEMPLATE_KHOTBAH_JUMAT.syahadat.arab)}
+              latin={cleanText(TEMPLATE_KHOTBAH_JUMAT.syahadat.latin)}
+              terjemah={cleanText(TEMPLATE_KHOTBAH_JUMAT.syahadat.terjemah)}
+            />
 
             {/* Shalawat */}
-            <div className="space-y-2">
-              <div style={{ fontFamily: 'Amiri, serif', direction: 'rtl' }} className="text-2xl leading-loose text-[var(--text1)] text-right">{cleanText(konten.khotbah_pertama?.shalawat?.arab)}</div>
-              <p className="italic text-right text-[var(--teal-300)] text-sm">{cleanText(konten.khotbah_pertama?.shalawat?.latin)}</p>
-              <p className="text-sm text-[var(--text2)] leading-relaxed">{cleanText(konten.khotbah_pertama?.shalawat?.terjemah)}</p>
-            </div>
+            <DoaCard 
+              arab={cleanText(TEMPLATE_KHOTBAH_JUMAT.shalawat_pembuka.arab)}
+              latin={cleanText(TEMPLATE_KHOTBAH_JUMAT.shalawat_pembuka.latin)}
+              terjemah={cleanText(TEMPLATE_KHOTBAH_JUMAT.shalawat_pembuka.terjemah)}
+            />
 
             {/* Wasiat Taqwa */}
-            <div className="p-4 bg-[var(--teal-900)]/20 border border-[var(--teal-500)]/20 rounded-xl my-6">
-              <p className="font-semibold text-[var(--teal-100)] text-center">{cleanText(konten.khotbah_pertama?.wasiat_taqwa)}</p>
+            <div className="border-l-2 border-[var(--teal-500)]/30 pl-4 py-2 my-4">
+              <p className="font-cairo text-sm sm:text-[15px] text-white/90 leading-relaxed text-justify italic">
+                {cleanText(toStr(konten.khotbah_pertama?.wasiat_taqwa))}
+              </p>
             </div>
 
             {/* Ayat */}
-            {konten.khotbah_pertama?.ayat_quran?.map((ayat, i) => (
-              <div key={i} className="my-6 p-6 bg-gradient-to-b from-[var(--dark)] to-[var(--dark3)] rounded-2xl border border-[var(--gold-border)]">
-                <div style={{ fontFamily: 'Amiri, serif', direction: 'rtl' }} className="text-3xl md:text-4xl leading-[2.5] text-[var(--gold)] text-center mb-6">
-                  {cleanText(ayat.arab)}
-                </div>
-                <p className="italic text-center text-[var(--teal-200)] text-sm mb-4">{cleanText(ayat.latin)}</p>
-                <p className="text-[var(--text1)] text-center leading-relaxed font-semibold mb-4">&quot;{cleanText(ayat.terjemah)}&quot;</p>
-                <div className="text-center text-xs text-[var(--gold)] tracking-widest uppercase">{cleanText(ayat.referensi)}</div>
-              </div>
-            ))}
+            {(() => {
+              const ayatList = (konten.khotbah_pertama as any)?.ayat_pendukung ?? konten.khotbah_pertama?.ayat_quran ?? []
+              return ayatList.map((ayat: any, i: number) => (
+                <DoaCard 
+                  key={i}
+                  arab={cleanText(ayat.arab ?? ayat.teks_arab)}
+                  latin={cleanText(ayat.latin ?? ayat.teks_latin)}
+                  terjemah={cleanText(ayat.terjemah ?? ayat.arti)}
+                  sumber={cleanText(ayat.referensi ?? ayat.sumber ?? `QS. ${ayat.surah_nama}: ${ayat.nomor_ayat}`)}
+                />
+              ))
+            })()}
 
             {/* Isi Khotbah */}
-            <div className="prose prose-invert max-w-none text-[var(--text1)] leading-loose whitespace-pre-line text-justify">
-              {cleanText(konten.khotbah_pertama?.isi_khotbah)}
-            </div>
+            <p className="font-cairo text-sm sm:text-[15px] text-white/90 leading-relaxed text-justify whitespace-pre-line mt-6">
+              {cleanText(toStr((konten.khotbah_pertama as any)?.isi_utama ?? konten.khotbah_pertama?.isi_khotbah))}
+            </p>
 
-            {/* Penutup Khotbah Pertama */}
-            <div className="pt-8 space-y-2 mt-8 border-t border-[var(--teal-500)]/20">
-              <div style={{ fontFamily: 'Amiri, serif', direction: 'rtl' }} className="text-2xl leading-loose text-[var(--text1)] text-right">{cleanText(konten.khotbah_pertama?.penutup_khotbah_pertama?.arab)}</div>
-              <p className="italic text-right text-[var(--teal-300)] text-sm">{cleanText(konten.khotbah_pertama?.penutup_khotbah_pertama?.latin)}</p>
-              <p className="text-sm text-[var(--text2)] leading-relaxed">{cleanText(konten.khotbah_pertama?.penutup_khotbah_pertama?.terjemah)}</p>
-            </div>
+            {/* Penutup Khotbah Pertama + Istighfar */}
+            {(() => {
+              const penutup = (konten.khotbah_pertama as any)?.penutup ?? konten.khotbah_pertama?.penutup_khotbah_pertama
+              return (
+                <div className="pt-6 space-y-4 mt-6 border-t border-[var(--teal-500)]/20">
+                  {penutup && (
+                    <p className="font-cairo text-sm sm:text-[15px] text-white/90 leading-relaxed text-justify">
+                      {cleanText(toStr(penutup))}
+                    </p>
+                  )}
+                  <DoaCard 
+                    arab="أَقُولُ قَوْلِي هَذَا وَأَسْتَغْفِرُ اللَّهَ الْعَظِيمَ لِي وَلَكُمْ وَلِسَائِرِ الْمُسْلِمِينَ وَالْمُسْلِمَاتِ فَاسْتَغْفِرُوهُ إِنَّهُ هُوَ الْغَفُورُ الرَّحِيمُ"
+                    latin="Aquulu qawlii haadzaa wa astaghfirullaahal 'azhiima lii wa lakum wa lisaa'iril muslimiina wal muslimaati fastaghfiruuhu innahuu huwal ghafuurur rahiim."
+                    terjemah="Aku katakan perkataanku ini, dan aku memohon ampunan kepada Allah Yang Maha Agung untukku dan untukmu serta seluruh umat Islam laki-laki dan perempuan, maka mohonlah ampunan kepada-Nya, sesungguhnya Dia Maha Pengampun lagi Maha Penyayang."
+                  />
+                </div>
+              )
+            })()}
           </div>
         </section>
 
         {/* 3. Duduk Antara Dua Khotbah */}
-        <section className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 text-center max-w-2xl mx-auto shadow-inner relative">
-          <div className="text-xs font-bold tracking-widest text-amber-500 mb-4 uppercase flex items-center justify-between">
-            <span>━━━ 🪑 DUDUK ANTARA DUA KHOTBAH ━━━</span>
-            {konten.durasi_per_bagian?.duduk_antara && (
-              <span className="font-cairo text-xs text-[var(--text3)] font-normal normal-case flex items-center gap-1 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md">
-                ⏱ ~{konten.durasi_per_bagian.duduk_antara} menit
-              </span>
-            )}
-          </div>
-          <p className="text-[var(--text2)] text-sm italic mb-6">{cleanText(konten.duduk_antara_dua_khotbah?.catatan)}</p>
-          <div style={{ fontFamily: 'Amiri, serif', direction: 'rtl' }} className="text-3xl leading-loose text-amber-400 mb-4">{cleanText(konten.duduk_antara_dua_khotbah?.doa_duduk?.arab)}</div>
-          <p className="italic text-amber-200/70 text-sm mb-2">{cleanText(konten.duduk_antara_dua_khotbah?.doa_duduk?.latin)}</p>
-          <p className="text-sm text-[var(--text1)] leading-relaxed">{cleanText(konten.duduk_antara_dua_khotbah?.doa_duduk?.terjemah)}</p>
+        <section className="p-6 rounded-2xl border border-[var(--gold-border)] bg-[var(--dark3)] text-center max-w-2xl mx-auto">
+          {/* Header */}
+          <p className="font-cinzel text-xs font-bold uppercase tracking-widest text-[var(--gold)] mb-6">
+            ——— 🪑 DUDUK ANTARA DUA KHOTBAH ———
+          </p>
+          
+          {/* Instruksi */}
+          <p className="font-cairo text-sm sm:text-[15px] italic text-justify text-white/90 mb-4">
+            Khatib duduk sejenak ± 1-2 menit. Jamaah dianjurkan membaca istighfar 
+            dan shalawat dalam hati.
+          </p>
+
+          {/* Doa duduk antara dua khotbah — HARDCODE */}
+          <p className="font-amiri text-3xl sm:text-4xl text-center leading-[2.2] sm:leading-[2.5] mt-6 text-[var(--gold)]" dir="rtl">
+            اللَّهُمَّ اغْفِرْ لِي وَارْحَمْنِي وَاجْبُرْنِي وَارْفَعْنِي وَارْزُقْنِي وَاهْدِنِي وَعَافِنِي
+          </p>
+          <p className="font-cairo text-sm sm:text-[15px] italic text-center mt-8 text-[#10b981]">
+            Allaahummaghfir lii warhamnii wajburnii warfa&apos;nii warzuqnii wahdinii wa &apos;aafinii
+          </p>
+          <p className="font-cairo text-sm sm:text-[15px] text-white/90 text-center mt-5 leading-relaxed">
+            "Ya Allah ampunilah aku, rahmatilah aku, perbaikilah keadaanku, angkatlah 
+            derajatku, berilah aku rezeki, tunjukkanlah aku, dan sehatkanlah aku."
+          </p>
         </section>
 
         {/* 4. Khotbah Kedua */}
-        <section className="border-l-4 border-purple-500 bg-[var(--dark2)] rounded-r-2xl p-6 md:p-8 space-y-8 shadow-lg relative overflow-hidden">
-          <div className="text-sm font-bold tracking-widest text-purple-400 mb-6 border-b border-purple-500/30 pb-4 flex items-center justify-between">
-            <span>━━━━ KHOTBAH KEDUA ━━━━</span>
-            {konten.durasi_per_bagian?.khotbah_kedua && (
-              <span className="font-cairo text-xs text-[var(--text3)] font-normal normal-case flex items-center gap-1 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md">
-                ⏱ ~{konten.durasi_per_bagian.khotbah_kedua} menit
-              </span>
-            )}
+        <section className="border-l-4 border-[var(--gold)] bg-[var(--dark2)] rounded-r-2xl p-6 md:p-8 space-y-6 shadow-lg relative overflow-hidden">
+          <div className="font-cairo text-lg sm:text-xl font-bold uppercase tracking-[0.15em] text-[var(--gold)] mb-6 border-b border-[var(--gold-border)]/30 pb-4 flex items-center justify-center gap-3">
+            <span>━━━━</span> 
+            <span>KHOTBAH KEDUA</span> 
+            <span>━━━━</span>
           </div>
           
           <div className="space-y-6">
-            {/* Pembuka */}
-            <div className="space-y-2">
-              <div style={{ fontFamily: 'Amiri, serif', direction: 'rtl' }} className="text-2xl leading-loose text-[var(--text1)] text-right">{cleanText(konten.khotbah_kedua?.pembuka?.arab)}</div>
-              <p className="italic text-right text-purple-300 text-sm">{cleanText(konten.khotbah_kedua?.pembuka?.latin)}</p>
-              <p className="text-sm text-[var(--text2)] leading-relaxed">{cleanText(konten.khotbah_kedua?.pembuka?.terjemah)}</p>
-            </div>
+            {/* 2. Pembuka arab khotbah kedua (TEMPLATE) */}
+            <DoaCard 
+              arab={cleanText(TEMPLATE_KHOTBAH_JUMAT.pembuka_khotbah_kedua.arab)}
+              latin={cleanText(TEMPLATE_KHOTBAH_JUMAT.pembuka_khotbah_kedua.latin)}
+              terjemah={cleanText(TEMPLATE_KHOTBAH_JUMAT.pembuka_khotbah_kedua.terjemah)}
+            />
 
-            {/* Wasiat 2 */}
-            <div className="p-4 bg-purple-900/20 border border-purple-500/20 rounded-xl my-6">
-              <p className="font-semibold text-purple-100 text-center">{cleanText(konten.khotbah_kedua?.wasiat_taqwa_2)}</p>
-            </div>
+            {/* 3. Wasiat taqwa ringkas */}
+            {(() => {
+              const wasiatTaqwa = (konten.khotbah_kedua as any)?.wasiat_taqwa_ringkas || konten.khotbah_kedua?.wasiat_taqwa_2 || "Marilah kita senantiasa meningkatkan ketakwaan kita kepada Allah SWT di mana pun kita berada, dengan menjalankan segala perintah-Nya dan menjauhi segala larangan-Nya."
+              return (
+                <div className="mt-8 p-6 sm:p-8 rounded-3xl" style={{ background: 'rgba(28, 19, 44, 0.6)', border: '1px solid rgba(75, 45, 115, 0.5)' }}>
+                  <p className="font-cairo text-[15px] sm:text-base font-semibold text-[#e9d5ff] leading-relaxed text-center">
+                    {cleanText(toStr(wasiatTaqwa))}
+                  </p>
+                </div>
+              )
+            })()}
 
-            {/* Isi Khotbah 2 */}
-            <div className="prose prose-invert max-w-none text-[var(--text1)] leading-loose whitespace-pre-line text-justify">
-              {cleanText(konten.khotbah_kedua?.isi_khotbah_2)}
-            </div>
+            {/* 4. Isi ringkas */}
+            {(() => {
+              const isiRingkas = (konten.khotbah_kedua as any)?.isi_ringkas || konten.khotbah_kedua?.isi_khotbah_2 || "Semoga dengan khotbah yang singkat ini, kita dapat mengambil pelajaran berharga dan mengamalkannya dalam kehidupan sehari-hari demi kebaikan di dunia dan akhirat."
+              return (
+                <p className="font-cairo text-sm sm:text-[15px] text-white/90 leading-relaxed text-justify whitespace-pre-line mt-6">
+                  {cleanText(toStr(isiRingkas))}
+                </p>
+              )
+            })()}
 
-            {/* Shalawat Ibrahim */}
-            <div className="my-6 p-6 bg-[var(--dark)] rounded-2xl border border-purple-500/30">
-              <div className="text-xs text-purple-400 mb-4 font-bold uppercase tracking-widest text-center">Shalawat Ibrahimiyah</div>
-              <div style={{ fontFamily: 'Amiri, serif', direction: 'rtl' }} className="text-2xl leading-loose text-[var(--text1)] text-right mb-4">{cleanText(konten.khotbah_kedua?.shalawat_ibrahim?.arab)}</div>
-              <p className="italic text-right text-purple-300 text-sm mb-4">{cleanText(konten.khotbah_kedua?.shalawat_ibrahim?.latin)}</p>
-              <p className="text-sm text-[var(--text2)] leading-relaxed">{cleanText(konten.khotbah_kedua?.shalawat_ibrahim?.terjemah)}</p>
-            </div>
+            {/* 5. Shalawat Ibrahimiyah (TEMPLATE) */}
+            <DoaCard 
+              label="SHALAWAT IBRAHIMIYAH"
+              arab={`${cleanText(TEMPLATE_KHOTBAH_JUMAT.shalawat_ibrahimiyah.ayat.arab)}\n\n${cleanText(TEMPLATE_KHOTBAH_JUMAT.shalawat_ibrahimiyah.doa.arab)}`}
+              latin={`${cleanText(TEMPLATE_KHOTBAH_JUMAT.shalawat_ibrahimiyah.ayat.latin)}\n\n${cleanText(TEMPLATE_KHOTBAH_JUMAT.shalawat_ibrahimiyah.doa.latin)}`}
+              terjemah={`${cleanText(TEMPLATE_KHOTBAH_JUMAT.shalawat_ibrahimiyah.ayat.terjemah)}\n\n${cleanText(TEMPLATE_KHOTBAH_JUMAT.shalawat_ibrahimiyah.doa.terjemah)}`}
+              sumber={cleanText(TEMPLATE_KHOTBAH_JUMAT.shalawat_ibrahimiyah.ayat.sumber)}
+            />
 
-            {/* Doa Kaum Muslimin */}
-            <div className="my-6 p-6 bg-[var(--dark)] rounded-2xl border border-purple-500/30">
-              <div className="text-xs text-purple-400 mb-4 font-bold uppercase tracking-widest text-center">Doa untuk Kaum Muslimin</div>
-              <div style={{ fontFamily: 'Amiri, serif', direction: 'rtl' }} className="text-2xl leading-loose text-[var(--text1)] text-right mb-4">{cleanText(konten.khotbah_kedua?.doa_kaum_muslimin?.arab)}</div>
-              <p className="italic text-right text-purple-300 text-sm mb-4">{cleanText(konten.khotbah_kedua?.doa_kaum_muslimin?.latin)}</p>
-              <p className="text-sm text-[var(--text2)] leading-relaxed">{cleanText(konten.khotbah_kedua?.doa_kaum_muslimin?.terjemah)}</p>
-            </div>
+            {/* 6. Doa Pilihan Jamaah (dari referensi user) */}
+            {(() => {
+              const doaUser = (referensiDipilih ?? [])
+                .filter((r: any) => r.type === 'doa_quran')
+              
+              if (doaUser.length === 0) {
+                return (
+                  <DoaCard 
+                    label="DOA PILIHAN JAMAAH"
+                    arab="رَبَّنَا تَقَبَّلْ مِنَّا إِنَّكَ أَنتَ السَّمِيعُ الْعَلِيمُ"
+                    latin="Rabbana taqabbal minna innaka antas-Sami'ul 'Alim"
+                    terjemah="Ya Tuhan kami, terimalah (amal) dari kami, sesungguhnya Engkaulah Yang Maha Mendengar lagi Maha Mengetahui."
+                    sumber="QS. Al-Baqarah: 127"
+                  />
+                )
+              }
+              
+              return (
+                <>
+                  <p className="font-cairo text-[10px] uppercase tracking-widest text-white/35 text-center mt-6">
+                    DOA PILIHAN JAMAAH
+                  </p>
+                  <p className="italic text-white/40 text-sm text-center mb-4">
+                    Marilah kita berdoa kepada Allah SWT...
+                  </p>
+                  {doaUser.map((r: any, i: number) => {
+                    const d = r.data ?? r
+                    return (
+                      <DoaCard 
+                        key={i}
+                        label={d.judul ?? r.judul}
+                        arab={d.arab ?? d.teks_arab}
+                        latin={d.latin ?? d.teks_latin}
+                        terjemah={d.terjemah}
+                        sumber={d.referensi ?? (d.surah_nama ? `QS. ${d.surah_nama}: ${d.nomor_ayat}` : undefined)}
+                      />
+                    )
+                  })}
+                </>
+              )
+            })()}
 
-            {/* Doa Penutup */}
-            <div className="my-6 p-6 bg-[var(--dark)] rounded-2xl border border-purple-500/30">
-              <div className="text-xs text-purple-400 mb-4 font-bold uppercase tracking-widest text-center">Doa Penutup (Sapu Jagat)</div>
-              <div style={{ fontFamily: 'Amiri, serif', direction: 'rtl' }} className="text-2xl leading-loose text-[var(--text1)] text-right mb-4">{cleanText(konten.khotbah_kedua?.doa_penutup_khotbah?.arab)}</div>
-              <p className="italic text-right text-purple-300 text-sm mb-4">{cleanText(konten.khotbah_kedua?.doa_penutup_khotbah?.latin)}</p>
-              <p className="text-sm text-[var(--text2)] leading-relaxed">{cleanText(konten.khotbah_kedua?.doa_penutup_khotbah?.terjemah)}</p>
-            </div>
+            {/* 7. Doa untuk kaum muslimin (TEMPLATE) */}
+            <DoaCard 
+              label="DOA UNTUK KAUM MUSLIMIN"
+              arab={cleanText(TEMPLATE_KHOTBAH_JUMAT.doa_kaum_muslimin.arab)}
+              latin={cleanText(TEMPLATE_KHOTBAH_JUMAT.doa_kaum_muslimin.latin)}
+              terjemah={cleanText(TEMPLATE_KHOTBAH_JUMAT.doa_kaum_muslimin.terjemah)}
+            />
 
-            {/* Penutup Turun Mimbar */}
-            <div className="pt-8 space-y-2 mt-8 border-t border-purple-500/20">
-              <div style={{ fontFamily: 'Amiri, serif', direction: 'rtl' }} className="text-2xl leading-loose text-[var(--text1)] text-right">{cleanText(konten.khotbah_kedua?.penutup_khotbah?.arab)}</div>
-              <p className="italic text-right text-purple-300 text-sm">{cleanText(konten.khotbah_kedua?.penutup_khotbah?.latin)}</p>
-              <p className="text-sm text-[var(--text2)] leading-relaxed mb-4">{cleanText(konten.khotbah_kedua?.penutup_khotbah?.terjemah)}</p>
-              <div className="p-3 bg-rose-500/10 rounded-lg border border-rose-500/20 mt-4 text-center">
-                <p className="font-bold text-rose-300 text-sm">{cleanText(konten.khotbah_kedua?.penutup_khotbah?.catatan_khatib)}</p>
-              </div>
+            {/* 8. Doa Sapu Jagad (HARDCODE) */}
+            <DoaCard 
+              label="DOA PENUTUP (SAPU JAGAD)"
+              arab="رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ وَأَدْخِلْنَا الْجَنَّةَ مَعَ الْأَبْرَارِ يَا عَزِيزُ يَا غَفَّارُ يَا رَبَّ الْعَالَمِينَ"
+              latin="Rabbaanaa aatinaa fid dunyaa hasanatan wa fil aakhirati hasanatan wa qinaa 'adzaabaan naar. Wa adkhilnal jannata ma'al abroor, yaa 'aziizu yaa ghaffaar yaa rabbal 'aalamiin"
+              terjemah="Ya Tuhan kami, berilah kami kebaikan di dunia dan kebaikan di akhirat, dan lindungilah kami dari azab neraka. Masukkan kami dalam surga bersama orang-orang yang baik, wahai Zat Yang Maha Mulia, Maha Pengampun, Tuhan semesta alam."
+            />
+
+            {/* 9. Dzikir penutup (HARDCODE) */}
+            <DoaCard 
+              label="DZIKIR PENUTUP"
+              arab="اذْكُرُوا اللَّهَ الْعَظِيمَ يَذْكُرْكُمْ وَاشْكُرُوهُ عَلَى نِعَمِهِ يَزِدْكُمْ وَلَذِكْرُ اللَّهِ أَكْبَرُ وَاللَّهُ يَعْلَمُ مَا تَصْنَعُونَ"
+              latin="Udzkurullaahal 'azhiima yadzkurkum wasyukruuhu 'alaa ni'amihii yazidkum wa ladzikrullaahi akbar, wallaahu ya'lamu maa tashna'uun"
+              terjemah="Ingatlah Allah Yang Maha Agung niscaya Dia akan mengingatmu, syukurilah nikmat-Nya niscaya Dia akan menambahkannya, dan dzikirlah adalah yang terbesar. Allah mengetahui apa yang kalian kerjakan."
+            />
+
+            {/* 10. Instruksi turun mimbar (HARDCODE) */}
+            <div className="mt-6 p-4 rounded-2xl bg-[#C9A84C]/10 border border-[#C9A84C]/30 text-center">
+              <p className="font-cairo text-sm text-[#C9A84C] font-semibold leading-relaxed">
+                Setelah membaca ini, khatib turun dari mimbar. Muadzin segera mengumandangkan 
+                iqamat untuk shalat Jum'at dua rakaat.
+              </p>
             </div>
           </div>
         </section>
 
         {/* 5. Catatan Pelaksanaan */}
-        <section className="glass-card p-6 rounded-2xl border-[var(--gold-border)] bg-[var(--dark)]">
-          <div className="flex items-center gap-2 text-[var(--gold)] mb-4">
-            <BookOpen className="w-5 h-5" />
-            <h3 className="font-bold uppercase tracking-widest text-sm">📝 Tata Cara Pelaksanaan</h3>
-          </div>
-          <ol className="list-decimal list-inside space-y-3 text-[var(--text2)] text-sm">
-            {(konten.catatan_pelaksanaan ?? []).map((note, i) => (
-              <li key={i} className="pl-2 leading-relaxed">{cleanText(note)}</li>
+        <section className="mt-8 p-6 rounded-2xl border border-[var(--gold-border)] bg-[var(--dark2)]">
+          <p className="font-cinzel text-xs font-bold uppercase tracking-widest text-[var(--gold)] mb-6">
+            📋 TATA CARA PELAKSANAAN
+          </p>
+          <ol className="font-cairo text-sm text-[var(--text2)] leading-relaxed space-y-4 list-none">
+            {[
+              'Khatib naik mimbar saat adzan dikumandangkan, langsung mengucap salam',
+              'Khotbah pertama: berdiri, bacakan susunan di atas, akhiri dengan istighfar',
+              'Duduk sejenak ± 1 menit antara dua khotbah',
+              'Khotbah kedua: lebih singkat dari khotbah pertama',
+              'Akhiri dengan doa penutup, lalu turun mimbar',
+              'Muadzin iqamat, laksanakan shalat Jum\'at 2 rakaat berjamaah',
+            ].map((step, i) => (
+              <li key={i} className="flex gap-4 items-start">
+                <span className="flex-shrink-0 font-cairo text-sm font-bold text-[var(--gold)]">
+                  {i + 1}.
+                </span>
+                <span>{step}</span>
+              </li>
             ))}
           </ol>
         </section>
+
+        {metricsSection}
 
       </div>
     </div>

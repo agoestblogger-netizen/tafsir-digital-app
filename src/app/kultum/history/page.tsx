@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Clock, Search, Trash2, Mic, PlayCircle, Star, CheckCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { BackButton } from '@/components/ui/BackButton'
+import { useRestoreScroll } from '@/hooks/useScrollRestore'
 
 type KultumHistory = {
   id: string
@@ -20,6 +22,7 @@ type FilterType = 'semua' | 'favorit' | 'belum_dipakai'
 
 export default function KultumHistoryPage() {
   const router = useRouter()
+  useRestoreScroll()
   const [history, setHistory] = useState<KultumHistory[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -109,9 +112,9 @@ export default function KultumHistoryPage() {
       <section className="relative overflow-hidden bg-gradient-to-b from-[var(--dark3)] to-[var(--dark)] pt-16 pb-8 px-4 sm:px-6 lg:px-8 border-b border-[var(--gold-border)]">
         <div className="arabesque-bg opacity-30"></div>
         <div className="relative max-w-4xl mx-auto">
-          <button onClick={() => router.push('/kultum')} className="font-cairo flex items-center gap-2 text-[var(--text2)] hover:text-[var(--gold-light)] mb-6 transition-colors w-fit">
-            <ArrowLeft className="w-4 h-4" /> Kembali ke Generator
-          </button>
+          <div className="mb-6">
+            <BackButton label="Kembali ke Generator" />
+          </div>
           
           <div className="flex items-center gap-3 mb-2">
             <Mic className="w-6 h-6 text-[var(--gold)]" />

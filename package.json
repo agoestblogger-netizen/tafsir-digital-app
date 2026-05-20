@@ -6,19 +6,27 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "label-hadits": "tsx scripts/ai-labeling-hadits.ts",
+    "seed-judul": "tsx scripts/seed-judul-bank.ts",
+    "update-matan": "tsx scripts/update-matan.ts",
+    "seed-sains": "tsx scripts/seed-sains-ayat.ts",
+    "seed-doa": "tsx scripts/seed-doa-qurani.ts",
+    "seed:embedding": "tsx scripts/seed-ayat-embedding.ts",
+    "seed:hadits-embedding": "tsx scripts/seed-hadits-embedding.ts"
   },
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.9",
     "@google/generative-ai": "^0.24.1",
     "@supabase/ssr": "^0.9.0",
-    "@supabase/supabase-js": "^2.99.0",
+    "@supabase/supabase-js": "^2.105.4",
     "@tailwindcss/typography": "^0.5.19",
     "clsx": "^2.1.1",
     "framer-motion": "^12.35.1",
     "lucide-react": "^0.577.0",
     "next": "16.1.6",
     "next-themes": "^0.4.6",
+    "node-fetch": "^3.3.2",
     "openai": "^6.27.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -31,9 +39,11 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
+    "tsx": "^4.22.3",
     "typescript": "^5"
   }
 }

@@ -1,7 +1,9 @@
+'use client'
 import React from 'react'
 import Link from 'next/link'
 import { getMustajab, HAJAT_INFO, TemaHajat, DOA_QURANI, NABI_LIST } from '@/data/doa_qurani'
 import { ArrowRight, BookOpen, Search, Heart, Sparkles, Shield, User, HeartHandshake } from 'lucide-react'
+import { useRestoreScroll } from '@/hooks/useScrollRestore'
 
 // Icon mapping for categories
 const CATEGORY_CARDS = [
@@ -12,6 +14,7 @@ const CATEGORY_CARDS = [
 ]
 
 export default function DoaPage() {
+  useRestoreScroll()
   const mustajabList = getMustajab()
   // Use a stable random based on the current date, to avoid hydration mismatch
   // However, in SSR nextjs, we can't reliably use Date.now() if it's rendered on server vs client.

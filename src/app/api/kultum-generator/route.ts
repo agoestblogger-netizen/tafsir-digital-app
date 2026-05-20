@@ -1,9 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
-import { createClient } from '@/lib/supabase/server'
-import { AYAT_SAINS } from '@/data/sains_ayat'
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! })
+export const maxDuration = 60 // Vercel: perpanjang timeout ke 60 detik
+export const dynamic = 'force-dynamic'
+import { getSupabaseAdmin } from '@/lib/supabase'
+import { AYAT_SAINS } from '@/data/sains_ayat'
+import { referensiToPromptContext, KultumReferensi as KultumReferensiOld } from '@/lib/kultum-references'
+import { fetchReferensiUntukTema, buildReferensiPrompt } from '@/lib/kultum-referensi'
+import { 
+  extractHaditsDariNarasi,
+  extractKalimatHaditsImplisit,
+  verifikasiHadits,
+  type HaditsTerverifikasi 
+} from '@/lib/kultum-verifikasi'
+
+const openai = new OpenAI({ 
+  apiKey: process.env.OPENAI_API_KEY!,
+  timeout: 120000 // 120 detik timeout built-in
+})
 
 function cariAyatSains(tema: string): typeof AYAT_SAINS[0] | null {
   const temaLower = tema.toLowerCase()
@@ -58,14 +72,6 @@ export interface KultumOutput {
   tema: string
   gaya_bahasa: string
   durasi_estimasi: string
-  durasi_per_bagian?: {
-    pembukaan: number
-    isi_utama: number
-    penutup: number
-    khotbah_pertama?: number
-    duduk_antara?: number
-    khotbah_kedua?: number
-  }
   bagian: {
     doa_pembuka: {
       arab: string
@@ -106,6 +112,14 @@ export interface KultumOutput {
     kesimpulan?: string
     ajakan_penutup?: string
     doa_penutup_tema?: string
+    doa_quran_penutup?: Array<{
+      pengantar?: string
+      arab: string
+      latin: string
+      terjemah: string
+      referensi: string
+    }>
+    doa_sapu_jagad?: string
     doa_penutup_majelis: {
       arab: string
       latin: string
@@ -113,238 +127,1071 @@ export interface KultumOutput {
       sumber: string
     }
   }
+  teks_lengkap?: string
 }
 
 const FORMAT_DURASI: Record<string, string> = {
   tausiyah: '2-5 menit',
   kultum: '5-15 menit',
   khotbah: '25-35 menit',
+  khotbah_jumat: '25-35 menit',
   ceramah: '30-60 menit',
+}
+
+interface VerifikasiResult {
+  referensi_terverifikasi: {
+    hadits: Array<{
+      arab: string
+      terjemah: string
+      perawi: string
+      nomor: string
+      topik_nama?: string
+      metode: 'strict' | 'fuzzy'
+      raw_dari_ai: string
+    }>
+  }
+  narasi_replaced: Array<{
+    original: string
+    replaced: string
+    reason: 'not_found' | 'verified_strict' | 'verified_fuzzy'
+    kalimat_dihapus?: string  // BARU
+  }>
+  narasi_bersih: string
+}
+
+/**
+ * Extract kalimat utuh yang mengandung teks tertentu.
+ * Kalimat = string antara dua titik (.) atau awal/akhir paragraf.
+ */
+function extractKalimatMengandung(
+  narasi: string, 
+  target: string
+): string | null {
+  const targetIdx = narasi.indexOf(target)
+  if (targetIdx === -1) return null
+  
+  // Cari boundary kalimat ke belakang (titik atau awal teks)
+  // Cari titik terakhir sebelum target
+  let startIdx = 0
+  for (let i = targetIdx - 1; i >= 0; i--) {
+    const char = narasi[i]
+    if (char === '.' || char === '\n') {
+      startIdx = i + 1
+      break
+    }
+  }
+  
+  // Cari boundary kalimat ke depan (titik atau akhir teks)
+  let endIdx = narasi.length
+  for (let i = targetIdx + target.length; i < narasi.length; i++) {
+    const char = narasi[i]
+    if (char === '.' || char === '\n') {
+      endIdx = i + 1  // include the period
+      break
+    }
+  }
+  
+  return narasi.slice(startIdx, endIdx).trim()
+}
+
+async function jalankanVerifikasiHadits(
+  narasiLengkap: string
+): Promise<VerifikasiResult> {
+  const detected = extractHaditsDariNarasi(narasiLengkap)
+  const detectedImplisit = extractKalimatHaditsImplisit(narasiLengkap)
+  
+  if (detected.length === 0 && detectedImplisit.length === 0) {
+    return {
+      referensi_terverifikasi: { hadits: [] },
+      narasi_replaced: [],
+      narasi_bersih: narasiLengkap
+    }
+  }
+  
+  const results = await Promise.all(
+    detected.map(d => verifikasiHadits(d))
+  )
+  
+  let narasiBersih = narasiLengkap
+  const haditsTerverifikasi: VerifikasiResult['referensi_terverifikasi']['hadits'] = []
+  const replaced: VerifikasiResult['narasi_replaced'] = []
+  
+  // 1. Proses Hadits Eksplisit
+  for (const r of results) {
+    if (r.found && r.data && r.metode) {
+      // VERIFIED — keep sebutan asli di narasi (atribusi benar)
+      haditsTerverifikasi.push({
+        arab: r.data.arab,
+        terjemah: r.data.terjemah,
+        perawi: r.data.perawi,
+        nomor: r.data.nomor,
+        topik_nama: r.data.topik_nama,
+        metode: r.metode,
+        raw_dari_ai: r.raw_dari_ai
+      })
+      replaced.push({
+        original: r.raw_dari_ai,
+        replaced: r.raw_dari_ai,
+        reason: r.metode === 'strict' ? 'verified_strict' : 'verified_fuzzy'
+      })
+    } else {
+      // NOT FOUND — HAPUS SELURUH KALIMAT yang mengandung atribusi ini
+      const kalimatYangDihapus = extractKalimatMengandung(
+        narasiBersih, 
+        r.raw_dari_ai
+      )
+      
+      if (kalimatYangDihapus) {
+        narasiBersih = narasiBersih.replace(kalimatYangDihapus, '').trim()
+        // Rapikan double space yang muncul setelah hapus
+        narasiBersih = narasiBersih.replace(/\s{2,}/g, ' ')
+      }
+      
+      replaced.push({
+        original: r.raw_dari_ai,
+        replaced: '[HAPUS - hadits tidak terverifikasi]',
+        reason: 'not_found',
+        kalimat_dihapus: kalimatYangDihapus ?? ''
+      })
+    }
+  }
+
+  // 2. Proses Hadits Implisit
+  const implisitDiNarasiBersih = extractKalimatHaditsImplisit(narasiBersih)
+  for (const kalimat of implisitDiNarasiBersih) {
+    narasiBersih = narasiBersih.replace(kalimat, '').trim()
+    narasiBersih = narasiBersih.replace(/\s{2,}/g, ' ')
+    
+    replaced.push({
+      original: kalimat,
+      replaced: '[HAPUS - hadits implisit]',
+      reason: 'not_found',
+      kalimat_dihapus: kalimat
+    })
+  }
+  
+  return {
+    referensi_terverifikasi: { hadits: haditsTerverifikasi },
+    narasi_replaced: replaced,
+    narasi_bersih: narasiBersih
+  }
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { format, sub_format, tema, kategori_tema, gaya_bahasa, user_id, durasi_menit } = body
+    console.log('=== GENERATOR REQUEST ===')
+    console.log('body keys:', Object.keys(body))
+    console.log('referensi_dipilih count:', body.referensi_dipilih?.length ?? 0)
+    console.log('referensi_dipilih[0]:', JSON.stringify(body.referensi_dipilih?.[0])?.slice(0, 200) ?? 'none')
+    console.log('========================')
+    
+    const { format, sub_format, tema, judul_override, kategori_tema, gaya_bahasa, user_id, durasi_menit, referensiDipilih, referensi_dipilih, semantic_expanded, kisah_id } = body
+
+    console.log('=== GENERATOR FORMAT DEBUG ===')
+    console.log('format received:', format)
+    console.log('isKhotbahJumat:', format === 'khotbah_jumat')
+    console.log('==============================')
+
+    const judulInstruction = judul_override
+      ? `\n\nJUDUL ${format.toUpperCase()} YANG HARUS DIGUNAKAN: "${judul_override}"\nGunakan judul ini persis untuk field "judul" di output JSON.`
+      : ''
 
     if (!format || !tema) {
-      return NextResponse.json(
-        { error: 'Format dan tema wajib diisi' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Format dan tema wajib diisi' }, { status: 400 })
     }
 
     const targetDurasi = durasi_menit || parseInt(FORMAT_DURASI[format.toLowerCase()]?.split('-')[0] || '10')
 
-    if (sub_format === 'khotbah_jumat') {
-      return await generateKhotbahJumat(tema, kategori_tema, gaya_bahasa, user_id, targetDurasi)
+    const isKisahMode = (kategori_tema === 'kisah_alquran' || kategori_tema === 'Kisah Al-Qur\'an') && kisah_id
+
+    const targetKata = Math.round(targetDurasi * 140)
+    const targetKataMin = Math.round(targetKata * 0.9)
+    const targetKataMax = Math.round(targetKata * 1.1)
+
+    let kisahData: any = null
+    let queryError: any = null
+    if (isKisahMode) {
+      const supabase = getSupabaseAdmin()
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(kisah_id)
+      const queryField = isUuid ? 'id' : 'slug'
+
+      const { data, error } = await supabase
+        .from('kaum_lampau')
+        .select(`
+          id,
+          slug,
+          nama,
+          nama_arab,
+          ringkasan,
+          latar_belakang,
+          kondisi_kaum,
+          kisah_lengkap,
+          azab_atau_kejadian,
+          pelajaran,
+          tipe_kisah,
+          referensi,
+          ayat_utama
+        `)
+        .eq(queryField, kisah_id)
+        .single()
+
+      console.log('kisahData:', data)
+      console.log('kisahError:', error)
+      queryError = error
+
+      if (error || !data) {
+        return NextResponse.json(
+          { error: `Kisah dengan id/slug '${kisah_id}' tidak ditemukan di database` },
+          { status: 404 }
+        )
+      }
+      kisahData = data
     }
 
-    const surahMatch = cariSurahByTema(tema)
-    const ayatSains = cariAyatSains(tema)
+    // Format referensi untuk prompt
+    const formatReferensiUntukPrompt = (refs: any[]): string => {
+      if (!refs || refs.length === 0) return '-'
+      
+      return refs.map((r, i) => {
+        const d = r.data ?? r  // data bisa di r.data atau langsung di r
+        
+        if (r.type === 'ayat_quran_db' || d.teks_arab || d.nomor_ayat) {
+          return `[AYAT ${i+1} - WAJIB MUNCUL VERBATIM]
+Arab: ${d.teks_arab ?? ''}
+Latin: ${d.teks_latin ?? ''}
+Terjemah: "${d.terjemah ?? ''}"
+Sumber: QS. ${d.surah_nama_latin ?? d.surah_nama ?? ''}: ${d.nomor_ayat ?? ''}`
+        }
+        
+        if (r.type === 'doa_quran' || d.arab || d.kategori === 'nabi' || d.kategori === 'rabbana') {
+          return `[DOA ${i+1} - WAJIB DISEBUT DAN DIBACAKAN]
+Nama: ${d.judul ?? r.judul ?? ''}
+Arab: ${d.arab ?? ''}
+Latin: ${d.latin ?? ''}
+Terjemah: "${d.terjemah ?? ''}"
+Konteks: ${d.konteks ?? ''}
+Sumber: ${d.referensi ?? ''}`
+        }
+        
+        if (r.type === 'hadits' || d.matan || d.arab) {
+          return `[HADITS ${i+1} - WAJIB DISEBUT]
+Arab: ${d.arab ?? d.matan ?? ''}
+Terjemah: "${d.terjemah ?? ''}"
+Perawi: ${d.perawi ?? ''}`
+        }
+        
+        return `[REFERENSI ${i+1}]: ${r.judul ?? JSON.stringify(d).slice(0, 100)}`
+      }).join('\n\n')
+    }
 
-    const ayatContext = surahMatch ? `
-PENTING: Tema ini berkaitan langsung dengan Surah ${surahMatch.surah_nama}.
-WAJIB gunakan ayat dari Surah ${surahMatch.surah_nama} (Surah ID: ${surahMatch.surah_id}) sebagai ayat utama.
-Pilih ayat yang paling relevan dengan tema "${tema}" dari surah ini.
-${ayatSains ? `\nTambahan konteks sains: ${ayatSains.topik_sains} — ${ayatSains.penjelasan.split('\n\n')[0]}` : ''}
-` : ayatSains ? `
-PENTING: Tema ini berkaitan dengan mukjizat ilmiah Al-Qur'an.
-Gunakan ayat ${ayatSains.surah_nama_latin} ayat ${ayatSains.nomor_ayat} sebagai ayat utama.
-Topik sains: ${ayatSains.topik_sains}
-Penjelasan: ${ayatSains.penjelasan.split('\n\n')[0]}
-Sertakan penjelasan ilmiah ini dalam bagian penjabaran_tafsir.
+    const refAktif = referensi_dipilih ?? referensiDipilih ?? []
+    console.log('referensi_dipilih full:', JSON.stringify(refAktif, null, 2).slice(0, 1000))
+    const referensiFormatted = formatReferensiUntukPrompt(refAktif)
+    
+    const referensiSection = refAktif.length > 0 ? `
+══════════════════════════════════
+REFERENSI WAJIB (${refAktif.length} ITEM — SEMUA HARUS MUNCUL):
+══════════════════════════════════
+${referensiFormatted}
+
+LARANGAN MUTLAK:
+- DILARANG skip salah satu referensi di atas
+- Semua ${refAktif.length} referensi HARUS muncul dalam kultum
+- Teks Arab HARUS disalin verbatim seperti di atas
+- Doa HARUS dibacakan lengkap (Arab + terjemah) dalam narasi
+- DILARANG tambah ayat/hadits/doa lain di luar daftar di atas
+
+LARANGAN ABSOLUT — TIDAK BOLEH DILANGGAR:
+- HANYA gunakan ayat/hadits/doa yang ada di daftar REFERENSI WAJIB di atas
+- DILARANG KERAS menambah ayat lain meski tampak relevan
+- DILARANG KERAS menambah hadits yang tidak ada di daftar
+- Jika ingin mengutip dalil → HANYA dari daftar referensi yang diberikan
+- Melanggar aturan ini = output GAGAL dan tidak valid
+
+CARA MENYISIPKAN AYAT YANG BENAR:
+- Sebutkan konteks → baca Arab verbatim → baca terjemah → jelaskan makna
+- JANGAN parafrase ayat — harus verbatim sesuai data yang diberikan
+- Jika ayat sudah disebut di pembuka → tidak perlu ulang di bagian lain
 ` : ''
 
-    const khotbahInstructions = format.toLowerCase() === 'khotbah' ? `
-FORMAT KHUSUS KHOTBAH:
-- Bagian "kesimpulan" WAJIB diisi dengan minimal 3 paragraf
-- Bagian "ajakan_penutup" WAJIB berisi kalimat motivasi yang kuat
-- Bagian "doa_penutup_tema" WAJIB berisi doa penutup bahasa Indonesia
-- Khotbah harus lebih panjang dan lebih formal dari kultum biasa
-` : ''
+    console.log('referensi_dipilih count:', refAktif.length)
+    console.log('referensi formatted preview:', referensiFormatted.slice(0, 300))
 
-    const prompt = `Kamu adalah ustadz/ulama yang berpengalaman membuat kultum dan khotbah Islam.
-Buat ${format} dengan tema "${tema}" ${kategori_tema ? `(kategori: ${kategori_tema})` : ''}.
-Gaya bahasa: ${gaya_bahasa || 'Semi-Formal'}.
-Estimasi durasi: ${targetDurasi} menit. Sesuaikan panjang konten dengan durasi ini.
-Panduan: 5 menit ≈ 500 kata, 10 menit ≈ 1000 kata, 30 menit ≈ 3000 kata
-Wajib sertakan estimasi pembagian durasi per bagian dalam response JSON di field "durasi_per_bagian" (angka dalam menit, total harus = ${targetDurasi} menit).
+    // Fetch automatic references based on theme
+    const autoReferensi = await fetchReferensiUntukTema(tema, format, semantic_expanded ?? null)
+    const autoReferensiPrompt = buildReferensiPrompt(autoReferensi)
 
-WAJIB output dalam format JSON berikut PERSIS:
+    // HANYA referensi yang dipilih user yang masuk to prompt AI, autoReferensi jadi fallback
+    const referensiContext = refAktif.length > 0
+      ? referensiSection
+      : autoReferensiPrompt
+
+    const originalPromptBase = (format.toLowerCase() === 'khotbah' && sub_format === 'khotbah_jumat') || format.toLowerCase() === 'khotbah_jumat'
+      ? `Kamu adalah khatib Jum'at yang berpengalaman. Buat naskah Khotbah Jum'at lengkap dengan tema "${tema}". Gaya bahasa: ${gaya_bahasa || 'Formal'}. Estimasi durasi total: ${targetDurasi} menit. Sesuaikan panjang isi khotbah dengan durasi ini agar tidak terlalu panjang. Panduan: 10 menit ≈ 600 kata, 30 menit ≈ 1500 kata.
+PENTING: Khotbah harus memiliki Khotbah Pertama dan Khotbah Kedua. Pastikan semua field terisi.
+WAJIB: Setiap ayat Al-Qur'an HARUS ditulis dengan format [[AYAT:surah_id:nomor_ayat]]
+surah_id = angka 1-114
+nomor_ayat = angka ayat saja (BUKAN gabungan surah+ayat)
+CONTOH BENAR: [[AYAT:22:78]] → Surah Al-Hajj ayat 78
+CONTOH SALAH: [[AYAT:22:2278]] atau [[AYAT:1813]] atau [[AYAT:ali_imran:35]]
+Output JSON dengan struktur PERSIS berikut:
 {
-  "judul": "Judul yang menarik dan relevan",
-  "format": "${format}",
+  "judul": "Judul khotbah yang relevan",
+  "format": "khotbah_jumat",
   "tema": "${tema}",
-  "gaya_bahasa": "${gaya_bahasa || 'Semi-Formal'}",
-  "durasi_estimasi": "${targetDurasi} menit",
-  "durasi_per_bagian": {
-    "pembukaan": 2,
-    "isi_utama": 6,
-    "penutup": 2
-  },
-  "bagian": {
-    "doa_pembuka": {
-      "arab": "اَلْحَمْدُ لِلّٰهِ رَبِّ الْعٰلَمِيْنَ وَبِهِ نَسْتَعِيْنُ عَلٰى أُمُوْرِ الدُّنْيَا وَالدِّيْنِ وَالصَّلاَةُ وَالسَّلاَمُ عَلٰى أَشْرَفِ الْأَنْبِيَاءِ وَالْمُرْسَلِيْنَ وَعَلٰى اٰلِهِ وَصَحْبِهِ أَجْمَعِيْنَ",
-      "latin": "Alhamdulillahi rabbil 'aalamiin, wa bihii nasta'iinu 'alaa umuurid dunyaa wad diin, wash shalaatu was salaamu 'alaa asyrafil ambiyaa'i wal mursaliin, wa 'alaa aalihii wa shahbihii ajma'iin",
-      "terjemah": "Segala puji bagi Allah Tuhan semesta alam, dengan-Nya kami memohon pertolongan atas urusan dunia dan agama, shalawat dan salam atas semulia-mulia para nabi dan rasul, beserta keluarga dan seluruh sahabatnya.",
-      "sumber": "Doa Pembuka Majelis Ilmu — HR. Tirmidzi & Abu Dawud"
-    },
-    "pembuka": {
-      "salam": "Assalamu'alaikum warahmatullahi wabarakatuh...",
-      "muqaddimah": "Paragraf hamdalah dan shalawat dalam bahasa Indonesia",
-      "pengantar_tema": "Paragraf pengantar yang menarik menuju tema"
-    },
+  "khotbah_pertama": {
+    "wasiat_taqwa": "Pesan wasiat taqwa yang relevan dengan tema, minimal 2 paragraf",
     "ayat_quran": [
       {
-        "arab": "teks Arab ayat",
-        "latin": "transliterasi Latin",
-        "terjemah": "terjemahan Indonesia",
-        "referensi": "QS. Nama Surah: Nomor Ayat",
-        "tafsir_singkat": "penjelasan singkat ayat (2-3 kalimat)"
+        "arab": "[[AYAT:22:78]]",
+        "latin": "Teks latin",
+        "terjemah": "Teks terjemahan",
+        "referensi": "Referensi ayat"
       }
     ],
-    "penjabaran_tafsir": "Paragraf penjabaran tafsir yang mendalam (3-4 paragraf)",
+    "isi_khotbah": "Isi khotbah pertama yang lengkap and mendalam, minimal 3 paragraf besar",
+    "poin_utama": [
+      {
+        "judul": "Judul poin spesifik 1 (bukan 'Poin 1')",
+        "paragraf": "Penjelasan mendalam poin 1, minimal 3 kalimat. Kaitkan dengan ayat/kisah dari referensi."
+      },
+      {
+        "judul": "Judul poin spesifik 2",
+        "paragraf": "Penjelasan mendalam poin 2, minimal 3 kalimat."
+      },
+      {
+        "judul": "Judul poin spesifik 3",
+        "paragraf": "Penjelasan mendalam poin 3, minimal 3 kalimat."
+      }
+    ],
+    "penekanan_makna": "Satu paragraf penekanan inti pesan khotbah — kalimat kuat yang merangkum esensi tema"
+  },
+  "khotbah_kedua": {
+    "wasiat_taqwa_2": "Wasiat taqwa ringkas di khotbah kedua (1 paragraf)",
+    "isi_khotbah_2": "Kesimpulan dan pesan ringkas di khotbah kedua (2 paragraf)",
+    "ajakan_penutup": "Satu kalimat ajakan kuat dan inspiratif untuk jamaah — pesan utama yang dibawa pulang",
+    "doa_quran_penutup": [
+      {
+        "arab": "[[AYAT:surah_id:nomor_ayat]] atau teks arab doa",
+        "latin": "transliterasi",
+        "terjemah": "terjemahan",
+        "referensi": "QS. Surah: Ayat atau sumber doa"
+      }
+    ]
+  }
+}
+
+${referensiContext}
+
+ATURAN KETAT TENTANG HADITS (WAJIB DIPATUHI):
+
+1. Setiap kali menyebut sabda Nabi atau hadits, WAJIB menyertakan 
+   atribusi LENGKAP dalam format:
+   "HR. {Perawi} No. {nomor}"
+   Contoh: "HR. Bukhari No. 6406", "HR. Muslim No. 906"
+
+2. DILARANG KERAS menyebut sabda Nabi/hadits tanpa atribusi 
+   nomor riwayat yang spesifik. Frasa berikut DILARANG:
+   - "Rasulullah SAW bersabda" (tanpa HR. xxx No. xxx)
+   - "Nabi pernah bersabda" (tanpa atribusi)
+   - "Dalam sebuah hadits disebutkan" (tanpa atribusi)
+   - "Hadits Nabi mengatakan" (tanpa atribusi)
+
+3. Jika TIDAK YAKIN tentang nomor atau perawi hadits, 
+   JANGAN sebut hadits sama sekali. Lebih baik:
+   - Fokus pada ayat Al-Qur'an (yang ada di referensi)
+   - Pakai pelajaran/ibrah dari kisah (yang ada di referensi)
+   - Berikan refleksi/aplikasi praktis
+   DARIPADA mengarang hadits yang tidak jelas sumbernya.
+
+4. Jika SUDAH ADA [HADITS SHAHIH] di referensi yang diberikan, 
+   GUNAKAN itu sebagai sumber utama. Sebut atribusi sesuai yang 
+   diberikan di referensi.
+
+5. PENTING: Hadits palsu/dhaif lebih berbahaya daripada tidak ada 
+   hadits. Lebih baik khotbah tanpa hadits daripada hadits yang 
+   diragukan keasliannya.
+
+6. DILARANG KERAS menyebut nama perawi DAN nomor hadits dalam format
+   APAPUN jika tidak ada [HADITS SHAHIH] di referensi yang diberikan.
+   Format yang dilarang (jika tidak ada referensi hadits):
+   - "HR. Bukhari No. 2231"
+   - "Bukhari No. 2231" (tanpa HR.)
+   - "Hadits Bukhari nomor 2231"
+   - "Shahih Bukhari, hadits ke-2231"
+   Jika tidak ada referensi hadits → SAMA SEKALI tidak boleh menyebut
+   nama perawi (Bukhari, Muslim, Tirmidzi, dll) beserta nomor apapun.
+
+WAJIB isi semua section berikut dengan LENGKAP (jangan kosongkan):
+- khotbah_pertama.isi_khotbah: isi khotbah mendalam, MINIMAL 500 kata
+- khotbah_kedua.isi_khotbah_2: ringkas 3-4 paragraf ajakan amal dan istighfar, MINIMAL 200 kata
+- khotbah_kedua.ajakan_penutup: WAJIB diisi — kalimat kuat 1-2 kalimat
+- khotbah_kedua.doa_quran_penutup: WAJIB berisi minimal 1 doa yang relevan dengan tema, lebih diutamakan dari referensi [DOA AL-QURAN] jika ada
+
+PANDUAN PANJANG KHOTBAH (WAJIB DIPATUHI):
+- Khotbah 20 menit = minimal 2.100 kata total
+- Khotbah 25 menit = minimal 2.600 kata total
+- Khotbah 30 menit = minimal 3.000 kata total
+Target khotbah ini: sekitar ${targetDurasi * 130} kata. JANGAN persingkat — lebih panjang lebih baik.
+Respond ONLY with valid JSON. No markdown, no code fences, no explanation outside the JSON.`
+      : `Kamu adalah ustadz/ulama yang berpengalaman membuat kultum dan khotbah Islam.
+Buat ${format} dengan tema "${tema}" ${kategori_tema ? `(kategori: ${kategori_tema})` : ''}.
+Gaya bahasa: ${gaya_bahasa || 'Semi-Formal'}.
+
+PANDUAN PANJANG KONTEN (WAJIB DIPATUHI):
+Kecepatan bicara ceramah: 120 kata/menit
+Target kata berdasarkan durasi:
+- 5 menit   = minimal 550 kata
+- 10 menit  = minimal 1.100 kata
+- 15 menit  = minimal 1.600 kata
+- 20 menit  = minimal 2.100 kata
+- 30 menit  = minimal 3.000 kata
+- 45 menit  = minimal 4.200 kata
+- 60 menit  = minimal 5.500 kata
+
+Target durasi kultum ini: ${targetDurasi} menit = minimal ${Math.round(targetDurasi * 120)} kata
+
+${referensiContext}
+
+ATURAN AYAT AL-QUR'AN:
+- Gunakan placeholder [[AYAT:surah_id:nomor_ayat]] — sistem akan render card ayat otomatis
+- surah_id = angka 1-114, nomor_ayat = angka ayat saja
+- CONTOH BENAR: [[AYAT:17:23]], [[AYAT:2:153]]
+- CONTOH SALAH: [[AYAT:17:2317]], [[AYAT:al_isra:23]]
+
+CARA MENYISIPKAN AYAT & TEKS ARAB YANG BENAR (WAJIB DIPATUHI):
+- Sebutkan referensi dalam narasi/paragraf/teks/isi/pembuka/penjabaran/penekanan_makna/kesimpulan: "Allah berfirman dalam QS. An-Nisa: 1..."
+- Teks Arab dan terjemah akan di-render otomatis oleh sistem
+- JANGAN tulis teks Arab dalam field narasi/paragraf/isi/pembuka/penjabaran/penekanan_makna/kesimpulan
+- Field ayat_pendukung atau ayat_quran sudah ada untuk menampilkan Arab — gunakan itu
+- Dalam field teks/paragraf/isi/pembuka/penjabaran/penekanan_makna/kesimpulan: cukup sebutkan "QS. Surah: ayat" secara tekstual saja tanpa menulis teks Arab
+
+Output JSON dengan struktur PERSIS berikut (WAJIB ikuti nama field):
+{
+  "judul": "Judul ${format} yang menarik dan spesifik",
+  "format": "${format.toLowerCase()}",
+  "tema": "${tema}",
+  "durasi_menit": ${targetDurasi},
+  "gaya_bahasa": "${gaya_bahasa || 'Semi-Formal'}",
+  "isi": [
+    {
+      "judul": "Judul poin spesifik sesuai konten (bukan 'Poin 1')",
+      "paragraf": "Isi paragraf pembukaan: salam, hamdalah, shalawat, pengantar tema. Sebut referensi QS/HR secara tekstual dalam narasi."
+    },
+    {
+      "judul": "Judul poin spesifik tentang dalil utama",
+      "paragraf": "Penjabaran tema dengan menyebut dalil: 'Allah berfirman dalam QS. X:Y bahwa...' dan [[AYAT:X:Y]] untuk card. Minimal 3 kalimat."
+    },
+    {
+      "judul": "Judul poin spesifik tentang hadits",
+      "paragraf": "Hadits pendukung: 'Rasulullah SAW bersabda dalam HR. Kitab No. X...' Minimal 3 kalimat."
+    },
+    {
+      "judul": "Judul poin spesifik tentang aplikasi",
+      "paragraf": "Aplikasi dalam kehidupan sehari-hari. Minimal 3 kalimat."
+    },
+    {
+      "judul": "Judul poin penutup yang spesifik",
+      "paragraf": "Kesimpulan dan penutup. Minimal 3 kalimat."
+    }
+  ],
+  "penekanan_makna": "Satu paragraf penekanan inti pesan — kalimat kuat yang merangkum esensi tema, bukan ringkasan biasa",
+  "kesimpulan": "2-3 paragraf kesimpulan yang mengajak muhasabah dan amal nyata",
+  "ajakan_penutup": "Satu kalimat ajakan kuat dan inspiratif yang menjadi pesan utama kultum ini — akan ditampilkan sebagai quote highlight",
+  "doa_quran_penutup": [
+    {
+      "pengantar": "Marilah kita berdoa agar [konteks doa sesuai tema]...",
+      "arab": "teks Arab doa dari referensi",
+      "latin": "teks latin",
+      "terjemah": "terjemahan",
+      "referensi": "QS. X: Y"
+    }
+  ],
+  "doa_sapu_jagad": "Rabbana atina fid dunya hasanah wa fil akhirati hasanah wa qina azabannar",
+  "doa_penutup": "Teks doa penutup kultum dalam bahasa Indonesia/latin saja (setelah doa sapu jagad)"
+}
+
+ATURAN KETAT TENTANG HADITS (WAJIB DIPATUHI):
+
+1. Setiap kali menyebut sabda Nabi atau hadits, WAJIB menyertakan 
+   atribusi LENGKAP dalam format:
+   "HR. {Perawi} No. {nomor}"
+   Contoh: "HR. Bukhari No. 6406", "HR. Muslim No. 906"
+
+2. DILARANG KERAS menyebut sabda Nabi/hadits tanpa atribusi 
+   nomor riwayat yang spesifik. Frasa berikut DILARANG:
+   - "Rasulullah SAW bersabda" (tanpa HR. xxx No. xxx)
+   - "Nabi pernah bersabda" (tanpa atribusi)
+   - "Dalam sebuah hadits disebutkan" (tanpa atribusi)
+   - "Hadits Nabi mengatakan" (tanpa atribusi)
+
+3. Jika TIDAK YAKIN tentang nomor atau perawi hadits, 
+   JANGAN sebut hadits sama sekali. Lebih baik:
+   - Fokus pada ayat Al-Qur'an (yang ada di referensi)
+   - Pakai pelajaran/ibrah dari kisah (yang ada di referensi)
+   - Berikan refleksi/aplikasi praktis
+   DARIPADA mengarang hadits yang tidak jelas sumbernya.
+
+4. Jika SUDAH ADA [HADITS SHAHIH] di referensi yang diberikan, 
+   GUNAKAN itu sebagai sumber utama. Sebut atribusi sesuai yang 
+   diberikan di referensi.
+
+5. PENTING: Hadits palsu/dhaif lebih berbahaya daripada tidak ada 
+   hadits. Lebih baik kultum tanpa hadits daripada hadits yang 
+   diragukan keasliannya.
+
+6. JUDUL POIN UTAMA tidak boleh mengandung kata "hadits" / "hadis" 
+   kecuali AI yakin akan menyertakan atribusi lengkap (HR. xxx No. xxx) 
+   di dalam paragrafnya. Jika ragu, gunakan judul yang lebih netral 
+   seperti:
+   - "Refleksi tentang [topik]"
+   - "Pelajaran dari [konteks]"
+   - "Makna [konsep]"
+   - "Aplikasi dalam Kehidupan"
+
+7. DILARANG KERAS menyebut nama perawi DAN nomor hadits dalam format
+   APAPUN jika tidak ada [HADITS SHAHIH] di referensi yang diberikan.
+   Format yang dilarang (jika tidak ada referensi hadits):
+   - "HR. Bukhari No. 2231"
+   - "Bukhari No. 2231" (tanpa HR.)
+   - "Hadits Bukhari nomor 2231"
+   - "Shahih Bukhari, hadits ke-2231"
+   Jika tidak ada referensi hadits → SAMA SEKALI tidak boleh menyebut
+   nama perawi (Bukhari, Muslim, Tirmidzi, dll) beserta nomor apapun.
+
+ATURAN WAJIB:
+- Jumlah item "isi" WAJIB sesuai durasi:
+  * 5 menit  = 3-4 poin, tiap poin minimal 3 kalimat
+  * 10 menit = 4-5 poin, tiap poin minimal 4 kalimat
+  * 15 menit = 5-6 poin, tiap poin minimal 5 kalimat
+  * 30 menit = 7-9 poin, tiap poin minimal 6 kalimat
+  * 45 menit = 9-12 poin, tiap poin minimal 7 kalimat
+- Field "pengantar_tema" (paragraf pertama) minimal 100 kata
+- Field "penjabaran_tafsir" (paragraf tengah) minimal 200 kata
+- Field "kesimpulan" minimal 100 kata
+- Setiap item "isi" WAJIB punya "judul" yang spesifik dan "paragraf" yang panjang sesuai target
+- Field "penekanan_makna", "kesimpulan", "ajakan_penutup" WAJIB diisi — jangan kosongkan
+- "ajakan_penutup" maksimal 2 kalimat, kuat dan menginspirasi
+- JANGAN persingkat konten — lebih panjang lebih baik selama masih relevan dengan tema
+- JANGAN tambahkan field lain di luar struktur di atas
+- Respond ONLY with valid JSON. No markdown, no code fences, no explanation.`
+
+    let promptBase = ''
+    if (isKisahMode) {
+      const ayatUtama = kisahData.ayat_utama ?? []
+      promptBase = `
+Kamu adalah ustaz/penulis kultum Islam yang ahli bercerita.
+Tugasmu adalah membuat naskah ${format} KHUSUS tentang kisah berikut.
+PENTING: Gunakan HANYA informasi di bawah ini sebagai sumber materi.
+Jangan tambahkan kisah lain atau informasi yang tidak ada di sini.
+
+══════════════════════════════════
+DATA KISAH: ${kisahData.nama}
+══════════════════════════════════
+
+JUDUL ARAB: ${kisahData.nama_arab ?? ''}
+RINGKASAN: ${kisahData.ringkasan ?? ''}
+
+LATAR BELAKANG:
+${kisahData.latar_belakang ?? '-'}
+
+KONDISI KAUM/TOKOH:
+${kisahData.kondisi_kaum ?? '-'}
+
+KISAH LENGKAP:
+${kisahData.kisah_lengkap ?? '-'}
+
+AZAB / KEJADIAN LUAR BIASA:
+${kisahData.azab_atau_kejadian ?? '-'}
+
+PELAJARAN & HIKMAH:
+${kisahData.pelajaran ?? '-'}
+
+AYAT AL-QUR'AN DARI DATABASE:
+${ayatUtama.map((a: any) => 
+  `• ${a.teks_arab}\n  "${a.terjemah}"\n  (${a.surah_nama}: ${a.nomor_ayat})`
+).join('\n\n')}
+
+SUMBER TAFSIR: ${kisahData.referensi ?? ''}
+
+══════════════════════════════════
+INSTRUKSI FORMAT & GAYA:
+══════════════════════════════════
+- Format: ${format}
+- Durasi: ${targetDurasi} menit
+- Gaya bahasa: ${gaya_bahasa || 'Semi-Formal'}
+- Judul kultum: "Kisah ${kisahData.nama}: [tambahkan tagline yang relevan]"
+- TARGET PANJANG KONTEN: ${targetKataMin}–${targetKataMax} kata (WAJIB dipenuhi). Jangan terlalu singkat.
+  * Bagian penjabaran/narasi kisah lengkap harus minimal ${Math.round(targetKata * 0.5)} kata. Ceritakan dengan detail yang hidup, dialog imajinatif, dan alur naratif yang menarik.
+  * Setiap poin utama (max 3 poin) masing-masing minimal harus berisi 80 kata.
+  * Gunakan gaya ceramah lisan yang mengalir untuk dibacakan di hadapan jamaah.
+
+STRUKTUR OUTPUT YANG BENAR:
+1. pembuka → salam + 2-3 kalimat pengantar kisah (BUKAN ringkasan panjang)
+2. ayat_pendukung → WAJIB isi dari ayat_utama yang diberikan di atas
+3. penjabaran → narasi kisah lengkap dan mengalir (latar belakang + kondisi + kisah + azab)
+4. penekanan_makna → 1 paragraf hikmah utama yang BELUM disebut di penjabaran
+5. poin_utama → MAX 3 poin, masing-masing BERBEDA dari penjabaran, fokus pada aplikasi praktis sehari-hari
+6. kesimpulan → penutup + doa, TIDAK mengulang poin-poin di atas
+
+INSTRUKSI AYAT (WAJIB DIIKUTI):
+Kamu HARUS menyisipkan ayat berikut secara verbatim dalam narasi kultum.
+Format penyisipan ayat di JSON output harus dalam field khusus "ayat_pendukung", BUKAN hanya disebut dalam teks penjabaran.
+Ayat yang WAJIB disertakan dalam output:
+${ayatUtama.map((a: any, i: number) => `
+AYAT ${i+1}:
+teks_arab: "${a.teks_arab}"
+latin: (tulis transliterasi latin dari teks arab ini)
+terjemah: "${a.terjemah}"
+sumber: "${a.surah_nama}: ${a.nomor_ayat}"
+`).join('\n')}
+
+Tempatkan ayat ini di bagian yang paling relevan dalam narasi.
+
+LARANGAN DUPLIKASI (WAJIB):
+- DILARANG menulis konten yang sama di dua tempat berbeda
+- DILARANG meringkas ulang di bagian "poin_utama" jika sudah ada di bagian "penjabaran"
+- DILARANG mengulang latar belakang kisah di bagian kesimpulan
+- Setiap section harus punya konten UNIK yang tidak ada di section lain
+- Semua fakta HARUS bersumber dari data yang diberikan di atas
+
+ATURAN AYAT AL-QUR'AN:
+- Gunakan placeholder [[AYAT:surah_id:nomor_ayat]] di dalam teks penjabaran — sistem akan render card ayat otomatis
+- surah_id = angka 1-114, nomor_ayat = angka ayat saja
+- CONTOH BENAR: [[AYAT:44:37]], [[AYAT:50:14]]
+
+CARA MENYISIPKAN AYAT & TEKS ARAB YANG BENAR (WAJIB DIPATUHI):
+- Sebutkan referensi dalam narasi/paragraf/teks/penjabaran/penekanan_makna: "Allah berfirman dalam QS. An-Nisa: 1..."
+- Teks Arab dan terjemah akan di-render otomatis oleh sistem
+- JANGAN tulis teks Arab dalam field narasi/paragraf/penjabaran/penekanan_makna/kesimpulan
+- Field ayat_pendukung sudah ada untuk menampilkan Arab — gunakan itu
+- Dalam field teks/paragraf/penjabaran/penekanan_makna/kesimpulan: cukup sebutkan "QS. Surah: ayat" secara tekstual saja tanpa menulis teks Arab
+
+Respond ONLY with valid JSON. No markdown, no code fences, no explanation.
+`
+    } else {
+      promptBase = originalPromptBase
+    }
+
+    if (isKisahMode) {
+      const error = queryError
+      const ayatData = kisahData?.ayat_utama
+      const systemPrompt = promptBase
+      console.log('=== KISAH MODE DEBUG ===')
+      console.log('kisah_id received:', kisah_id)
+      console.log('kisahData:', JSON.stringify(kisahData, null, 2))
+      console.log('kisahError:', error)
+      console.log('ayatData count:', ayatData?.length)
+      console.log('systemPrompt preview:', systemPrompt?.slice(0, 500))
+      console.log('========================')
+    }
+
+    let finalJudulInstruction = judulInstruction
+    if (isKisahMode && kisahData) {
+      const judulKultum = `Kisah ${kisahData.nama}`
+      finalJudulInstruction = `\n\nJUDUL ${format.toUpperCase()} YANG HARUS DIGUNAKAN: "${judulKultum}"\nGunakan judul ini persis untuk field "judul" di output JSON.`
+    }
+
+    const warningPenekanan = refAktif.length > 0
+      ? `\n\nPERINGATAN: Kamu HANYA boleh menggunakan ${refAktif.length} referensi yang telah ditetapkan. Menambah ayat atau hadits di luar daftar adalah pelanggaran serius. Jumlah referensi di output harus tepat ${refAktif.length}.`
+      : ''
+
+    let messages: any[] = []
+    const isKhotbahJumat = format === 'khotbah_jumat'
+
+    if (isKhotbahJumat) {
+      const laranganReferensi = refAktif.length > 0 ? `
+LARANGAN ABSOLUT:
+- HANYA gunakan ${refAktif.length} referensi yang diberikan
+- DILARANG tambah ayat/hadits lain di luar daftar
+- Melanggar = output GAGAL
+` : `
+LARANGAN: Gunakan maksimal 3 ayat yang paling relevan dengan tema.
+Jangan tambah ayat yang tidak perlu.
+`
+
+      const systemPromptKhotbah = `Kamu adalah khatib Jum'at berpengalaman yang menyusun naskah khotbah sesuai pakem syar'i.
+
+${laranganReferensi}
+
+LARANGAN KHUSUS DOA PILIHAN:
+- DILARANG MASUKKAN DOA (type/kategori doa, doa para nabi, doa rabbana, doa harian, dll.) ke array ayat_pendukung di khotbah pertama/kedua.
+- Array ayat_pendukung HANYA boleh berisi ayat Al-Qur'an umum/bukan doa pilihan. Doa pilihan akan dirender secara terpisah oleh sistem dari referensi doa yang dipilih user.
+
+CARA MENYISIPKAN AYAT YANG BENAR:
+- Sebutkan referensi dalam narasi: "Allah berfirman dalam QS. An-Nisa: 1..."
+- Teks Arab dan terjemah akan di-render otomatis oleh sistem
+- JANGAN tulis teks Arab dalam field narasi/paragraf/wasiat_taqwa/isi_utama/isi_ringkas
+- Field ayat_pendukung atau hadits_pendukung sudah ada untuk menampilkan Arab — gunakan itu
+- Dalam field teks/paragraf/isi/wasiat_taqwa/isi_ringkas: cukup sebutkan "QS. Surah: ayat" tanpa Arab
+
+PAKEM WAJIB KHOTBAH JUM'AT:
+Khotbah terdiri dari DUA khotbah terpisah dengan jeda duduk di antaranya.
+
+KHOTBAH PERTAMA berisi:
+1. Wasiat taqwa kepada jamaah (mengajak jamaah meningkatkan taqwa)
+2. Ayat Al-Qur'an yang relevan dengan tema
+3. Isi/materi khotbah utama (panjang, mendalam, minimal 400 kata)
+4. Hadits pendukung jika ada
+5. Penutup khotbah pertama sebelum khatib duduk
+
+KHOTBAH KEDUA berisi:
+1. Wasiat taqwa ringkas (1 paragraf)
+2. Isi ringkas (kesimpulan dari khotbah pertama)
+3. Doa khusus untuk kaum muslimin
+
+PENTING:
+- Bagian doa tetap (Khutbatul Hajah, Syahadat, Shalawat, Shalawat Ibrahimiyah, Doa Penutup) TIDAK perlu di-generate — sudah hardcoded di sistem
+- AI hanya generate: wasiat_taqwa, isi_utama, isi_ringkas, doa_umat
+- Gunakan Bahasa Indonesia yang fasih, khusyuk, dan menginspirasi.`
+
+      const userMessageKhotbah = `Buatkan naskah Khotbah Jum'at tentang tema: "${tema ?? kisahData?.nama}"
+Durasi total: ${targetDurasi} menit | Gaya: ${gaya_bahasa || 'Formal'}
+
+${kisahData ? `KISAH UTAMA DARI REFERENSI:\n${kisahData.kisah_lengkap ?? kisahData.ringkasan}\n\nLatar Belakang: ${kisahData.latar_belakang ?? ''}\nKondisi Kaum: ${kisahData.kondisi_kaum ?? ''}\nAzab/Kejadian: ${kisahData.azab_atau_kejadian ?? ''}\nPelajaran: ${kisahData.pelajaran ?? ''}` : ''}
+
+${referensiContext}
+
+Output HARUS berupa JSON valid dengan struktur PERSIS seperti ini:
+{
+  "judul": "judul khotbah yang menarik",
+  "khotbah_pertama": {
+    "wasiat_taqwa": "teks wasiat taqwa pembuka (2-3 paragraf, mengajak jamaah bertaqwa)",
+    "isi_utama": "teks isi khotbah pertama yang panjang and mendalam (minimal 400 kata)",
+    "ayat_pendukung": [
+      {
+        "teks_arab": "[[AYAT:23:8]]",
+        "terjemah": "terjemahan ayat",
+        "sumber": "QS. Al-Mu'minun: 8"
+      }
+    ],
     "hadits_pendukung": [
       {
-        "arab": "teks Arab hadits",
-        "latin": "transliterasi Latin",
-        "terjemah": "terjemahan Indonesia",
-        "referensi": "HR. Perawi No. Nomor",
-        "syarah": "penjelasan hadits (2-3 kalimat)"
+        "matan": "teks hadits pendukung",
+        "terjemah": "terjemah hadits",
+        "sumber": "HR. Perawi No. Nomor"
       }
     ],
-    "penekanan_makna": "Paragraf penekanan pesan utama (2-3 paragraf)",
-    "poin_utama": [
-      {"judul": "Poin 1", "isi": "Penjelasan poin 1"},
-      {"judul": "Poin 2", "isi": "Penjelasan poin 2"},
-      {"judul": "Poin 3", "isi": "Penjelasan poin 3"}
-    ],
-    "kesimpulan": "Tulis 2-3 paragraf kesimpulan yang merangkum isi kultum dengan baik",
-    "ajakan_penutup": "Tulis kalimat ajakan motivasi yang kuat untuk jamaah",
-    "doa_penutup_tema": "Tulis doa penutup bahasa Indonesia yang relevan dengan tema",
-    "doa_penutup_majelis": {
-      "arab": "سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ أَشْهَدُ أَنْ لاَ إِلَهَ إِلاَّ أَنْتَ أَسْتَغْفِرُكَ وَأَتُوبُ إِلَيْكَ",
-      "latin": "Subhanakallahumma wabihamdika asyhadu alla ilaha illa anta astaghfiruka wa atubu ilaik",
-      "terjemah": "Maha Suci Engkau ya Allah dan dengan memuji-Mu, aku bersaksi bahwa tidak ada tuhan selain Engkau, aku memohon ampunan-Mu dan bertaubat kepada-Mu.",
-      "sumber": "Kaffaratul Majelis (HR. Tirmidzi, Abu Dawud)"
+    "penutup": "kalimat penutup khotbah pertama sebelum duduk"
+  },
+  "khotbah_kedua": {
+    "wasiat_taqwa_ringkas": "wasiat taqwa singkat (1 paragraf)",
+    "isi_ringkas": "ringkasan dan penekanan dari khotbah pertama (100-150 kata)",
+    "doa_umat": {
+      "arab": "teks Arab dengan harakat lengkap",
+      "latin": "transliterasi latin",
+      "terjemah": "terjemah bahasa Indonesia"
     }
   }
 }
-${ayatContext}
-${khotbahInstructions}
-ATURAN PENTING:
-- Semua ayat Al-Qur'an harus dengan referensi surah dan nomor yang akurat
-- Semua hadits harus dengan referensi perawi dan nomor yang dapat diverifikasi
-- Gaya bahasa harus konsisten sesuai pilihan: ${gaya_bahasa}
-- Output HANYA JSON, tanpa markdown backticks
-- Minimal 2 ayat Al-Qur'an dan 1 hadits
-- WAJIB: Field "kesimpulan", "ajakan_penutup", dan "doa_penutup_tema" TIDAK BOLEH kosong. Setiap field harus berisi teks yang bermakna, minimal 1 kalimat.
-- LARANGAN: Jangan gunakan """ (triple quote) sebagai value field. Jika tidak ada konten untuk field tertentu, isi dengan string kosong "" bukan """. Setiap field penutup WAJIB diisi dengan teks nyata dalam bahasa Indonesia.`
 
-    // Generate dengan timeout 45 detik
-    const aiCall = openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [{ role: 'user', content: prompt }],
-      response_format: { type: 'json_object' },
-      max_tokens: 4000,
+WAJIB: Output hanya JSON, tidak ada teks lain di luar JSON.
+WAJIB: khotbah_pertama.isi_utama minimal 400 kata.
+WAJIB: ayat_pendukung tidak boleh kosong. Gunakan format [[AYAT:surah_id:nomor_ayat]] (GANTI surah_id dan nomor_ayat dengan angka asli dari referensi yang Anda gunakan, contoh: [[AYAT:23:8]]) untuk teks_arab.`
+
+      messages = [
+        { role: 'system', content: systemPromptKhotbah },
+        { role: 'user', content: userMessageKhotbah + warningPenekanan }
+      ]
+    } else if (isKisahMode && kisahData) {
+      const userMessageKisah = `Buatkan kultum kisah ${kisahData.nama} dengan ketentuan:
+- Format: ${format}
+- Durasi: ${targetDurasi} menit
+- Gaya: ${gaya_bahasa || 'Semi-Formal'}
+- TARGET PANJANG: ${targetKataMin}–${targetKataMax} kata (WAJIB dipenuhi)
+  Ini setara ceramah ${targetDurasi} menit. Jangan terlalu singkat.
+
+Untuk mencapai target kata:
+- Bagian penjabaran/narasi kisah harus minimal ${Math.round(targetKata * 0.5)} kata
+- Ceritakan kisah dengan detail, dialog imajinatif, dan deskripsi yang hidup
+- Poin utama masing-masing minimal 80 kata
+- Jangan ringkas — ini untuk dibacakan, bukan dibaca dalam hati
+
+Output HARUS berupa JSON valid dengan struktur:
+{
+  "judul": "Kisah ${kisahData.nama}: [tagline]",
+  "pembuka": { "teks": "..." },
+  "ayat_pendukung": [
+    {
+      "teks_arab": "...",  // salin verbatim dari data yang diberikan
+      "latin": "...",
+      "terjemah": "...",
+      "sumber": "..."
+    }
+  ],
+  "penjabaran": { "teks": "..." },
+  "penekanan_makna": { "teks": "..." },
+  "poin_utama": [
+    { "judul": "...", "teks": "..." }
+  ],
+  "kesimpulan": { "teks": "..." }
+}
+
+WAJIB: field ayat_pendukung tidak boleh kosong.
+WAJIB: tidak ada duplikasi konten antar section.`
+
+      messages = [
+        {
+          role: 'system',
+          content: promptBase + finalJudulInstruction
+        },
+        {
+          role: 'user',
+          content: userMessageKisah + warningPenekanan
+        }
+      ]
+    } else {
+      messages = [
+        {
+          role: 'system',
+          content: `Kamu adalah ustadz/ulama yang berpengalaman membuat kultum dan khotbah Islam.`
+        },
+        {
+          role: 'user',
+          content: promptBase + finalJudulInstruction + warningPenekanan
+        }
+      ]
+    }
+
+    console.log('messages[0] role:', messages[0].role)
+    console.log('messages[0] content length:', messages[0].content.length)
+
+    const encoder = new TextEncoder()
+    const stream = new ReadableStream({
+      async start(controller) {
+        let fullContent = ''
+        try {
+          const maxTokens = Math.max(2000, targetDurasi * 400)
+          const response = await openai.chat.completions.create({
+            model: 'gpt-4o-mini',
+            messages,
+            response_format: { type: 'json_object' },
+            stream: true,
+            max_tokens: maxTokens,
+          })
+
+          for await (const chunk of response) {
+            const content = chunk.choices[0]?.delta?.content || ''
+            if (content) {
+              fullContent += content
+              controller.enqueue(encoder.encode(content))
+            }
+          }
+
+          if (user_id && fullContent) {
+            try {
+              let konten = JSON.parse(fullContent)
+
+              // Normalisasi Khotbah Jumat
+              if (format === 'khotbah_jumat' || konten.khotbah_pertama || konten.khotbah_kedua) {
+                const kp = konten.khotbah_pertama || {}
+                const kk = konten.khotbah_kedua || {}
+                konten = {
+                  judul: konten.judul || tema || 'Khotbah Jum\'at',
+                  format: 'khotbah_jumat',
+                  tema: tema || '',
+                  khotbah_pertama: {
+                    wasiat_taqwa: kp.wasiat_taqwa || '',
+                    ayat_quran: (kp.ayat_pendukung || kp.ayat_quran || []).map((a: any) => ({
+                      arab: a.teks_arab || a.arab || '',
+                      latin: a.latin || '',
+                      terjemah: a.terjemah || '',
+                      referensi: a.sumber || a.referensi || ''
+                    })),
+                    isi_khotbah: kp.isi_utama || kp.isi_khotbah || '',
+                    poin_utama: (kp.poin_utama || []).map((p: any) => ({
+                      judul: p.judul || '',
+                      paragraf: p.paragraf || p.isi || ''
+                    })),
+                    penekanan_makna: kp.penutup || kp.penekanan_makna || ''
+                  },
+                  khotbah_kedua: {
+                    wasiat_taqwa_2: kk.wasiat_taqwa_ringkas || kk.wasiat_taqwa_2 || '',
+                    isi_khotbah_2: kk.isi_ringkas || kk.isi_khotbah_2 || '',
+                    ajakan_penutup: kk.ajakan_penutup || '',
+                    doa_umat: kk.doa_umat || kk.doa_quran_penutup || '',
+                    doa_quran_penutup: Array.isArray(kk.doa_umat)
+                      ? kk.doa_umat.map((d: any) => ({
+                          arab: d.arab || d.teks_arab || '',
+                          latin: d.latin || '',
+                          terjemah: d.terjemah || '',
+                          referensi: d.referensi || d.sumber || ''
+                        }))
+                      : typeof kk.doa_umat === 'string'
+                        ? [{
+                            arab: kk.doa_umat,
+                            latin: '',
+                            terjemah: '',
+                            referensi: 'Doa Khotbah'
+                          }]
+                        : Array.isArray(kk.doa_quran_penutup)
+                          ? kk.doa_quran_penutup
+                          : []
+                  }
+                }
+              }
+
+              console.log('konten keys:', Object.keys(konten))
+
+              // Normalisasi jika menggunakan format Kisah Baru
+              if (konten.pembuka || konten.ayat_pendukung || konten.penjabaran) {
+                konten = {
+                  ...konten,
+                  bagian: {
+                    doa_pembuka: {
+                      arab: "سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ، أَشْهَدُ أَنْ لاَ إِلَهَ إِلاَّ أَنْتَ، أَسْتَغْفِرُكَ وَأَتُوبُ إِلَيْكَ",
+                      latin: "Subhaanaka Allaahumma wa bihamdika, asyhadu al-laa ilaaha illa Anta, astaghfiruka wa atuubu ilayk",
+                      terjemah: "Maha Suci Engkau, ya Allah, dan dengan memuji-Mu, aku bersaksi bahwa tiada Tuhan melainkan Engkau, aku memohon ampunan-Mu dan bertaubat kepada-Mu.",
+                      sumber: "HR. Tirmidzi"
+                    },
+                    pembuka: {
+                      salam: "Assalamu'alaikum warahmatullahi wabarakatuh.",
+                      muqaddimah: konten.pembuka?.teks || "",
+                      pengantar_tema: ""
+                    },
+                    ayat_quran: (konten.ayat_pendukung ?? []).map((a: any) => ({
+                      arab: a.teks_arab ?? "",
+                      latin: a.latin ?? "",
+                      terjemah: a.terjemah ?? "",
+                      referensi: a.sumber ?? "",
+                      tafsir_singkat: ""
+                    })),
+                    penjabaran_tafsir: konten.penjabaran?.teks || "",
+                    penekanan_makna: konten.penekanan_makna?.teks || "",
+                    poin_utama: (konten.poin_utama ?? []).map((p: any) => ({
+                      judul: p.judul ?? "",
+                      isi: p.teks ?? ""
+                    })),
+                    kesimpulan: konten.kesimpulan?.teks || "",
+                    doa_penutup_majelis: {
+                      arab: "سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ، أَشْهَدُ أَنْ لاَ إِلَهَ إِلاَّ أَنْتَ، أَسْتَغْفِرُكَ وَأَتُوبُ إِلَيْكَ",
+                      latin: "Subhaanaka Allaahumma wa bihamdika, asyhadu al-laa ilaaha illa Anta, astaghfiruka wa atuubu ilayk",
+                      terjemah: "Maha Suci Engkau, ya Allah, dan dengan memuji-Mu, aku bersaksi bahwa tiada Tuhan melainkan Engkau, aku memohon ampunan-Mu dan bertaubat kepada-Mu."
+                    }
+                  },
+                  durasi_estimasi: `${konten.durasi_menit ?? targetDurasi} Menit`
+                }
+              }
+
+              // Kumpulkan SEMUA narasi yang mungkin mengandung sebutan hadits
+              const narasiGabungan = [
+                ...(konten.isi ?? []).map((i: any) => i.paragraf ?? ''),
+                konten.penekanan_makna ?? '',
+                konten.kesimpulan ?? '',
+                konten.ajakan_penutup ?? '',
+                konten.khotbah_pertama?.wasiat_taqwa ?? '',
+                konten.khotbah_pertama?.isi_khotbah ?? '',
+                konten.khotbah_kedua?.wasiat_taqwa_2 ?? '',
+                konten.khotbah_kedua?.isi_khotbah_2 ?? ''
+              ].join('\n\n')
+              
+              // Jalankan verifikasi
+              const hasilVerifikasi = await jalankanVerifikasiHadits(narasiGabungan)
+              
+              // SEMENTARA log hasil verifikasi
+              console.log('=== HASIL VERIFIKASI ===')
+              console.log('Total hadits terdeteksi:', extractHaditsDariNarasi(narasiGabungan).length)
+              console.log('Verifikasi sukses:', hasilVerifikasi.referensi_terverifikasi.hadits.length)
+              console.log('Replaced:', hasilVerifikasi.narasi_replaced)
+              
+              // Jika ada narasi yang di-replace, update konten asli
+              if (hasilVerifikasi.narasi_replaced.some(r => r.reason === 'not_found')) {
+                // Apply replacement ke setiap field konten
+                const applyReplacement = (text: string): string => {
+                  let result = text
+                  for (const rep of hasilVerifikasi.narasi_replaced) {
+                    if (rep.reason === 'not_found' && rep.kalimat_dihapus) {
+                      // HAPUS seluruh kalimat
+                      result = result.replace(rep.kalimat_dihapus, '')
+                    }
+                  }
+                  // Rapikan double space dan double titik
+                  result = result.replace(/\s{2,}/g, ' ').replace(/\.\s*\./g, '.').trim()
+                  return result
+                }
+
+                konten.isi = (konten.isi ?? []).map((i: any) => ({
+                  ...i,
+                  paragraf: applyReplacement(i.paragraf ?? '')
+                }))
+                konten.kesimpulan = applyReplacement(konten.kesimpulan ?? '')
+                konten.penekanan_makna = applyReplacement(konten.penekanan_makna ?? '')
+                konten.ajakan_penutup = applyReplacement(konten.ajakan_penutup ?? '')
+
+                if (konten.khotbah_pertama) {
+                  konten.khotbah_pertama.wasiat_taqwa = applyReplacement(konten.khotbah_pertama.wasiat_taqwa ?? '')
+                  konten.khotbah_pertama.isi_khotbah = applyReplacement(konten.khotbah_pertama.isi_khotbah ?? '')
+                }
+                if (konten.khotbah_kedua) {
+                  konten.khotbah_kedua.wasiat_taqwa_2 = applyReplacement(konten.khotbah_kedua.wasiat_taqwa_2 ?? '')
+                  konten.khotbah_kedua.isi_khotbah_2 = applyReplacement(konten.khotbah_kedua.isi_khotbah_2 ?? '')
+                }
+              }
+
+              // Post-cleanup: hilangkan judul poin yang menyebut "hadits" 
+              // jika paragrafnya tidak mengandung atribusi HR. xxx No. xxx
+              konten.isi = (konten.isi ?? []).map((item: any) => {
+                const judulMengandungHadits = /hadi[ts]+/i.test(item.judul ?? '')
+                const hasAtribusi = /HR\..*?(?:No\.?|nomor)\s*\d+/i.test(item.paragraf ?? '') ||
+                          /Hadits\s+riwayat.*?(?:No\.?|nomor)\s*\d+/i.test(item.paragraf ?? '') ||
+                          /diriwayatkan\s+oleh.*?(?:No\.?|nomor)\s*\d+/i.test(item.paragraf ?? '') ||
+                          /\b(Bukhari|Muslim|Tirmidzi|Tirmizi|Abu\s+Dawud|Ibnu?\s+Majah|Ahmad|Nasa.?i|Baihaqi|Hakim|Darimi)\s+(?:No\.?|nomor)\s*\d+/i.test(item.paragraf ?? '')
+                
+                if (judulMengandungHadits && !hasAtribusi) {
+                  // Judul menyesatkan — ganti jadi netral
+                  return {
+                    ...item,
+                    judul: 'Refleksi dan Pelajaran'  // judul default netral
+                  }
+                }
+                return item
+              })
+
+              const supabase = getSupabaseAdmin()
+              const { data, error } = await supabase
+                .from('kultum_history')
+                .insert({
+                  user_id,
+                  judul: konten.judul,
+                  format: sub_format === 'khotbah_jumat' ? 'khotbah_jumat' : format,
+                  tema,
+                  kategori_tema: kategori_tema || null,
+                  durasi_menit: targetDurasi,
+                  gaya_bahasa: gaya_bahasa || 'Semi-Formal',
+                  konten: konten as unknown as Record<string, unknown>,
+                  referensi_dipilih: refAktif,
+                  referensi_terverifikasi: hasilVerifikasi.referensi_terverifikasi,
+                  narasi_replaced: hasilVerifikasi.narasi_replaced,
+                })
+                .select('id')
+                .single()
+
+              if (error) {
+                console.error('[Kultum] Supabase insert error:', error.message, error.details)
+              }
+
+              if (!error && data) {
+                controller.enqueue(encoder.encode(`\n---ID---${data.id}`))
+              }
+            } catch (e) {
+              console.error('[Kultum] Error saving to history:', e)
+            }
+          }
+        } catch (err) {
+          console.error('[Kultum] Stream error:', err)
+        } finally {
+          controller.close()
+        }
+      }
     })
 
-    const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error('AI timeout')), 45000)
-    )
-
-    const completion = await Promise.race([aiCall, timeoutPromise]) as Awaited<typeof aiCall>
-    const responseText = completion.choices[0].message.content || '{}'
-
-    let konten: KultumOutput
-    try {
-      konten = JSON.parse(responseText)
-    } catch {
-      return NextResponse.json(
-        { error: 'Gagal parse response AI' },
-        { status: 500 }
-      )
-    }
-
-    if (!konten.bagian) {
-      konten.bagian = {} as KultumOutput['bagian']
-    }
-
-    // Cek apakah field ada di root konten (bukan di bagian) — AI kadang taruh di luar
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const rootKonten = konten as any
-    if (!konten.bagian.kesimpulan && rootKonten.kesimpulan) {
-      konten.bagian.kesimpulan = rootKonten.kesimpulan
-    }
-    if (!konten.bagian.ajakan_penutup && rootKonten.ajakan_penutup) {
-      konten.bagian.ajakan_penutup = rootKonten.ajakan_penutup
-    }
-    if (!konten.bagian.doa_penutup_tema && rootKonten.doa_penutup_tema) {
-      konten.bagian.doa_penutup_tema = rootKonten.doa_penutup_tema
-    }
-
-    // Normalisasi: jika AI masih pakai format lama (nested penutup)
-    if (konten.bagian?.penutup && typeof konten.bagian.penutup === 'object') {
-      konten.bagian.kesimpulan = konten.bagian.kesimpulan || konten.bagian.penutup.kesimpulan || ''
-      konten.bagian.ajakan_penutup = konten.bagian.ajakan_penutup || konten.bagian.penutup.ajakan || ''
-      konten.bagian.doa_penutup_tema = konten.bagian.doa_penutup_tema || konten.bagian.penutup.doa_penutup_konten || ''
-    }
-
-    // Normalisasi durasi per bagian
-    if (!konten.durasi_per_bagian || typeof konten.durasi_per_bagian !== 'object') {
-      konten.durasi_per_bagian = { pembukaan: 0, isi_utama: 0, penutup: 0 };
-    }
-    const dpb = konten.durasi_per_bagian as Record<string, number>;
-    
-    // Fallback pembagian durasi
-    const fallbackPembukaan = Math.max(1, Math.round(targetDurasi * 0.2));
-    const fallbackPenutup = Math.max(1, Math.round(targetDurasi * 0.2));
-    const fallbackIsiUtama = Math.max(1, targetDurasi - fallbackPembukaan - fallbackPenutup);
-
-    if (typeof dpb.pembukaan !== 'number') dpb.pembukaan = fallbackPembukaan;
-    if (typeof dpb.isi_utama !== 'number') dpb.isi_utama = fallbackIsiUtama;
-    if (typeof dpb.penutup !== 'number') dpb.penutup = fallbackPenutup;
-
-    // Ensure total sum equals targetDurasi
-    const currentTotal = dpb.pembukaan + dpb.isi_utama + dpb.penutup;
-    if (currentTotal !== targetDurasi) {
-      dpb.isi_utama = Math.max(1, targetDurasi - dpb.pembukaan - dpb.penutup);
-    }
-
-    // Bersihkan dari karakter """
-    const clean = (s: unknown) => typeof s === 'string' ? s.replace(/"""/g, '').trim() : ''
-    
-    konten.bagian.kesimpulan = clean(konten.bagian.kesimpulan)
-    konten.bagian.ajakan_penutup = clean(konten.bagian.ajakan_penutup)
-    konten.bagian.doa_penutup_tema = clean(konten.bagian.doa_penutup_tema)
-
-    // Simpan ke Supabase jika ada user_id
-    let savedId: string | null = null
-    if (user_id) {
-      const supabase = await createClient()
-      const { data, error } = await supabase
-        .from('kultum_history')
-        .insert({
-          user_id,
-          judul: konten.judul,
-          format,
-          tema,
-          kategori_tema: kategori_tema || null,
-          durasi_menit: targetDurasi,
-          gaya_bahasa: gaya_bahasa || 'Semi-Formal',
-          konten: konten as unknown as Record<string, unknown>,
-        })
-        .select('id')
-        .single()
-
-      if (!error && data) savedId = data.id
-    }
-
-    return NextResponse.json({
-      success: true,
-      id: savedId,
-      konten,
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
     })
 
   } catch (error) {
@@ -359,161 +1206,318 @@ async function generateKhotbahJumat(
   kategori_tema: string,
   gaya_bahasa: string,
   user_id?: string,
-  durasi_menit: number = 25
+  durasi_menit: number = 25,
+  referensiDipilih: KultumReferensiOld[] = [],
+  semanticExpanded?: Record<string, unknown> | null
 ) {
   try {
+    // Fetch automatic references based on theme
+    const autoReferensi = await fetchReferensiUntukTema(
+      tema,
+      'khotbah',
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      semanticExpanded as any ?? null
+    )
+    const autoReferensiPrompt = buildReferensiPrompt(autoReferensi)
+
+    // HANYA referensi yang dipilih user yang masuk ke prompt AI, autoReferensi jadi fallback
+    const referensiContext = referensiDipilih && referensiDipilih.length > 0
+      ? referensiToPromptContext(referensiDipilih, tema)
+      : autoReferensiPrompt
+
+    const laranganReferensi = referensiDipilih && referensiDipilih.length > 0 ? `
+LARANGAN ABSOLUT:
+- HANYA gunakan ${referensiDipilih.length} referensi yang diberikan
+- DILARANG tambah ayat/hadits lain di luar daftar
+- Melanggar = output GAGAL
+` : `
+LARANGAN: Gunakan maksimal 3 ayat yang paling relevan dengan tema.
+Jangan tambah ayat yang tidak perlu.
+`
+
     const prompt = `Kamu adalah khatib Jum'at yang berpengalaman.
 Buat naskah Khotbah Jum'at lengkap dengan tema "${tema}".
 Gaya bahasa: ${gaya_bahasa || 'Formal'}.
-Estimasi durasi total: ${durasi_menit} menit. Sesuaikan panjang isi khotbah dengan durasi ini.
-Panduan: 10 menit ≈ 1000 kata, 30 menit ≈ 3000 kata.
-Wajib sertakan estimasi pembagian durasi per bagian dalam response JSON di field "durasi_per_bagian" (angka dalam menit: khotbah_pertama, duduk_antara, khotbah_kedua, total harus = ${durasi_menit} menit).
+Estimasi durasi total: ${durasi_menit} menit. Sesuaikan panjang isi khotbah dengan durasi ini agar tidak terlalu panjang.
+Panduan: 10 menit ≈ 600 kata, 30 menit ≈ 1500 kata.
+
+${laranganReferensi}
+
+CARA MENYISIPKAN AYAT YANG BENAR:
+- Sebutkan referensi dalam narasi: "Allah berfirman dalam QS. An-Nisa: 1..."
+- Teks Arab dan terjemah akan di-render otomatis oleh sistem
+- JANGAN tulis teks Arab dalam field narasi/paragraf
+- Field ayat_pendukung sudah ada untuk menampilkan Arab — gunakan itu
+- Dalam field teks/paragraf/isi: cukup sebutkan "QS. Surah: ayat" tanpa Arab
+
+ATURAN PENGGUNAAN REFERENSI (WAJIB DIPATUHI):
+
+1. REFERENSI HADITS:
+   - HANYA sebut hadits yang ada di [HADITS SHAHIH] dalam referensi
+   - Format wajib: HR. {Perawi} No. {nomor}
+   - DILARANG mengarang hadits tanpa atribusi lengkap
+   - Jika tidak ada referensi hadits → fokus pada ayat & kisah
+
+2. REFERENSI AYAT:
+   - Jika ada [SEJARAH AL-QURAN] → HANYA gunakan ayat dari 
+     daftar "AYAT YANG BOLEH DIGUNAKAN" yang diberikan
+   - DILARANG menambah ayat lain meskipun valid
+   - Jika tidak ada referensi kisah → gunakan ayat yang 
+     relevan dengan tema (boleh dari pengetahuan AI)
+
+3. REFERENSI DOA:
+   - Jika ada [DOA AL-QURAN] → gunakan sebagai doa penutup 
+     sebelum kaffaratul majelis
+   - Selalu akhiri dengan doa sapu jagad (Rabbana atina...)
 
 Output JSON dengan struktur PERSIS berikut:
 {
-  "judul": "Judul khotbah yang relevan",
+  "judul": "Judul khotbah yang relevan dan spesifik",
   "format": "khotbah_jumat",
   "tema": "${tema}",
-  "durasi_estimasi": "${durasi_menit} menit",
-  "durasi_per_bagian": {
-    "khotbah_pertama": 15,
-    "duduk_antara": 2,
-    "khotbah_kedua": 8
-  },
-
-  "persiapan_khatib": {
-    "catatan": "Panduan singkat untuk khatib sebelum naik mimbar",
-    "salam_naik_mimbar": "Assalamu'alaikum warahmatullahi wabarakatuh"
-  },
-
   "khotbah_pertama": {
-    "pembuka_hamdalah": {
-      "arab": "إِنَّ الْحَمْدَ لِلَّهِ نَحْمَدُهُ وَنَسْتَعِيْنُهُ وَنَسْتَغْفِرُهُ وَنَعُوذُ بِاللَّهِ مِنْ شُرُوْرِ أَنْفُسِنَا وَمِنْ سَيِّئَاتِ أَعْمَالِنَا مَنْ يَهْدِهِ اللَّهُ فَلَا مُضِلَّ لَهُ وَمَنْ يُضْلِلْ فَلَا هَادِيَ لَهُ",
-      "latin": "Innal hamda lillah, nahmaduhu wanasta'iinuhu wanastaghfiruh, wana'uudzu billahi min syuruuri anfusinaa, wamin sayyiaati a'maalinaa, man yahdihillaahu falaa mudhilla lah, wa man yudhlil falaa haadiya lah",
-      "terjemah": "Sesungguhnya segala puji hanya milik Allah, kami memuji-Nya, memohon pertolongan dan ampunan kepada-Nya, kami berlindung kepada Allah dari kejahatan diri dan keburukan amal kami. Barangsiapa diberi hidayah Allah tak ada yang bisa menyesatkannya, dan barangsiapa disesatkan-Nya tak ada yang bisa memberinya petunjuk."
-    },
-    "syahadat": {
-      "arab": "أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُوْلُهُ",
-      "latin": "Asyhadu allaa ilaaha illallaahu wahdahu laa syariika lah, wa asyhadu anna muhammadan 'abduhu wa rasuuluh",
-      "terjemah": "Aku bersaksi bahwa tidak ada tuhan selain Allah Yang Maha Esa, tidak ada sekutu bagi-Nya, dan aku bersaksi bahwa Muhammad adalah hamba dan utusan-Nya."
-    },
-    "shalawat": {
-      "arab": "اَللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَأَصْحَابِهِ أَجْمَعِيْنَ",
-      "latin": "Allahumma shalli wasallim wabarik 'alaa sayyidinaa muhammadin wa 'alaa aalihii wa ash-haabihii ajma'iin",
-      "terjemah": "Ya Allah, limpahkanlah shalawat, salam, dan keberkahan kepada junjungan kami Nabi Muhammad beserta keluarga dan seluruh sahabatnya."
-    },
-    "wasiat_taqwa": "Teks wasiat taqwa dalam bahasa Indonesia yang relevan dengan tema",
+    "wasiat_taqwa": "Teks wasiat taqwa yang relevan dengan tema, minimal 2 paragraf yang substantif",
     "ayat_quran": [
       {
-        "arab": "teks Arab ayat utama yang relevan dengan tema",
+        "arab": "[[AYAT:surah_id:nomor_ayat]]",
         "latin": "transliterasi Latin",
         "terjemah": "terjemahan Indonesia",
         "referensi": "QS. Nama Surah: Nomor Ayat"
       }
     ],
-    "isi_khotbah": "Isi khotbah pertama 4-5 paragraf yang mendalam sesuai tema",
-    "penutup_khotbah_pertama": {
-      "arab": "أَقُوْلُ قَوْلِي هَذَا وَأَسْتَغْفِرُ اللَّهَ الْعَظِيْمَ لِي وَلَكُمْ وَلِسَائِرِ الْمُسْلِمِيْنَ وَالْمُسْلِمَاتِ فَاسْتَغْفِرُوهُ إِنَّهُ هُوَ الْغَفُوْرُ الرَّحِيْمُ",
-      "latin": "Aquulu qawlii haadzaa wa astaghfirullaahal 'azhiim lii walakum wali saa'iril muslimiina wal muslimaat, fastaghfiruuh innahuu huwal ghafuurur rahiim",
-      "terjemah": "Demikianlah yang dapat saya sampaikan, dan saya memohon ampunan kepada Allah Yang Maha Agung untuk saya, untuk kalian, dan untuk seluruh kaum muslimin dan muslimat. Mohonlah ampunan kepada-Nya, sesungguhnya Dia Maha Pengampun lagi Maha Penyayang."
-    }
+    "isi_khotbah": "Isi khotbah pertama yang substantif sesuai tema. WAJIB mengandung: (1) penjelasan makna ayat yang disebutkan, (2) kisah/ibrah dari referensi jika ada, (3) aplikasi dalam kehidupan. Minimal 4-6 paragraf panjang.",
+    "poin_utama": [
+      {
+        "judul": "Judul poin spesifik 1",
+        "paragraf": "Penjelasan mendalam poin 1, minimal 3 kalimat. Kaitkan dengan ayat/kisah dari referensi."
+      },
+      {
+        "judul": "Judul poin spesifik 2", 
+        "paragraf": "Penjelasan mendalam poin 2, minimal 3 kalimat."
+      },
+      {
+        "judul": "Judul poin spesifik 3",
+        "paragraf": "Penjelasan mendalam poin 3, minimal 3 kalimat."
+      }
+    ],
+    "penekanan_makna": "Satu paragraf penekanan inti pesan khotbah — kalimat kuat yang merangkum esensi tema"
   },
-
-  "duduk_antara_dua_khotbah": {
-    "catatan": "Khatib duduk sejenak ± 1-2 menit. Jamaah dianjurkan membaca istighfar dan shalawat dalam hati.",
-    "doa_duduk": {
-      "arab": "اللَّهُمَّ اغْفِرْ لِيْ وَارْحَمْنِيْ وَاجْبُرْنِيْ وَارْفَعْنِيْ وَارْزُقْنِيْ وَاهْدِنِيْ وَعَافِنِيْ",
-      "latin": "Allaahummaghfir lii warhamnii wajburnii warfa'nii warzuqnii wahdinii wa 'aafinii",
-      "terjemah": "Ya Allah ampunilah aku, rahmatilah aku, perbaikilah keadaanku, angkatlah derajatku, berilah aku rezeki, tunjukkanlah aku, dan sehatkanlah aku.",
-      "sumber": "HR. Abu Dawud, Ibnu Majah — dibaca khatib saat duduk antara dua khotbah"
-    }
-  },
-
   "khotbah_kedua": {
-    "pembuka": {
-      "arab": "اَلْحَمْدُ لِلَّهِ وَالصَّلَاةُ وَالسَّلَامُ عَلَى رَسُوْلِ اللَّهِ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُوْلُهُ",
-      "latin": "Alhamdulillah wash shalaatu was salaamu 'alaa rasuulillaah. Asyhadu allaa ilaaha illallaahu wahdahu laa syariikalah wa asyhadu anna muhammadan 'abduhu wa rasuuluh",
-      "terjemah": "Segala puji bagi Allah, shalawat dan salam atas Rasulullah. Aku bersaksi tidak ada tuhan selain Allah Yang Maha Esa, tidak ada sekutu bagi-Nya, dan aku bersaksi bahwa Muhammad adalah hamba dan utusan-Nya."
-    },
-    "wasiat_taqwa_2": "Wasiat taqwa singkat untuk khotbah kedua",
-    "isi_khotbah_2": "Ringkasan dan penekanan isi khotbah pertama dalam 2-3 paragraf",
-    "shalawat_ibrahim": {
-      "arab": "إِنَّ اللَّهَ وَمَلَائِكَتَهُ يُصَلُّونَ عَلَى النَّبِيِّ ۚ يَا أَيُّهَا الَّذِينَ آمَنُوا صَلُّوا عَلَيْهِ وَسَلِّمُوا تَسْلِيمًا. اَللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ وَبَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ فِي الْعَالَمِينَ إِنَّكَ حَمِيدٌ مَجِيدٌ",
-      "latin": "Innallaaha wa malaa'ikatahu yushalluna 'alan nabiyy. Yaa ayyuhalladzina amanuu shalluu 'alayhi wa sallimuu tasliimaa. Allahumma shalli 'alaa muhammadin wa 'alaa aali muhammadin kamaa shallayta 'alaa ibraahiima wa 'alaa aali ibraahiim, wa baarik 'alaa muhammadin wa 'alaa aali muhammadin kamaa baarakta 'alaa ibraahiima wa 'alaa aali ibraahiima fil 'aalamiina innaka hamiidun majiid",
-      "terjemah": "Sesungguhnya Allah dan para malaikat-Nya bershalawat atas Nabi. Wahai orang-orang yang beriman, bershalawatlah atas Nabi dan ucapkanlah salam penghormatan kepadanya. Ya Allah, limpahkanlah shalawat kepada Muhammad dan keluarga Muhammad, sebagaimana Engkau telah melimpahkan shalawat kepada Ibrahim dan keluarga Ibrahim...",
-      "sumber": "QS. Al-Ahzab: 56 + Shalawat Ibrahimiyah"
-    },
-    "doa_kaum_muslimin": {
-      "arab": "اَللَّهُمَّ اغْفِرْ لِلْمُسْلِمِيْنَ وَالْمُسْلِمَاتِ وَالْمُؤْمِنِيْنَ وَالْمُؤْمِنَاتِ الْأَحْيَاءِ مِنْهُمْ وَالْأَمْوَاتِ إِنَّكَ سَمِيْعٌ قَرِيْبٌ مُجِيْبُ الدَّعَوَاتِ. اَللَّهُمَّ أَرِنَا الْحَقَّ حَقًّا وَارْزُقْنَا اتِّبَاعَهُ وَأَرِنَا الْبَاطِلَ بَاطِلًا وَارْزُقْنَا اجْتِنَابَهُ",
-      "latin": "Allaahummaghfir lil muslimiina wal muslimaat wal mu'miniina wal mu'minaat al-ahyaa'i minhum wal amwaat, innaka samii'un qariibun mujiibud da'awaat. Allahumma arinaal haqqa haqqan warzuqnat tibaa'ahu wa arinaal baathila baathilan warzuqnaj tinaabah",
-      "terjemah": "Ya Allah, ampunilah kaum muslimin dan muslimat, mukminin dan mukminat, yang masih hidup maupun yang sudah wafat. Sesungguhnya Engkau Maha Mendengar, Maha Dekat, Maha Mengabulkan doa. Ya Allah, tunjukkanlah kepada kami kebenaran sebagai kebenaran dan berilah kami kemampuan untuk mengikutinya, dan tunjukkanlah kepada kami kebatilan sebagai kebatilan dan berilah kami kemampuan untuk menjauhinya.",
-      "sumber": "Doa khotbah kedua — bersumber dari Kemenag RI & ulama Indonesia"
-    },
-    "doa_penutup_khotbah": {
-      "arab": "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ. وَأَدْخِلْنَا الْجَنَّةَ مَعَ الْأَبْرَارِ يَا عَزِيزُ يَا غَفَّارُ يَا رَبَّ الْعَالَمِيْنَ",
-      "latin": "Rabbanaa aatinaa fid dunyaa hasanatan wa fil aakhirati hasanatan wa qinaa 'adzaaban naar. Wa adkhilnal jannata ma'al abroor, yaa 'aziizu yaa ghaffaar yaa rabbal 'aalamiin",
-      "terjemah": "Ya Tuhan kami, berilah kami kebaikan di dunia dan kebaikan di akhirat, dan lindungilah kami dari azab neraka. Masukkan kami ke dalam surga bersama orang-orang yang baik, wahai Dzat Yang Maha Mulia, Maha Pengampun, Tuhan semesta alam.",
-      "sumber": "QS. Al-Baqarah: 201 + doa penutup khotbah yang lazim"
-    },
-    "penutup_khotbah": {
-      "arab": "اُذْكُرُوا اللَّهَ الْعَظِيْمَ يَذْكُرْكُمْ وَاشْكُرُوْهُ عَلَى نِعَمِهِ يَزِدْكُمْ وَلَذِكْرُ اللَّهِ أَكْبَرُ وَاللَّهُ يَعْلَمُ مَا تَصْنَعُوْنَ",
-      "latin": "Udzkurullahal 'azhiima yadzkurkum wasykuruhu 'alaa ni'amihii yazidkum wala dzikrullaahi akbar, wallaahu ya'lamu maa tashna'uun",
-      "terjemah": "Ingatlah Allah Yang Maha Agung niscaya Dia akan mengingatmu, syukurilah nikmat-Nya niscaya Dia akan menambahkannya, dan dzikrullah adalah yang terbesar, Allah mengetahui apa yang kalian kerjakan.",
-      "catatan_khatib": "Setelah membaca ini, khatib turun dari mimbar. Muadzin segera mengumandangkan iqamat untuk shalat Jum'at dua rakaat."
-    }
-  },
-
-  "catatan_pelaksanaan": [
-    "Khatib naik mimbar saat adzan dikumandangkan, langsung mengucap salam",
-    "Khotbah pertama: berdiri, bacakan susunan di atas, akhiri dengan istighfar",
-    "Duduk sejenak ± 1 menit antara dua khotbah",
-    "Khotbah kedua: lebih singkat dari khotbah pertama",
-    "Akhiri dengan doa penutup, lalu turun mimbar",
-    "Muadzin iqamat, laksanakan shalat Jum'at 2 rakaat berjamaah"
-  ]
+    "wasiat_taqwa_2": "Wasiat taqwa singkat yang relevan dengan tema, 1-2 paragraf",
+    "isi_khotbah_2": "Ringkasan dan penekanan pelajaran dari khotbah pertama dalam 2-3 paragraf. Ajak jamaah mengamalkan secara konkret.",
+    "ajakan_penutup": "Satu kalimat ajakan kuat dan inspiratif untuk jamaah",
+    "doa_quran_penutup": [
+      {
+        "arab": "[[AYAT:surah_id:nomor_ayat]] atau teks arab doa",
+        "latin": "transliterasi",
+        "terjemah": "terjemahan",
+        "referensi": "QS. Surah: Ayat atau sumber doa"
+      }
+    ]
+  }
 }
 
-ATURAN:
-- Semua teks Arab harus benar dan sesuai referensi ulama
+${referensiContext}
+PENTING: Setiap kali menyebut ayat Al-Qur'an, tulis placeholder [[AYAT:surah_id:nomor_ayat]] di field "arab". JANGAN tulis teks Arab secara manual.
+surah_id = angka 1-114
+nomor_ayat = angka ayat saja (BUKAN gabungan surah+ayat)
+CONTOH BENAR: [[AYAT:22:78]] → Surah Al-Hajj ayat 78
+CONTOH SALAH: [[AYAT:22:2278]] atau [[AYAT:1813]]
+
+ATURAN KETAT TENTANG HADITS (WAJIB DIPATUHI):
+
+1. Setiap kali menyebut sabda Nabi atau hadits, WAJIB menyertakan 
+   atribusi LENGKAP dalam format:
+   "HR. {Perawi} No. {nomor}"
+   Contoh: "HR. Bukhari No. 6406", "HR. Muslim No. 906"
+
+2. DILARANG KERAS menyebut sabda Nabi/hadits tanpa atribusi 
+   nomor riwayat yang spesifik. Frasa berikut DILARANG:
+   - "Rasulullah SAW bersabda" (tanpa HR. xxx No. xxx)
+   - "Nabi pernah bersabda" (tanpa atribusi)
+   - "Dalam sebuah hadits disebutkan" (tanpa atribusi)
+   - "Hadits Nabi mengatakan" (tanpa atribusi)
+
+3. Jika TIDAK YAKIN tentang nomor atau perawi hadits, 
+   JANGAN sebut hadits sama sekali. Lebih baik:
+   - Fokus pada ayat Al-Qur'an (yang ada di referensi)
+   - Pakai pelajaran/ibrah dari kisah (yang ada di referensi)
+   - Berikan refleksi/aplikasi praktis
+   DARIPADA mengarang hadits yang tidak jelas sumbernya.
+
+4. Jika SUDAH ADA [HADITS SHAHIH] di referensi yang diberikan, 
+   GUNAKAN itu sebagai sumber utama. Sebut atribusi sesuai yang 
+   diberikan di referensi.
+
+5. PENTING: Hadits palsu/dhaif lebih berbahaya daripada tidak ada 
+   hadits. Lebih baik khotbah tanpa hadits daripada hadits yang 
+   diragukan keasliannya.
+
+6. JUDUL POIN UTAMA tidak boleh mengandung kata "hadits" / "hadis" 
+   kecuali AI yakin akan menyertakan atribusi lengkap (HR. xxx No. xxx) 
+   di dalam paragrafnya. Jika ragu, gunakan judul yang lebih netral 
+   seperti:
+   - "Refleksi tentang [topik]"
+   - "Pelajaran dari [konteks]"
+   - "Makna [konsep]"
+   - "Aplikasi dalam Kehidupan"
+
+7. DILARANG KERAS menyebut nama perawi DAN nomor hadits dalam format
+   APAPUN jika tidak ada [HADITS SHAHIH] di referensi yang diberikan.
+   Format yang dilarang (jika tidak ada referensi hadits):
+   - "HR. Bukhari No. 2231"
+   - "Bukhari No. 2231" (tanpa HR.)
+   - "Hadits Bukhari nomor 2231"
+   - "Shahih Bukhari, hadits ke-2231"
+   Jika tidak ada referensi hadits → SAMA SEKALI tidak boleh menyebut
+   nama perawi (Bukhari, Muslim, Tirmidzi, dll) beserta nomor apapun.
+
+ATURAN WAJIB untuk isi materi:
+- isi_khotbah dan poin_utama WAJIB menggunakan referensi dari [REFERENSI] yang diberikan di bawah
+- Jika ada [SEJARAH AL-QURAN] → kisahkan detail dalam isi_khotbah
+- Jika ada [HADITS SHAHIH] → kutip dalam poin_utama dengan atribusi
+- Jika ada [DOA AL-QURAN] → masukkan ke doa_quran_penutup
+- Jumlah poin_utama sesuai durasi: 10 menit = 2-3 poin, 25 menit = 3-4 poin, 45 menit = 4-5 poin
+- penekanan_makna WAJIB diisi — jangan kosongkan
+- JANGAN tambah field lain di luar struktur di atas
+- Respond ONLY with valid JSON
+
 - Isi khotbah harus relevan dengan tema: ${tema}
-- Output HANYA JSON, tanpa markdown`
+- Output HANYA JSON, tanpa markdown
+Respond ONLY with valid JSON. No markdown, no code fences, no explanation outside the JSON.`
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [{ role: 'user', content: prompt }],
-      response_format: { type: 'json_object' },
-      max_tokens: 5000,
-    })
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 118000) // 118 detik
 
-    const responseText = completion.choices[0].message.content || '{}'
-    const konten = JSON.parse(responseText)
-
-    // Normalisasi durasi per bagian
-    if (!konten.durasi_per_bagian || typeof konten.durasi_per_bagian !== 'object') {
-      konten.durasi_per_bagian = { khotbah_pertama: 0, duduk_antara: 0, khotbah_kedua: 0 };
+    let responseText = ''
+    try {
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: prompt }],
+        response_format: { type: 'json_object' },
+        max_tokens: 4000,
+      }, {
+        signal: controller.signal
+      })
+      responseText = completion.choices[0].message.content || '{}'
+    } catch (e: any) {
+      if (e.name === 'AbortError' || e.message?.includes('abort')) throw new Error('Request was aborted')
+      throw e
+    } finally {
+      clearTimeout(timeoutId)
     }
-    const dpb = konten.durasi_per_bagian as Record<string, number>;
-    
-    // Fallback pembagian durasi untuk Khotbah Jumat:
-    // khotbah_pertama: ~65%, duduk_antara: ~10% (1-2 menit), khotbah_kedua: ~25%
-    const fallbackDudukAntara = Math.max(1, Math.round(durasi_menit * 0.1));
-    const fallbackKhotbahKedua = Math.max(1, Math.round(durasi_menit * 0.25));
-    const fallbackKhotbahPertama = Math.max(1, durasi_menit - fallbackDudukAntara - fallbackKhotbahKedua);
 
-    if (typeof dpb.khotbah_pertama !== 'number') dpb.khotbah_pertama = fallbackKhotbahPertama;
-    if (typeof dpb.duduk_antara !== 'number') dpb.duduk_antara = fallbackDudukAntara;
-    if (typeof dpb.khotbah_kedua !== 'number') dpb.khotbah_kedua = fallbackKhotbahKedua;
+    let konten: any
+    try {
+      const raw = typeof responseText === 'string' ? responseText : JSON.stringify(responseText)
+      const cleaned = raw
+        .replace(/```json\n?/g, '')
+        .replace(/```\n?/g, '')
+        .trim()
+      konten = JSON.parse(cleaned)
 
-    // Ensure total sum equals durasi_menit
-    const currentTotal = dpb.khotbah_pertama + dpb.duduk_antara + dpb.khotbah_kedua;
-    if (currentTotal !== durasi_menit) {
-      dpb.khotbah_pertama = Math.max(1, durasi_menit - dpb.duduk_antara - dpb.khotbah_kedua);
+      // Set authentic doa_pembuka_majelis
+      konten.doa_pembuka_majelis = {
+        arab: 'سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ وَتَبَارَكَ اسْمُكَ وَتَعَالَى جَدُّكَ وَلاَ إِلَهَ غَيْرُكَ',
+        latin: 'Subhanakallahumma wabihamdika watabarakasmuka wata\'ala jadduka wala ilaha ghairuk',
+        terjemah: 'Maha Suci Engkau ya Allah, dengan memuji-Mu, Maha Berkah nama-Mu, Maha Tinggi keagungan-Mu, dan tidak ada Tuhan selain Engkau.',
+        sumber: 'Doa Pembuka Majelis — HR. Abu Dawud & At-Tirmidzi'
+      }
+    } catch (e) {
+      console.error('[Khotbah] Parse error:', e, 'Raw:', responseText)
+      throw new Error('Gagal parse response AI')
     }
 
     // Save to Supabase
     let savedId: string | null = null
     if (user_id) {
-      const supabase = await createClient()
+      // Kumpulkan SEMUA narasi yang mungkin mengandung sebutan hadits di Khotbah Jumat
+      const narasiGabungan = [
+        konten.khotbah_pertama?.wasiat_taqwa ?? '',
+        konten.khotbah_pertama?.isi_khotbah ?? '',
+        konten.khotbah_pertama?.penekanan_makna ?? '',
+        ...(konten.khotbah_pertama?.poin_utama ?? []).map((p: any) => p.paragraf ?? ''),
+        konten.khotbah_kedua?.wasiat_taqwa_2 ?? '',
+        konten.khotbah_kedua?.isi_khotbah_2 ?? '',
+        konten.khotbah_kedua?.ajakan_penutup ?? '',
+        ...(konten.khotbah_kedua?.doa_quran_penutup ?? []).map((d: any) => d.terjemah ?? '')
+      ].join('\n\n')
+      
+      // Jalankan verifikasi
+      const hasilVerifikasi = await jalankanVerifikasiHadits(narasiGabungan)
+      
+      // SEMENTARA log hasil verifikasi
+      console.log('=== HASIL VERIFIKASI KHOTBAH ===')
+      console.log('Total hadits terdeteksi:', extractHaditsDariNarasi(narasiGabungan).length)
+      console.log('Verifikasi sukses:', hasilVerifikasi.referensi_terverifikasi.hadits.length)
+      console.log('Replaced:', hasilVerifikasi.narasi_replaced)
+      
+      // Jika ada narasi yang di-replace, update konten asli
+      if (hasilVerifikasi.narasi_replaced.some(r => r.reason === 'not_found')) {
+        const applyReplacement = (text: string): string => {
+          let result = text
+          for (const rep of hasilVerifikasi.narasi_replaced) {
+            if (rep.reason === 'not_found' && rep.kalimat_dihapus) {
+              // HAPUS seluruh kalimat
+              result = result.replace(rep.kalimat_dihapus, '')
+            }
+          }
+          // Rapikan double space dan double titik
+          result = result.replace(/\s{2,}/g, ' ').replace(/\.\s*\./g, '.').trim()
+          return result
+        }
+
+        if (konten.khotbah_pertama) {
+          konten.khotbah_pertama.wasiat_taqwa = applyReplacement(konten.khotbah_pertama.wasiat_taqwa ?? '')
+          konten.khotbah_pertama.isi_khotbah = applyReplacement(konten.khotbah_pertama.isi_khotbah ?? '')
+          if (konten.khotbah_pertama.penekanan_makna) {
+            konten.khotbah_pertama.penekanan_makna = applyReplacement(konten.khotbah_pertama.penekanan_makna)
+          }
+          if (konten.khotbah_pertama.poin_utama) {
+            konten.khotbah_pertama.poin_utama = konten.khotbah_pertama.poin_utama.map((p: any) => ({
+              ...p,
+              paragraf: applyReplacement(p.paragraf ?? '')
+            }))
+          }
+        }
+        
+        if (konten.khotbah_kedua) {
+          konten.khotbah_kedua.wasiat_taqwa_2 = applyReplacement(konten.khotbah_kedua.wasiat_taqwa_2 ?? '')
+          konten.khotbah_kedua.isi_khotbah_2 = applyReplacement(konten.khotbah_kedua.isi_khotbah_2 ?? '')
+          if (konten.khotbah_kedua.ajakan_penutup) {
+            konten.khotbah_kedua.ajakan_penutup = applyReplacement(konten.khotbah_kedua.ajakan_penutup)
+          }
+          if (konten.khotbah_kedua.doa_quran_penutup) {
+            konten.khotbah_kedua.doa_quran_penutup = konten.khotbah_kedua.doa_quran_penutup.map((d: any) => ({
+              ...d,
+              terjemah: applyReplacement(d.terjemah ?? '')
+            }))
+          }
+        }
+      }
+
+      // Post-cleanup: hilangkan judul poin yang menyebut "hadits" 
+      // jika paragrafnya tidak mengandung atribusi HR. xxx No. xxx
+      if ((konten as any).isi) {
+        (konten as any).isi = ((konten as any).isi ?? []).map((item: any) => {
+          const judulMengandungHadits = /hadi[ts]+/i.test(item.judul ?? '')
+          const hasAtribusi = /HR\..*?(?:No\.?|nomor)\s*\d+/i.test(item.paragraf ?? '') ||
+                          /Hadits\s+riwayat.*?(?:No\.?|nomor)\s*\d+/i.test(item.paragraf ?? '') ||
+                          /diriwayatkan\s+oleh.*?(?:No\.?|nomor)\s*\d+/i.test(item.paragraf ?? '') ||
+                          /\b(Bukhari|Muslim|Tirmidzi|Tirmizi|Abu\s+Dawud|Ibnu?\s+Majah|Ahmad|Nasa.?i|Baihaqi|Hakim|Darimi)\s+(?:No\.?|nomor)\s*\d+/i.test(item.paragraf ?? '')
+          
+          if (judulMengandungHadits && !hasAtribusi) {
+            // Judul menyesatkan — ganti jadi netral
+            return {
+              ...item,
+              judul: 'Refleksi dan Pelajaran'  // judul default netral
+            }
+          }
+          return item
+        })
+      }
+
+      const supabase = getSupabaseAdmin()
       const { data, error } = await supabase
         .from('kultum_history')
         .insert({
@@ -525,18 +1529,27 @@ ATURAN:
           durasi_menit,
           gaya_bahasa: gaya_bahasa || 'Formal',
           konten: konten as unknown as Record<string, unknown>,
+          referensi_dipilih: referensiDipilih,
+          referensi_terverifikasi: hasilVerifikasi.referensi_terverifikasi,
+          narasi_replaced: hasilVerifikasi.narasi_replaced,
         })
         .select('id')
         .single()
+
+      if (error) {
+        console.error('[Khotbah Jumat] Supabase insert error:', error.message, error.details)
+      }
 
       if (!error && data) savedId = data.id
     }
 
     return NextResponse.json({ success: true, id: savedId, konten, is_jumat: true })
-  } catch (error) {
-    const msg = error instanceof Error ? error.message : 'Internal error'
-    console.error('[Khotbah Jumat] Error:', msg)
-    return NextResponse.json({ error: msg }, { status: 500 })
+  } catch (err: any) {
+    console.error('=== GENERATOR ERROR ===')
+    console.error('message:', err.message)
+    console.error('stack:', err.stack?.slice(0, 500))
+    console.error('======================')
+    return NextResponse.json({ error: err.message }, { status: 500 })
   }
 }
 

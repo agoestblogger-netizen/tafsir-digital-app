@@ -2,11 +2,17 @@ export interface KisahConfig {
   slug: string
   nama: string
   nama_arab: string
-  kategori: 'kaum_diazab' | 'kisah_pilihan' | 'kisah_nabi'
+  kategori: 'kaum_diazab' | 'kisah_pilihan' | 'kisah_nabi' | 'sirah_nabawiyah'
+  tipe_kisah?: 'kaum_diazab' | 'kisah_pilihan' | 'kisah_nabi' | 'sirah_nabawiyah'
   periode?: string
   lokasi?: string
   nabi_diutus?: string
-  surah_utama: { surah_id: number; surah_nama: string; ayat_range: string }[]
+  ringkasan?: string
+  surah_utama: { 
+    surah_id: number
+    surah_nama: string
+    ayat_range: string 
+  }[]
   icon: string
 }
 
@@ -286,6 +292,47 @@ export const KISAH_LIST: KisahConfig[] = [
     ]
   },
   {
+    slug: 'kisah-ibrahim-api',
+    nama: 'Nabi Ibrahim AS — Dibakar Api',
+    nama_arab: 'إِبْرَاهِيمُ عَلَيْهِ السَّلَّام',
+    kategori: 'kisah_nabi',
+    periode: '± 2000 SM',
+    lokasi: 'Ur (Irak)',
+    nabi_diutus: 'Nabi Ibrahim AS',
+    icon: '🔥',
+    surah_utama: [
+      { surah_id: 21, surah_nama: "Al-Anbiya'", ayat_range: '58-70' },
+      { surah_id: 37, surah_nama: 'As-Saffat', ayat_range: '83-98' },
+    ]
+  },
+  {
+    slug: 'kisah-ibrahim-ismail',
+    nama: 'Nabi Ibrahim AS — Pengorbanan Ismail',
+    nama_arab: 'إِبْرَاهِيمُ وَإِسْمَاعِيلُ عَلَيْهِمَا السَّلَام',
+    kategori: 'kisah_nabi',
+    periode: '± 2000 SM',
+    lokasi: 'Makkah (Arab Saudi)',
+    nabi_diutus: 'Nabi Ibrahim AS',
+    icon: '🐑',
+    surah_utama: [
+      { surah_id: 37, surah_nama: 'As-Saffat', ayat_range: '100-113' },
+    ]
+  },
+  {
+    slug: 'kisah-ibrahim-kabah',
+    nama: 'Nabi Ibrahim AS — Membangun Kabah',
+    nama_arab: 'إِبْرَاهِيمُ يَبْنِي الْكَعْبَة',
+    kategori: 'kisah_nabi',
+    periode: '± 2000 SM',
+    lokasi: 'Makkah (Arab Saudi)',
+    nabi_diutus: 'Nabi Ibrahim AS',
+    icon: '🕋',
+    surah_utama: [
+      { surah_id: 2, surah_nama: 'Al-Baqarah', ayat_range: '125-129' },
+      { surah_id: 14, surah_nama: 'Ibrahim', ayat_range: '35-41' },
+    ]
+  },
+  {
     slug: 'kisah-ibrahim',
     nama: "Nabi Ibrahim AS",
     nama_arab: 'إِبْرَاهِيمُ عَلَيْهِ السَّلَامُ',
@@ -385,6 +432,292 @@ export const KISAH_LIST: KisahConfig[] = [
     surah_utama: [
       { surah_id: 21, surah_nama: "Al-Anbiya'", ayat_range: '83-84' },
       { surah_id: 38, surah_nama: 'Shad', ayat_range: '41-44' },
+    ]
+  },
+  // KISAH NABI BARU
+  { slug: 'kisah-idris', nama: 'Nabi Idris AS', 
+    nama_arab: 'نَبِيّ إِدْرِيس', kategori: 'kisah_nabi',
+    tipe_kisah: 'kisah_nabi', periode: '± 3000 SM',
+    lokasi: 'Babilonia', icon: '⭐',
+    ringkasan: 'Nabi pertama yang menulis dengan pena dan ahli dalam ilmu astronomi. Allah mengangkat derajatnya ke tempat yang tinggi.',
+    surah_utama: [
+      { surah_id: 19, surah_nama: 'Maryam', ayat_range: '56-57' },
+      { surah_id: 21, surah_nama: 'Al-Anbiya', ayat_range: '85-86' }
+    ]
+  },
+  { slug: 'kisah-hud', nama: 'Nabi Hud AS',
+    nama_arab: 'نَبِيّ هُود', kategori: 'kisah_nabi',
+    tipe_kisah: 'kisah_nabi', periode: '± 2500 SM',
+    lokasi: 'Ahqaf, Jazirah Arab', icon: '🌪️',
+    ringkasan: 'Diutus kepada Kaum Ad yang sombong dan kuat. Mereka menolak dakwah hingga Allah menghancurkan mereka dengan angin kencang selama 7 malam 8 hari.',
+    surah_utama: [
+      { surah_id: 7, surah_nama: 'Al-Araf', ayat_range: '65-72' },
+      { surah_id: 11, surah_nama: 'Hud', ayat_range: '50-60' }
+    ]
+  },
+  { slug: 'kisah-saleh', nama: 'Nabi Saleh AS',
+    nama_arab: 'نَبِيّ صَالِح', kategori: 'kisah_nabi',
+    tipe_kisah: 'kisah_nabi', periode: '± 2000 SM',
+    lokasi: 'Al-Hijr, Jazirah Arab', icon: '🐪',
+    ringkasan: 'Diutus kepada Kaum Tsamud. Mukjizatnya seekor unta betina dari batu. Kaum Tsamud menyembelih unta tersebut hingga azab menimpa mereka.',
+    surah_utama: [
+      { surah_id: 7, surah_nama: 'Al-Araf', ayat_range: '73-79' },
+      { surah_id: 11, surah_nama: 'Hud', ayat_range: '61-68' }
+    ]
+  },
+  { slug: 'kisah-ishaq', nama: 'Nabi Ishaq AS',
+    nama_arab: 'نَبِيّ إِسْحَاق', kategori: 'kisah_nabi',
+    tipe_kisah: 'kisah_nabi', periode: '± 1900 SM',
+    lokasi: 'Kanaan (Palestina)', icon: '🌟',
+    ringkasan: 'Putra Nabi Ibrahim dari Sarah, lahir sebagai karunia Allah di usia tua. Menjadi nabi dan meneruskan risalah tauhid ayahnya.',
+    surah_utama: [
+      { surah_id: 37, surah_nama: 'As-Saffat', ayat_range: '112-113' }
+    ]
+  },
+  { slug: 'kisah-yaqub', nama: 'Nabi Yaqub AS',
+    nama_arab: 'نَبِيّ يَعْقُوب', kategori: 'kisah_nabi',
+    tipe_kisah: 'kisah_nabi', periode: '± 1800 SM',
+    lokasi: 'Kanaan & Mesir', icon: '👴',
+    ringkasan: 'Ayah dari 12 putra yang menjadi cikal bakal Bani Israil. Kesabarannya menghadapi kehilangan Yusuf hingga akhirnya bersatu kembali di Mesir.',
+    surah_utama: [
+      { surah_id: 12, surah_nama: 'Yusuf', ayat_range: '4-100' }
+    ]
+  },
+  { slug: 'kisah-harun', nama: 'Nabi Harun AS',
+    nama_arab: 'نَبِيّ هَارُون', kategori: 'kisah_nabi',
+    tipe_kisah: 'kisah_nabi', periode: '± 1400 SM',
+    lokasi: 'Mesir & Sinai', icon: '📜',
+    ringkasan: 'Saudara kandung Nabi Musa yang menjadi pendamping dan juru bicara dalam dakwah kepada Firaun. Dikaruniai kemampuan bicara yang fasih.',
+    surah_utama: [
+      { surah_id: 20, surah_nama: 'Thaha', ayat_range: '29-35' },
+      { surah_id: 7, surah_nama: 'Al-Araf', ayat_range: '122' }
+    ]
+  },
+  { slug: 'kisah-dzulkifli', nama: 'Nabi Dzulkifli AS',
+    nama_arab: 'نَبِيّ ذُو الْكِفْل', kategori: 'kisah_nabi',
+    tipe_kisah: 'kisah_nabi', periode: '± 1500 SM',
+    lokasi: 'Syam (Suriah)', icon: '⚖️',
+    ringkasan: 'Nabi yang terkenal karena kesabaran dan komitmennya dalam menunaikan janji. Selalu melaksanakan shalat dan tidak pernah marah.',
+    surah_utama: [
+      { surah_id: 21, surah_nama: 'Al-Anbiya', ayat_range: '85-86' },
+      { surah_id: 38, surah_nama: 'Sad', ayat_range: '48' }
+    ]
+  },
+  { slug: 'kisah-ilyas', nama: 'Nabi Ilyas AS',
+    nama_arab: 'نَبِيّ إِلْيَاس', kategori: 'kisah_nabi',
+    tipe_kisah: 'kisah_nabi', periode: '± 900 SM',
+    lokasi: 'Baalbek, Libanon', icon: '⚡',
+    ringkasan: 'Diutus kepada kaum yang menyembah berhala Baal. Berdakwah dengan gigih namun kaumnya menolak hingga Allah menyelamatkannya.',
+    surah_utama: [
+      { surah_id: 37, surah_nama: 'As-Saffat', ayat_range: '123-132' }
+    ]
+  },
+  { slug: 'kisah-ilyasa', nama: 'Nabi Ilyasa AS',
+    nama_arab: 'نَبِيّ الْيَسَع', kategori: 'kisah_nabi',
+    tipe_kisah: 'kisah_nabi', periode: '± 850 SM',
+    lokasi: 'Palestina', icon: '🌊',
+    ringkasan: 'Penerus dakwah Nabi Ilyas. Seorang nabi yang sabar and tabah dalam menyebarkan agama Allah kepada Bani Israil.',
+    surah_utama: [
+      { surah_id: 6, surah_nama: 'Al-Anam', ayat_range: '86-87' },
+      { surah_id: 38, surah_nama: 'Sad', ayat_range: '48' }
+    ]
+  },
+  { slug: 'kisah-dawud', nama: 'Nabi Dawud AS',
+    nama_arab: 'نَبِيّ دَاوُد', kategori: 'kisah_nabi',
+    tipe_kisah: 'kisah_nabi', periode: '± 1000 SM',
+    lokasi: 'Palestina & Yerusalem', icon: '👑',
+    ringkasan: 'Raja dan nabi yang membunuh Jalut saat masih muda. Dikaruniai suara merdu, kitab Zabur, kemampuan melunakkan besi, dan berbicara dengan burung.',
+    surah_utama: [
+      { surah_id: 38, surah_nama: 'Sad', ayat_range: '17-26' },
+      { surah_id: 2, surah_nama: 'Al-Baqarah', ayat_range: '251' }
+    ]
+  },
+  { slug: 'kisah-zakaria', nama: 'Nabi Zakaria AS',
+    nama_arab: 'نَبِيّ زَكَرِيَّا', kategori: 'kisah_nabi',
+    tipe_kisah: 'kisah_nabi', periode: '± 100 SM',
+    lokasi: 'Palestina & Yerusalem', icon: '🕊️',
+    ringkasan: 'Di usia tua dengan istri yang mandul, berdoa kepada Allah agar dikaruniai keturunan. Allah mengabulkan doanya dengan kelahiran Yahya secara mukjizat.',
+    surah_utama: [
+      { surah_id: 19, surah_nama: 'Maryam', ayat_range: '1-11' },
+      { surah_id: 3, surah_nama: 'Ali Imran', ayat_range: '37-41' }
+    ]
+  },
+  { slug: 'kisah-yahya', nama: 'Nabi Yahya AS',
+    nama_arab: 'نَبِيّ يَحْيَى', kategori: 'kisah_nabi',
+    tipe_kisah: 'kisah_nabi', periode: '± 1 SM',
+    lokasi: 'Palestina', icon: '🌿',
+    ringkasan: 'Putra Nabi Zakaria yang lahir secara mukjizat. Hidup sederhana, zuhud, dan menjadi nabi sejak kecil. Diberi hikmah dan kasih sayang sejak dini.',
+    surah_utama: [
+      { surah_id: 19, surah_nama: 'Maryam', ayat_range: '12-15' }
+    ]
+  },
+
+  // KISAH PILIHAN BARU
+  { slug: 'kisah-habil-qabil', nama: 'Habil dan Qabil',
+    nama_arab: 'هَابِيل وَقَابِيل', kategori: 'kisah_pilihan',
+    tipe_kisah: 'kisah_pilihan', periode: 'Awal penciptaan manusia',
+    lokasi: 'Bumi', icon: '⚔️',
+    ringkasan: 'Dua putra Nabi Adam yang mempersembahkan kurban. Kurban Habil diterima Allah, Qabil tidak. Karena dengki, Qabil membunuh Habil — pembunuhan pertama dalam sejarah.',
+    surah_utama: [
+      { surah_id: 5, surah_nama: 'Al-Maidah', ayat_range: '27-32' }
+    ]
+  },
+  { slug: 'kisah-thalut-jalut', nama: 'Thalut dan Jalut',
+    nama_arab: 'طَالُوت وَجَالُوت', kategori: 'kisah_pilihan',
+    tipe_kisah: 'kisah_pilihan', periode: '± 1000 SM',
+    lokasi: 'Palestina', icon: '🛡️',
+    ringkasan: 'Thalut dipilih Allah memimpin Bani Israil melawan Jalut yang zalim. Dawud muda berhasil membunuh Jalut dengan ketapel atas izin Allah.',
+    surah_utama: [
+      { surah_id: 2, surah_nama: 'Al-Baqarah', ayat_range: '246-251' }
+    ]
+  },
+  { slug: 'kisah-luqman', nama: 'Luqman Al-Hakim',
+    nama_arab: 'لُقْمَان الْحَكِيم', kategori: 'kisah_pilihan',
+    tipe_kisah: 'kisah_pilihan', periode: '± 1000 SM',
+    lokasi: 'Afrika / Nubia', icon: '📖',
+    ringkasan: 'Seorang yang dikaruniai hikmah oleh Allah. Terkenal dengan nasihat-nasihatnya kepada putranya tentang tauhid, shalat, akhlak, dan larangan sombong.',
+    surah_utama: [
+      { surah_id: 31, surah_nama: 'Luqman', ayat_range: '12-19' }
+    ]
+  },
+  { slug: 'kisah-qarun', nama: 'Qarun',
+    nama_arab: 'قَارُون', kategori: 'kisah_pilihan',
+    tipe_kisah: 'kisah_pilihan', periode: '± 1400 SM',
+    lokasi: 'Mesir', icon: '💰',
+    ringkasan: 'Diberi kekayaan berlimpah namun menjadi sombong dan ingkar. Mengklaim kekayaannya hasil kepintaran sendiri. Allah membenamkannya beserta hartanya ke dalam bumi.',
+    surah_utama: [
+      { surah_id: 28, surah_nama: 'Al-Qasas', ayat_range: '76-82' }
+    ]
+  },
+  { slug: 'kisah-ashabul-ukhdud', nama: 'Ashabul Ukhdud',
+    nama_arab: 'أَصْحَابُ الْأُخْدُود', kategori: 'kisah_pilihan',
+    tipe_kisah: 'kisah_pilihan', periode: '± 500 M',
+    lokasi: 'Najran, Yaman', icon: '🔥',
+    ringkasan: 'Para penguasa zalim membuat parit berisi api untuk membakar orang-orang beriman yang tidak mau meninggalkan agamanya. Mereka mati syahid dengan penuh keimanan.',
+    surah_utama: [
+      { surah_id: 85, surah_nama: 'Al-Buruj', ayat_range: '4-10' }
+    ]
+  },
+  { slug: 'kisah-ashabus-sabt', nama: 'Ashabus Sabt',
+    nama_arab: 'أَصْحَابُ السَّبْت', kategori: 'kisah_pilihan',
+    tipe_kisah: 'kisah_pilihan', periode: '± 800 SM',
+    lokasi: 'Eilat, Palestina', icon: '🐟',
+    ringkasan: 'Bani Israil yang melanggar larangan memancing di hari Sabtu dengan tipu muslihat. Allah mengutuk mereka menjadi kera sebagai pelajaran bagi generasi berikutnya.',
+    surah_utama: [
+      { surah_id: 7, surah_nama: 'Al-Araf', ayat_range: '163-166' }
+    ]
+  },
+  { slug: 'kisah-ratu-balqis', nama: 'Ratu Balqis (Saba)',
+    nama_arab: 'مَلِكَةُ سَبَأ', kategori: 'kisah_pilihan',
+    tipe_kisah: 'kisah_pilihan', periode: '± 1000 SM',
+    lokasi: 'Saba, Yaman', icon: '👸',
+    ringkasan: 'Ratu Saba yang cerdas dan bijaksana. Setelah menerima surat Nabi Sulaiman, ia datang menghadap dan akhirnya beriman kepada Allah bersama Sulaiman.',
+    surah_utama: [
+      { surah_id: 27, surah_nama: 'An-Naml', ayat_range: '22-44' }
+    ]
+  },
+  { slug: 'kisah-kaum-tsamud', nama: 'Kaum Tsamud',
+    nama_arab: 'قَوْمُ ثَمُود', kategori: 'kaum_diazab',
+    tipe_kisah: 'kaum_diazab', periode: '± 2000 SM',
+    lokasi: 'Al-Hijr, Jazirah Arab', icon: '🪨',
+    ringkasan: 'Kaum yang menyembelih unta mukjizat Nabi Saleh. Tiga hari setelah peringatan, mereka diazab dengan suara petir yang dahsyat hingga binasa.',
+    surah_utama: [
+      { surah_id: 11, surah_nama: 'Hud', ayat_range: '61-68' },
+      { surah_id: 7, surah_nama: 'Al-Araf', ayat_range: '73-79' }
+    ]
+  },
+  { slug: 'kisah-keluar-ribuan', nama: 'Kaum yang Keluar Ribuan',
+    nama_arab: 'الَّذِينَ خَرَجُوا', kategori: 'kisah_pilihan',
+    tipe_kisah: 'kisah_pilihan', periode: 'Zaman Bani Israil',
+    lokasi: 'Syam', icon: '👥',
+    ringkasan: 'Ribuan orang keluar meninggalkan kampung halaman karena takut wabah/perang. Allah mematikan mereka lalu menghidupkan kembali sebagai pelajaran tentang kekuasaan-Nya.',
+    surah_utama: [
+      { surah_id: 2, surah_nama: 'Al-Baqarah', ayat_range: '243' }
+    ]
+  },
+
+  // SIRAH NABAWIYAH BARU
+  { slug: 'sirah-isra-miraj', nama: 'Isra Miraj',
+    nama_arab: 'الْإِسْرَاء وَالْمِعْرَاج', 
+    kategori: 'sirah_nabawiyah',
+    tipe_kisah: 'sirah_nabawiyah', periode: '621 M',
+    lokasi: 'Makkah → Yerusalem → Sidratul Muntaha',
+    nabi_diutus: 'Nabi Muhammad SAW', icon: '🌙',
+    ringkasan: 'Perjalanan malam Rasulullah dari Masjidil Haram ke Masjidil Aqsa lalu naik ke langit hingga Sidratul Muntaha. Menerima perintah shalat 5 waktu langsung dari Allah.',
+    surah_utama: [
+      { surah_id: 17, surah_nama: 'Al-Isra', ayat_range: '1' },
+      { surah_id: 53, surah_nama: 'An-Najm', ayat_range: '1-18' }
+    ]
+  },
+  { slug: 'sirah-perang-badar', nama: 'Perang Badar',
+    nama_arab: 'غَزْوَةُ بَدْر', kategori: 'sirah_nabawiyah',
+    tipe_kisah: 'sirah_nabawiyah', periode: '2 H / 624 M',
+    lokasi: 'Badar, Hijaz', 
+    nabi_diutus: 'Nabi Muhammad SAW', icon: '⚔️',
+    ringkasan: '313 pasukan Muslim menghadapi 1.000 tentara Quraisy. Dengan pertolongan Allah dan malaikat, kaum Muslim meraih kemenangan besar pertama dalam sejarah Islam.',
+    surah_utama: [
+      { surah_id: 3, surah_nama: 'Ali Imran', ayat_range: '123-127' },
+      { surah_id: 8, surah_nama: 'Al-Anfal', ayat_range: '5-19' }
+    ]
+  },
+  { slug: 'sirah-perang-uhud', nama: 'Perang Uhud',
+    nama_arab: 'غَزْوَةُ أُحُد', kategori: 'sirah_nabawiyah',
+    tipe_kisah: 'sirah_nabawiyah', periode: '3 H / 625 M',
+    lokasi: 'Bukit Uhud, Madinah',
+    nabi_diutus: 'Nabi Muhammad SAW', icon: '🏔️',
+    ringkasan: 'Kaum Muslim awalnya menang namun sebagian pemanah meninggalkan pos karena mengincar harta rampasan. Pelajaran besar tentang ketaatan dan strategi perang.',
+    surah_utama: [
+      { surah_id: 3, surah_nama: 'Ali Imran', ayat_range: '121-179' }
+    ]
+  },
+  { slug: 'sirah-perang-ahzab', nama: 'Perang Ahzab (Khandaq)',
+    nama_arab: 'غَزْوَةُ الْأَحْزَاب', kategori: 'sirah_nabawiyah',
+    tipe_kisah: 'sirah_nabawiyah', periode: '5 H / 627 M',
+    lokasi: 'Madinah',
+    nabi_diutus: 'Nabi Muhammad SAW', icon: '🏰',
+    ringkasan: '10.000 pasukan koalisi mengepung Madinah. Strategi parit (khandaq) yang dicetuskan Salman Al-Farisi berhasil menahan musuh hingga Allah mengirimkan angin kencang.',
+    surah_utama: [
+      { surah_id: 33, surah_nama: 'Al-Ahzab', ayat_range: '9-27' }
+    ]
+  },
+  { slug: 'sirah-perang-hunain', nama: 'Perang Hunain',
+    nama_arab: 'غَزْوَةُ حُنَيْن', kategori: 'sirah_nabawiyah',
+    tipe_kisah: 'sirah_nabawiyah', periode: '8 H / 630 M',
+    lokasi: 'Lembah Hunain, Hijaz',
+    nabi_diutus: 'Nabi Muhammad SAW', icon: '🏹',
+    ringkasan: 'Setelah Fathu Makkah, 12.000 pasukan Muslim kalah di awal karena ujub (sombong). Ketabahan Rasulullah and pertolongan Allah membalikkan keadaan menjadi kemenangan.',
+    surah_utama: [
+      { surah_id: 9, surah_nama: 'At-Taubah', ayat_range: '25-27' }
+    ]
+  },
+  { slug: 'sirah-hijrah', nama: 'Hijrah Nabi ke Madinah',
+    nama_arab: 'هِجْرَةُ النَّبِيّ', kategori: 'sirah_nabawiyah',
+    tipe_kisah: 'sirah_nabawiyah', periode: '1 H / 622 M',
+    lokasi: 'Makkah → Gua Tsur → Madinah',
+    nabi_diutus: 'Nabi Muhammad SAW', icon: '🌙',
+    ringkasan: 'Rasulullah dan Abu Bakar bersembunyi di Gua Tsur 3 hari menghindari kejaran Quraisy. Allah mengirimkan ketenangan dan pertolongan-Nya hingga selamat sampai Madinah.',
+    surah_utama: [
+      { surah_id: 9, surah_nama: 'At-Taubah', ayat_range: '40' }
+    ]
+  },
+  { slug: 'sirah-fathu-makkah', nama: 'Fathu Makkah',
+    nama_arab: 'فَتْحُ مَكَّة', kategori: 'sirah_nabawiyah',
+    tipe_kisah: 'sirah_nabawiyah', periode: '8 H / 630 M',
+    lokasi: 'Makkah',
+    nabi_diutus: 'Nabi Muhammad SAW', icon: '🕌',
+    ringkasan: '10.000 pasukan Muslim memasuki Makkah tanpa pertumpahan darah. Rasulullah memaafkan seluruh penduduk Makkah yang pernah menyakitinya — penaklukan penuh rahmat.',
+    surah_utama: [
+      { surah_id: 48, surah_nama: 'Al-Fath', ayat_range: '1-29' }
+    ]
+  },
+  { slug: 'sirah-kisah-ifk', nama: 'Kisah Ifk (Fitnah Aisyah)',
+    nama_arab: 'حَدِيثُ الْإِفْك', kategori: 'sirah_nabawiyah',
+    tipe_kisah: 'sirah_nabawiyah', periode: '5 H / 627 M',
+    lokasi: 'Madinah',
+    nabi_diutus: 'Nabi Muhammad SAW', icon: '📜',
+    ringkasan: 'Fitnah keji yang disebarkan kaum munafik terhadap kehormatan Aisyah RA. Allah menurunkan 10 ayat membebaskan Aisyah dan menetapkan hukum qadzaf.',
+    surah_utama: [
+      { surah_id: 24, surah_nama: 'An-Nur', ayat_range: '11-26' }
     ]
   },
 ]

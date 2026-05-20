@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, BookOpen, Quote, Sparkles, Copy, Share2, PlayCircle, Image as ImageIcon, ExternalLink, Bookmark } from 'lucide-react'
 import { getById, getByHajat } from '@/data/doa_qurani'
+import { BackButton } from '@/components/ui/BackButton'
 
 export default function DoaDetailPage() {
   const params = useParams()
@@ -18,9 +19,7 @@ export default function DoaDetailPage() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
         <h1 className="text-2xl text-[var(--gold)] mb-4">Doa tidak ditemukan</h1>
-        <button onClick={() => router.push('/doa')} className="text-[var(--teal-200)] flex items-center gap-2">
-          <ArrowLeft className="w-4 h-4" /> Kembali ke Beranda Doa
-        </button>
+        <BackButton label="Kembali ke Beranda Doa" />
       </div>
     )
   }
@@ -61,9 +60,7 @@ export default function DoaDetailPage() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
         
         {/* Navigation */}
-        <button onClick={() => router.back()} className="flex items-center gap-2 text-[var(--text2)] hover:text-[var(--gold-light)] transition-colors w-fit">
-          <ArrowLeft className="w-4 h-4" /> Kembali
-        </button>
+        <BackButton />
 
         {/* Main Content Card */}
         <main className="glass-card p-6 md:p-8 lg:p-10 rounded-[2rem] border-[var(--gold-border)] relative overflow-hidden">

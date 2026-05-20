@@ -11,6 +11,7 @@ import { Verse, VerseWord } from "@/lib/api/quran";
 import { useAudioState } from "@/lib/audioStore";
 import { getSainsForAyat } from "@/data/sains_ayat";
 import { HadistPenguatSection } from "@/components/quran/HadistPenguatSection";
+import { DOA_QURANI } from "@/data/doa_qurani";
 
 // ─── Tafsir Data Interface (v2 — nullable perspectives) ────────
 type LensKey = 'sains' | 'psikologi' | 'sosial';
@@ -25,11 +26,7 @@ interface VerseTafsirData {
   todo_list: string[];
 }
 
-interface PenemuMuslimRef {
-  id: string;
-  nama_ilmuwan: string;
-  bidang_ilmu: string;
-}
+
 
 const LENS_CONFIG: { key: LensKey; field: keyof VerseTafsirData; label: string; emoji: string; color: string; activeColor: string }[] = [
   { key: 'sains', field: 'perspektif_sains', label: 'Sains', emoji: '🧬', color: 'text-cyan-600', activeColor: 'bg-cyan-600 text-white shadow-cyan-200' },
@@ -93,8 +90,7 @@ export function VerseCard({
   const [showTafsir, setShowTafsir] = React.useState(false);
   const [activeLens, setActiveLens] = React.useState<LensKey>('psikologi');
 
-  // Penemu Muslim Cross-Link State
-  const [penemuList, setPenemuList] = React.useState<PenemuMuslimRef[]>([]);
+
 
   // Cleanup on unmount
   React.useEffect(() => {
@@ -115,34 +111,31 @@ export function VerseCard({
     }
   }, [masterSpeed]);
 
-  // ─── Fetch Cross-Link Penemu Muslim ─────────────────────
-  // Berjalan diam-diam saat VerseCard di-mount (intersection observer / render)
-  React.useEffect(() => {
-    // Avoid re-fetching if data is already loaded or attempted
-    let isMounted = true;
-    const surahNumber = verse.verse_key.split(":")[0];
-    const ayatNumber = verse.verse_key.split(":")[1];
 
-    fetch(`/api/penemu-muslim?surah=${surahNumber}&ayat=${ayatNumber}`)
-      .then(r => r.json())
-      .then(d => {
-        if (isMounted && d.data && d.data.length > 0) {
-          setPenemuList(d.data);
-        }
-      })
-      .catch(err => console.error("Gagal sinkronisasi data cross-link Penemu Muslim:", err));
-
-    return () => {
-      isMounted = false;
-    };
-  }, [verse.verse_key]);
 
   // Translate 33 is Kemenag Indonesian translation, 57 is Transliteration
   const translationText = verse.translations?.find(t => t.resource_id === 33)?.text || "Terjemahan tidak tersedia.";
   const transliterationText = verse.translations?.find(t => t.resource_id === 57)?.text || "";
 
   // Extract verse number from verse_key (e.g. "2:286" -> "286")
+  const surahNumber = verse.verse_key.split(":")[0];
   const verseNumber = verse.verse_key.split(":")[1];
+
+  // Cari doa terkait
+  const doaRelated = React.useMemo(() => {
+    // Exact match for verseNumber (e.g., "83") or containing in range (e.g., "25-28" includes "25")
+    return DOA_QURANI.find(d => {
+      if (String(d.surah_id) !== surahNumber) return false;
+      
+      const isRange = d.nomor_ayat.includes('-');
+      if (isRange) {
+        const [start, end] = d.nomor_ayat.split('-').map(Number);
+        const vNum = Number(verseNumber);
+        return vNum >= start && vNum <= end;
+      }
+      return d.nomor_ayat === verseNumber;
+    });
+  }, [surahNumber, verseNumber]);
 
   const isActive = activeVerseKey === verse.verse_key;
   const isCurrentlyPlaying = isActive && isPlaying;
@@ -620,6 +613,15 @@ export function VerseCard({
           />
         </div>
 
+        {/* Link Doa Qurani */}
+        {doaRelated && (
+          <div className="mt-4 flex justify-center">
+            <Link href={`/doa/${doaRelated.id}`} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 hover:-translate-y-0.5 transition-all border border-amber-500/20 text-sm font-semibold shadow-sm">
+              <span className="text-lg leading-none">🤲</span> Lihat Doa dari Ayat Ini →
+            </Link>
+          </div>
+        )}
+
         {/* ✨ Kupas Makna Modern — AI Tafsir CTA */}
         <div className="mt-6 pt-6 border-t border-border/30 flex justify-center">
           <button
@@ -699,35 +701,7 @@ export function VerseCard({
                   transition={{ duration: 0.4 }}
                   className="mt-4 flex flex-col gap-4 overflow-hidden"
                 >
-                  {/* ─── Premium Cross-Link Banner: Jejak Al-Qur'an (Dipindah Dalam Accordion) ─────────────────────────── */}
-                  {penemuList.length > 0 && (
-                    <div className="space-y-3 mb-2">
-                      {penemuList.map((tokoh) => (
-                        <Link 
-                          key={tokoh.id}
-                          href={`/tafsir-sains?tab=tokoh&id=${tokoh.id}`} 
-                          className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/40 dark:to-slate-800 border border-emerald-200 dark:border-emerald-800/50 hover:shadow-md transition-all group"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400 flex flex-shrink-0 items-center justify-center">
-                              <Telescope className="w-5 h-5" />
-                            </div>
-                            <div>
-                              <h4 className="font-bold text-emerald-900 dark:text-emerald-50 text-sm md:text-base">
-                                Jejak Al-Qur&apos;an di Alam Semesta
-                              </h4>
-                              <p className="text-xs md:text-sm text-emerald-700/80 dark:text-emerald-200/70">
-                                Temukan kaitan ayat ini dengan penemu <strong>{tokoh.nama_ilmuwan}</strong>
-                              </p>
-                            </div>
-                          </div>
-                          <span className="text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform ml-2 flex-shrink-0">
-                            <ArrowRight className="w-5 h-5" />
-                          </span>
-                        </Link>
-                      ))}
-                    </div>
-                  )}
+
 
                   {/* Section 1: Tafsir Kemenag (ALWAYS SHOWN) */}
                   {tafsirData.tafsir_kemenag && String(tafsirData.tafsir_kemenag).trim() !== "" && String(tafsirData.tafsir_kemenag).trim().toLowerCase() !== "null" && (

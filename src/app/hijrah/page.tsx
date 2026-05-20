@@ -1,9 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Leaf, CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import { PohonIman } from "@/components/specific/PohonIman";
-import { Checkbox } from "@/components/ui/Checkbox";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 
@@ -169,28 +168,35 @@ export default function HijrahPage() {
 
   // ─── Render ───────────────────────────────────────────────────
   return (
-    <main className="flex flex-col min-h-screen px-6 pt-12 pb-32 gap-6 relative overflow-hidden max-w-7xl mx-auto w-full">
+    <main className="min-h-screen bg-[var(--dark)] relative overflow-x-hidden pb-32 px-6 pt-12 max-w-7xl mx-auto w-full">
 
       {/* Header */}
-      <header className="flex flex-col gap-2 relative z-10">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-secondary dark:bg-emerald-900/30 text-primary dark:text-emerald-400 mb-2 shadow-sm border border-transparent dark:border-emerald-800/50">
-          <Leaf className="w-6 h-6" />
-        </div>
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
-          Jalur Hijrah
+      <header className="flex flex-col relative z-10 text-center mb-8 mt-6">
+        <p
+          className="font-amiri text-2xl md:text-3xl text-right leading-loose text-[var(--gold-light)]"
+          dir="rtl"
+        >
+          وَمَن يُهَاجِرْ فِي سَبِيلِ اللَّهِ يَجِدْ فِي الْأَرْضِ مُرَاغَمًا كَثِيرًا وَسَعَةً
+        </p>
+        <p className="font-cairo text-sm italic text-[var(--teal-300)] text-right opacity-85 mt-1 mb-8">
+          &quot;Barangsiapa berhijrah di jalan Allah, niscaya mereka mendapati di muka bumi ini tempat hijrah yang luas&quot; — QS. An-Nisa&apos;: 100
+        </p>
+
+        <h1 className="font-cinzel text-3xl md:text-4xl font-extrabold tracking-tight text-[var(--gold-light)] mb-2">
+          Hijrah Tracker
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
-          Program {TOTAL_DAYS}-Hari: <span className="font-semibold text-gray-900 dark:text-gray-100">Detox Penyakit Hati</span>.
+        <p className="font-cairo text-base text-[var(--text2)]">
+          Pantau perjalanan hijrahmu, satu langkah dalam satu waktu. Program {TOTAL_DAYS}-Hari: <span className="font-bold text-[var(--text1)]">Detox Penyakit Hati</span>.
         </p>
       </header>
 
       {/* Loading skeleton */}
       {isLoading ? (
         <div className="flex flex-col gap-4 mt-2">
-          <div className="h-48 rounded-3xl bg-secondary/50 dark:bg-slate-800 animate-pulse" />
-          <div className="h-24 rounded-3xl bg-secondary/50 dark:bg-slate-800 animate-pulse" />
+          <div className="h-48 rounded-3xl bg-[var(--dark2)] animate-pulse border border-[var(--gold-border)]" />
+          <div className="h-24 rounded-3xl bg-[var(--dark2)] animate-pulse border border-[var(--gold-border)]" />
           {[1, 2, 3].map(i => (
-            <div key={i} className="h-16 rounded-2xl bg-secondary/50 dark:bg-slate-800 animate-pulse" />
+            <div key={i} className="h-16 rounded-2xl bg-[var(--dark2)] animate-pulse border border-[var(--gold-border)]" />
           ))}
         </div>
       ) : (
@@ -205,26 +211,26 @@ export default function HijrahPage() {
               animate={{ opacity: 1, y: 0 }}
               className="flex justify-center -mt-4 mb-2"
             >
-              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-primary/10 dark:bg-emerald-900/40 border border-primary/20 dark:border-emerald-800 text-sm font-semibold text-primary dark:text-emerald-400">
+              <span className="font-cairo inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-[var(--gold-border)] text-[var(--gold)] bg-[var(--gold-pale)] text-sm font-bold">
                 {plantLevel.emoji} {plantLevel.label}
               </span>
             </motion.div>
 
             {/* Overall Progress Bar */}
-            <div className="mt-2 card-premium bg-white dark:bg-slate-800 border-gray-100 dark:border-slate-700 border p-5 rounded-3xl relative overflow-hidden shadow-sm">
-              <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-gold-light to-gold opacity-60" />
-              <div className="flex justify-between items-end mb-3">
+            <div className="mt-2 rounded-2xl border p-5 relative overflow-hidden shadow-sm" style={{ background: "rgba(10,21,32,0.85)", borderColor: "rgba(201,163,90,0.15)" }}>
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[var(--gold-light)] to-[var(--gold)] opacity-60" />
+              <div className="flex justify-between items-end mb-3 pl-2">
                 <div>
-                  <p className="text-xs text-gold/80 dark:text-amber-500/80 font-medium uppercase tracking-wider mb-1">Progress Keseluruhan</p>
-                  <p className="font-semibold text-lg text-gray-900 dark:text-gray-100">
-                    Hari ke-{currentDay} <span className="text-gray-500 dark:text-gray-400 text-sm font-normal">/ {TOTAL_DAYS}</span>
+                  <p className="font-cinzel text-xs text-[var(--text3)] uppercase tracking-widest mb-1">Progress Keseluruhan</p>
+                  <p className="font-cairo font-bold text-lg text-[var(--text1)]">
+                    Hari ke-{currentDay} <span className="text-[var(--text2)] text-sm font-normal">/ {TOTAL_DAYS}</span>
                   </p>
                 </div>
-                <p className="text-gold font-bold">{Math.round(overallProgress)}%</p>
+                <p className="font-cairo font-bold text-[var(--gold)]">{Math.round(overallProgress)}%</p>
               </div>
-              <div className="h-3 w-full bg-secondary dark:bg-gray-700 rounded-full overflow-hidden">
+              <div className="h-2 w-full bg-[var(--dark2)] rounded-full overflow-hidden ml-2">
                 <motion.div
-                  className="h-full bg-primary dark:bg-emerald-500"
+                  className="h-full bg-gradient-to-r from-[var(--teal-300)] to-[var(--gold)] rounded-full"
                   initial={{ width: 0 }}
                   animate={{ width: `${overallProgress}%` }}
                   transition={{ duration: 1, ease: "easeOut" }}
@@ -232,13 +238,13 @@ export default function HijrahPage() {
               </div>
 
               {/* Progress hari ini */}
-              <div className="flex justify-between items-center mt-3">
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Misi hari ini: <span className="font-semibold text-gray-900 dark:text-gray-100">{completedToday}/{currentMissions.length}</span> selesai
+              <div className="flex justify-between items-center mt-4 pl-2">
+                <p className="font-cairo text-xs text-[var(--text2)]">
+                  Misi hari ini: <span className="font-bold text-[var(--text1)]">{completedToday}/{currentMissions.length}</span> selesai
                 </p>
-                <div className="h-1.5 w-24 bg-secondary dark:bg-gray-700 rounded-full overflow-hidden">
+                <div className="h-2 w-24 bg-[var(--dark2)] rounded-full overflow-hidden">
                   <motion.div
-                    className="h-full bg-gold"
+                    className="h-full bg-gradient-to-r from-[var(--teal-300)] to-[var(--teal-400)] rounded-full"
                     initial={{ width: 0 }}
                     animate={{ width: `${progressToday}%` }}
                     transition={{ duration: 0.6, ease: "easeOut" }}
@@ -250,7 +256,7 @@ export default function HijrahPage() {
 
           {/* Daily Tasks */}
           <section className="relative z-10 mt-4 flex flex-col gap-4">
-            <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 pl-1">Misi Hari Ini</h3>
+            <h3 className="font-cinzel text-xl font-bold text-[var(--text1)] mb-1 pl-1">Misi Hari Ini</h3>
 
             <div className="flex flex-col gap-3">
               {currentMissions.map((task) => {
@@ -263,22 +269,30 @@ export default function HijrahPage() {
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleToggleTask(task.id)}
                     disabled={isSaving}
-                    className={`flex items-center gap-3 p-4 card-premium bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-2xl cursor-pointer transition-all group hover:border-gold/60 dark:hover:border-gold/60 text-left w-full disabled:opacity-70 ${isDone ? "border-primary dark:border-emerald-500 bg-primary/5 dark:bg-emerald-900/40" : ""
-                      }`}
+                    className={`flex items-center gap-3 p-4 rounded-2xl cursor-pointer transition-all group text-left w-full disabled:opacity-70 ${
+                      isDone 
+                        ? "border border-[var(--teal-300)] bg-[var(--dark2)] shadow-[0_0_10px_rgba(26,170,120,0.2)]" 
+                        : "border bg-[rgba(10,21,32,0.85)] border-[rgba(201,163,90,0.15)] hover:border-[var(--teal-300)]/50"
+                    }`}
                   >
                     {isSaving ? (
-                      <Loader2 className="w-4 h-4 text-gold animate-spin flex-shrink-0 mt-0.5" />
+                      <Loader2 className="w-4 h-4 text-[var(--gold)] animate-spin flex-shrink-0 mt-0.5" />
                     ) : (
                       <div className="pointer-events-none mt-0.5 flex-shrink-0">
-                        <Checkbox
-                          checked={isDone}
-                          readOnly
-                          className="border-gold text-gold data-[state=checked]:bg-gold data-[state=checked]:border-gold"
-                        />
+                        <div className={`w-5 h-5 rounded-full flex items-center justify-center border transition-colors ${
+                          isDone 
+                            ? "bg-[var(--teal-300)] border-[var(--teal-300)] text-[var(--dark)]" 
+                            : "bg-transparent border-[var(--gold-border)]"
+                        }`}>
+                          {isDone && <CheckCircle2 className="w-3.5 h-3.5" />}
+                        </div>
                       </div>
                     )}
-                    <span className={`text-base font-medium transition-colors ${isDone ? "text-primary/70 dark:text-emerald-500/70 line-through" : "text-gray-900 dark:text-gray-100 group-hover:text-gold dark:group-hover:text-amber-400"
-                      }`}>
+                    <span className={`font-cairo text-base leading-relaxed transition-colors ${
+                      isDone 
+                        ? "text-[var(--teal-300)] opacity-80 line-through" 
+                        : "text-[var(--text1)] group-hover:text-[var(--gold)]"
+                    }`}>
                       {task.title}
                     </span>
                   </motion.button>
@@ -297,13 +311,14 @@ export default function HijrahPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-24 left-6 right-6 bg-primary text-primary-foreground p-4 rounded-2xl shadow-xl flex items-center justify-between z-50 border border-primary-foreground/20"
+            className="fixed bottom-24 left-6 right-6 p-4 rounded-2xl shadow-[0_0_30px_rgba(26,170,120,0.3)] flex items-center justify-between z-50 border border-[var(--teal-300)]/50"
+            style={{ background: "rgba(10,21,32,0.95)", backdropFilter: "blur(12px)" }}
           >
             <div className="flex items-center gap-3">
-              <CheckCircle2 className="w-6 h-6" />
+              <CheckCircle2 className="w-6 h-6 text-[var(--teal-300)]" />
               <div>
-                <p className="font-bold">Misi Hari Ini Selesai! 🎉</p>
-                <p className="text-sm opacity-90">Alhamdulillah, istiqomahmu tercatat.</p>
+                <p className="font-cinzel font-bold text-[var(--text1)]">Misi Hari Ini Selesai! 🎉</p>
+                <p className="font-cairo text-sm text-[var(--teal-200)] opacity-90">Alhamdulillah, istiqomahmu tercatat.</p>
               </div>
             </div>
           </motion.div>

@@ -1,39 +1,30 @@
-export const dynamic = 'force-dynamic';
-import { NextResponse } from 'next/server';
-import { getSupabaseAdmin } from '@/lib/supabase';
+import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
 
-export async function GET(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const surahParam = searchParams.get('surah');
-    const ayatParam = searchParams.get('ayat');
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url)
+  const surah = searchParams.get('surah')
+  const ayat = searchParams.get('ayat')
 
-    const supabase = getSupabaseAdmin();
-    let query = supabase.from('penemu_muslim').select('*');
+  const supabase = await createClient()
 
-    if (surahParam && ayatParam) {
-      // Fetch specifically for cross-reference
-      query = query
-        .eq('nomor_surat', parseInt(surahParam, 10))
-        .eq('nomor_ayat', parseInt(ayatParam, 10));
-    } else {
-      // Fetch all for encyclopedia
-      query = query.order('nama_ilmuwan', { ascending: true });
-    }
+  let query = supabase
+    .from('penemu_muslim')
+    .select('id, nama_ilmuwan, julukan, tahun_hidup, wilayah_peradaban, bidang_ilmu, profil_singkat')
 
-    const { data, error } = await query;
-
-    if (error) {
-      console.error('[API Penemu Muslim] DB Fetch error:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
-    return NextResponse.json({ data: data || [] });
-  } catch (err: unknown) {
-    console.error('[API Penemu Muslim] Unexpected error:', err);
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Kesalahan server internal' },
-      { status: 500 }
-    );
+  if (surah && ayat) {
+    query = query
+      .eq('surah_id', parseInt(surah))
+      .eq('ayat_number', parseInt(ayat))
   }
+
+  const { data, error } = await query.order('nama_ilmuwan')
+
+  if (error) {
+    console.error('[API penemu-muslim] Error:', error)
+    return NextResponse.json({ data: [] })
+  }
+
+  console.log('[API penemu-muslim] Total records:', data?.length)
+  return NextResponse.json({ data: data ?? [] })
 }

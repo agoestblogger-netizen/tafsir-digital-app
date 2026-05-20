@@ -38,7 +38,7 @@ export function TafsirTabs() {
 
   return (
     <div className="flex flex-col gap-4 mt-6">
-      <div className="flex gap-2 relative overflow-x-auto pb-2 scrollbar-hide hide-scroll-bar no-scrollbar">
+      <div className="flex gap-2 relative overflow-x-auto pb-2 scrollbar-hide hide-scroll-bar no-scrollbar pr-6">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -64,6 +64,7 @@ export function TafsirTabs() {
             </button>
           );
         })}
+        <div className="flex-shrink-0 w-6" />
       </div>
 
       <AnimatePresence mode="wait">

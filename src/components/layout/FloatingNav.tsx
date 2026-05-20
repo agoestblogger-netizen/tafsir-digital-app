@@ -5,12 +5,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Compass } from "lucide-react";
 
 const NAV_ITEMS = [
   { id: "beranda",  icon: "🏠", label: "Beranda",  href: "/" },
   { id: "quran",   icon: "📖", label: "Al Quran", href: "/surah" },
+  { id: "doa",     icon: "🤲", label: "Doa",      href: "/doa" },
   { id: "hadits",  icon: "📜", label: "Hadist",   href: "/hadits" },
   { id: "sains",   icon: "🔬", label: "Sains",    href: "/tafsir-sains" },
+  { id: "kultum",  icon: "🎤", label: "Kultum",   href: "/kultum" },
+  { id: "hijrah",  icon: <Compass className="w-5 h-5" />, label: "Jalur Hijrah", href: "/hijrah" },
 ];
 
 // ── Desktop sidebar (collapsed icon-only, sticky left) ──────────────────────

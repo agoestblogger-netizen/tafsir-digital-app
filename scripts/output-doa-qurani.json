@@ -1,0 +1,540 @@
+[
+  {
+    "id": "rabbana-102",
+    "judul": "Doa untuk mendapatkan petunjuk",
+    "kategori": "rabbana",
+    "arab": "رَبَّنَا وَآتِنَا مَا وَعَدْتَّنَا عَلَى رُسُلِكَ وَلَا تُخْزِنَا يَوْمَ الْقِيَامَةِ ۖ إِنَّكَ لَا تُخْلِفُ الْمِيعَادَ",
+    "latin": "Rabbana wa aatina ma wa'adhtana 'ala rusulika wala tukhzina yawmal qiyamah innaka la tukhliful mi'ad",
+    "terjemah": "Wahai Tuhan kami, berikanlah kepada kami apa yang Engkau janjikan kepada kami melalui para utusan-Mu, dan janganlah Engkau hinakan kami pada hari kiamat. Sesungguhnya Engkau tidak menyalahi janji.",
+    "surah_id": 3,
+    "surah_nama": "Ali 'Imran",
+    "nomor_ayat": "194",
+    "referensi": "QS. Ali 'Imran: 194",
+    "konteks": "Doa ini digunakan ketika seseorang merasa memerlukan petunjuk dan janji Allah dalam hidupnya.",
+    "keutamaan": "Membaca doa ini mengingatkan kita akan janji Allah dan harapan akan pertolongan-Nya.",
+    "mustajab": true,
+    "tema_hajat": [
+      "hidayah",
+      "ilmu"
+    ],
+    "tags": [
+      "Doa & Munajat",
+      "Tawakkal",
+      "Hidayah"
+    ]
+  },
+  {
+    "id": "rabbana-103",
+    "judul": "Doa untuk keselamatan dan perlindungan",
+    "kategori": "rabbana",
+    "arab": "رَبَّنَا أَتْمِمْ لَنَا نُورَنَا وَاغْفِرْ لَنَا ۖ إِنَّكَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",
+    "latin": "Rabbana atmim lana nurana waghfir lana innaka 'ala kulli shay'in qadir",
+    "terjemah": "Wahai Tuhan kami, sempurnakanlah untuk kami cahaya kami dan ampunilah kami. Sesungguhnya Engkau Maha Kuasa atas segala sesuatu.",
+    "surah_id": 66,
+    "surah_nama": "At-Tahrim",
+    "nomor_ayat": "8",
+    "referensi": "QS. At-Tahrim: 8",
+    "konteks": "Digunakan dalam situasi yang memerlukan perlindungan dan bimbingan dari Allah.",
+    "keutamaan": "Doa ini sangat mustajab dalam meminta perlindungan dari segala keburukan.",
+    "mustajab": true,
+    "tema_hajat": [
+      "perlindungan"
+    ],
+    "tags": [
+      "Doa & Munajat",
+      "Perlindungan",
+      "Tawakkal"
+    ]
+  },
+  {
+    "id": "rabbana-104",
+    "judul": "Doa untuk memperoleh ampunan",
+    "kategori": "rabbana",
+    "arab": "رَبَّنَا إِنَّنَا آمَنَّا فَاغْفِرْ لَنَا وَارْحَمْنَا وَأَنتَ خَيْرُ الرَّاحِمِينَ",
+    "latin": "Rabbana innana amanna faghfir lana warhamna wa anta khairu ar-rahimin",
+    "terjemah": "Wahai Tuhan kami, sesungguhnya kami telah beriman, maka ampunilah kami dan kasihilah kami, dan Engkaulah sebaik-baik yang mengasihi.",
+    "surah_id": 23,
+    "surah_nama": "Al-Mu'minun",
+    "nomor_ayat": "109",
+    "referensi": "QS. Al-Mu'minun: 109",
+    "konteks": "Digunakan ketika merasa melakukan kesalahan dan sangat membutuhkan ampunan Allah.",
+    "keutamaan": "Membaca doa ini merupakan permohonan yang tulus untuk mendapatkan ampunan dari Allah.",
+    "mustajab": true,
+    "tema_hajat": [
+      "taubat"
+    ],
+    "tags": [
+      "Doa & Munajat",
+      "Taubat",
+      "Sabar"
+    ]
+  },
+  {
+    "id": "rabbana-105",
+    "judul": "Doa untuk mendapatkan rezeki yang baik",
+    "kategori": "rabbana",
+    "arab": "رَبَّنَا آتِنَا مِن لَّدُنكَ رَحْمَةً وَهَيِّئْ لَنَا مِنْ أَمْرِنَا رَشَدًا",
+    "latin": "Rabbana aatina min ladunka rahmatan wahayyi' lana min amrina rashada",
+    "terjemah": "Wahai Tuhan kami, berikanlah kepada kami dari sisi-Mu rahmat dan siapkanlah untuk kami petunjuk dalam urusan kami.",
+    "surah_id": 18,
+    "surah_nama": "Al-Kahf",
+    "nomor_ayat": "10",
+    "referensi": "QS. Al-Kahf: 10",
+    "konteks": "Doa ini dibaca untuk meminta rezeki yang baik dan petunjuk dalam kehidupan.",
+    "keutamaan": "Doa ini dikenal mustajab dalam menarik rezeki dan berkah dari Allah.",
+    "mustajab": true,
+    "tema_hajat": [
+      "rezeki"
+    ],
+    "tags": [
+      "Doa & Munajat",
+      "Syukur",
+      "Rezeki"
+    ]
+  },
+  {
+    "id": "rabbana-106",
+    "judul": "Doa untuk keteguhan hati",
+    "kategori": "rabbana",
+    "arab": "رَبَّنَا أَفْرِغْ عَلَيْنَا صَبْرًا وَثَبِّتْ أَقْدَامَنَا وَانصُرْنَا عَلَى الْقَوْمِ الْكَافِرِينَ",
+    "latin": "Rabbana afrigh 'alayna sabran wathabbit aqdamana wansurna 'ala al-qawm al-kafirina",
+    "terjemah": "Wahai Tuhan kami, curahkanlah kepada kami kesabaran dan teguhkanlah pendirian kami serta bantulah kami terhadap kaum yang kafir.",
+    "surah_id": 2,
+    "surah_nama": "Al-Baqarah",
+    "nomor_ayat": "250",
+    "referensi": "QS. Al-Baqarah: 250",
+    "konteks": "Digunakan saat menghadapi ujian dan tantangan dalam hidup.",
+    "keutamaan": "Doa ini sangat mustajab untuk meminta kesabaran dan kekuatan.",
+    "mustajab": true,
+    "tema_hajat": [
+      "sabar"
+    ],
+    "tags": [
+      "Doa & Munajat",
+      "Sabar",
+      "Tawakkal"
+    ]
+  },
+  {
+    "id": "rabbana-107",
+    "judul": "Doa untuk mendapatkan kebahagiaan",
+    "kategori": "rabbana",
+    "arab": "رَبَّنَا آمَنَّا فَاغْفِرْ لَنَا وَأَنْتَ خَيْرُ الْغَافِرِينَ",
+    "latin": "Rabbana amanna faghfir lana wa anta khairul ghafirin",
+    "terjemah": "Wahai Tuhan kami, sesungguhnya kami telah beriman, maka ampunilah kami, dan Engkaulah sebaik-baik yang mengampuni.",
+    "surah_id": 7,
+    "surah_nama": "Al-A'raf",
+    "nomor_ayat": "23",
+    "referensi": "QS. Al-A'raf: 23",
+    "konteks": "Doa ini dibaca ketika seseorang ingin mendapatkan kebahagiaan dan kedamaian dalam hidup.",
+    "keutamaan": "Membaca doa ini dapat mendatangkan kebahagiaan dan ketenangan hati.",
+    "mustajab": true,
+    "tema_hajat": [
+      "taubat"
+    ],
+    "tags": [
+      "Doa & Munajat",
+      "Syukur",
+      "Keluarga"
+    ]
+  },
+  {
+    "id": "rabbana-108",
+    "judul": "Doa untuk keselamatan anak",
+    "kategori": "rabbana",
+    "arab": "رَبَّنَا اجْعَلْهُمْ قُلُوبَ مُطْمَئِنَّةً إِلَى ذِكْرِكَ",
+    "latin": "Rabbana ij'alhum quluban mutma'innah ila dhikrika",
+    "terjemah": "Wahai Tuhan kami, jadikanlah hati mereka tenang dengan mengingat-Mu.",
+    "surah_id": 13,
+    "surah_nama": "Ar-Ra'd",
+    "nomor_ayat": "28",
+    "referensi": "QS. Ar-Ra'd: 28",
+    "konteks": "Digunakan untuk memohon keselamatan dan ketenangan hati bagi anak-anak.",
+    "keutamaan": "Doa ini sangat mustajab untuk keselamatan jiwa dan hati anak-anak.",
+    "mustajab": true,
+    "tema_hajat": [
+      "anak",
+      "perlindungan"
+    ],
+    "tags": [
+      "Doa & Munajat",
+      "Keluarga",
+      "Perlindungan"
+    ]
+  },
+  {
+    "id": "rabbana-109",
+    "judul": "Doa untuk kekuatan iman",
+    "kategori": "rabbi",
+    "arab": "رَبِّ زِدْنِي عِلْمًا",
+    "latin": "Rabbi zidni 'ilma",
+    "terjemah": "Ya Tuhanku, tambahilah ilmuku.",
+    "surah_id": 20,
+    "surah_nama": "Taha",
+    "nomor_ayat": "114",
+    "referensi": "QS. Taha: 114",
+    "konteks": "Doa ini sering dibaca oleh mereka yang ingin meningkatkan pengetahuan dan iman.",
+    "keutamaan": "Doa ini sangat mustajab untuk mendapatkan ilmu yang bermanfaat.",
+    "mustajab": true,
+    "tema_hajat": [
+      "ilmu"
+    ],
+    "tags": [
+      "Doa & Munajat",
+      "Ilmu",
+      "Tawakkal"
+    ]
+  },
+  {
+    "id": "rabbana-110",
+    "judul": "Doa untuk mendapatkan jodoh",
+    "kategori": "hajat",
+    "arab": "رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ",
+    "latin": "Rabbana hab lana min azwajina wa dhurriyyatina qurrata a'yun",
+    "terjemah": "Wahai Tuhan kami, berikanlah kepada kami istri-istri dan keturunan yang menjadi penyejuk hati.",
+    "surah_id": 25,
+    "surah_nama": "Al-Furqan",
+    "nomor_ayat": "74",
+    "referensi": "QS. Al-Furqan: 74",
+    "konteks": "Doa ini dibaca oleh orang-orang yang mendambakan jodoh dan keturunan yang baik.",
+    "keutamaan": "Doa ini dikenal mustajab untuk mendapatkan jodoh yang baik.",
+    "mustajab": true,
+    "tema_hajat": [
+      "jodoh"
+    ],
+    "tags": [
+      "Doa & Munajat",
+      "Keluarga",
+      "Jodoh"
+    ]
+  },
+  {
+    "id": "rabbana-8",
+    "judul": "Doa Memohon Petunjuk dan Kebijaksanaan",
+    "kategori": "rabbana",
+    "arab": "رَبَّنَا آتِنَا مِن لَّدُنكَ رَحْمَةً وَهَيِّئْ لَنَا مِنْ أَمْرِنَا رَشَدًا",
+    "latin": "Rabbana atina min ladunka rahmatan wahaiyi' lana min amrina rashada",
+    "terjemah": "Ya Tuhan kami, berikanlah kepada kami dari sisi-Mu rahmat dan siapkanlah untuk kami petunjuk dalam urusan kami.",
+    "surah_id": 18,
+    "surah_nama": "Al-Kahf",
+    "nomor_ayat": "10",
+    "referensi": "QS. Al-Kahf: 10",
+    "konteks": "Doa ini digunakan ketika seseorang merasa bingung dan memerlukan petunjuk dalam mengambil keputusan.",
+    "keutamaan": "Membaca doa ini dapat memberikan kebijaksanaan dan petunjuk dari Allah dalam setiap langkah hidup.",
+    "mustajab": true,
+    "tema_hajat": [
+      "ilmu",
+      "hidayah"
+    ],
+    "tags": [
+      "Doa & Munajat",
+      "Taqwa",
+      "Ilmu"
+    ]
+  },
+  {
+    "id": "rabbana-74",
+    "judul": "Doa Memohon Keluarga yang Saleh",
+    "kategori": "rabbana",
+    "arab": "رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ",
+    "latin": "Rabbana hab lana min azwajina wa dhurriyyatina qurrata a'yunin",
+    "terjemah": "Ya Tuhan kami, anugerahkanlah kepada kami istri-istri dan keturunan kami sebagai penyenang hati.",
+    "surah_id": 25,
+    "surah_nama": "Al-Furqan",
+    "nomor_ayat": "74",
+    "referensi": "QS. Al-Furqan: 74",
+    "konteks": "Doa ini dipanjatkan oleh orang-orang yang ingin agar keluarganya menjadi sumber kebahagiaan dan ketenangan.",
+    "keutamaan": "Doa ini sangat baik dibaca untuk mendapatkan keluarga yang saleh dan penuh kasih sayang.",
+    "mustajab": true,
+    "tema_hajat": [
+      "keluarga",
+      "jodoh"
+    ],
+    "tags": [
+      "Doa & Munajat",
+      "Keluarga",
+      "Syukur"
+    ]
+  },
+  {
+    "id": "rabbana-118",
+    "judul": "Doa Memohon Ampunan dan Rahmat",
+    "kategori": "rabbana",
+    "arab": "رَبَّنَا وَآتِنَا مَا وَعَدتَّنَا عَلَى رُسُلِكَ وَلَا تُخْزِنَا يَوْمَ الْقِيَامَةِ",
+    "latin": "Rabbana wa atina ma wa'adtana 'ala rusulika wa la tukhzina yawma al-qiyamah",
+    "terjemah": "Ya Tuhan kami, berikanlah kepada kami apa yang telah Engkau janjikan kepada para rasul-Mu dan janganlah Engkau hinakan kami pada hari kiamat.",
+    "surah_id": 3,
+    "surah_nama": "Ali 'Imran",
+    "nomor_ayat": "118",
+    "referensi": "QS. Ali 'Imran: 118",
+    "konteks": "Digunakan ketika seseorang ingin memohon ampunan dan berharap mendapatkan rahmat Allah di hari kiamat.",
+    "keutamaan": "Membaca doa ini dapat mendatangkan harapan akan rahmat dan ampunan Allah.",
+    "mustajab": true,
+    "tema_hajat": [
+      "taubat"
+    ],
+    "tags": [
+      "Doa & Munajat",
+      "Sabar",
+      "Tawakkal"
+    ]
+  },
+  {
+    "id": "rabbana-147",
+    "judul": "Doa Memohon Pertolongan dalam Kesulitan",
+    "kategori": "rabbi",
+    "arab": "رَبِّ انصُرْنِي عَلَى الْقَوْمِ الْمُفْسِدِينَ",
+    "latin": "Rabbi ansurni 'ala al-qawmil-mufsidin",
+    "terjemah": "Tuhanku, tolonglah aku atas kaum yang berbuat kerusakan.",
+    "surah_id": 29,
+    "surah_nama": "Al-Ankabut",
+    "nomor_ayat": "30",
+    "referensi": "QS. Al-Ankabut: 30",
+    "konteks": "Doa ini dipanjatkan ketika menghadapi orang-orang yang merusak dan mengganggu kebaikan.",
+    "keutamaan": "Doa ini dapat menjadi penguat dan penolong bagi yang teraniaya.",
+    "mustajab": true,
+    "tema_hajat": [
+      "musibah",
+      "perlindungan"
+    ],
+    "tags": [
+      "Doa & Munajat",
+      "Tawakkal",
+      "Sabar"
+    ]
+  },
+  {
+    "id": "rabbana-40",
+    "judul": "Doa Memohon Kesehatan dan Keselamatan",
+    "kategori": "rabbana",
+    "arab": "رَبَّنَا إِنَّنَا آمَنَّا فَاغْفِرْ لَنَا وَارْحَمْنَا",
+    "latin": "Rabbana innana amanna faghfir lana warhamna",
+    "terjemah": "Ya Tuhan kami, sesungguhnya kami telah beriman, maka ampunilah kami dan rahmatilah kami.",
+    "surah_id": 14,
+    "surah_nama": "Ibrahim",
+    "nomor_ayat": "40",
+    "referensi": "QS. Ibrahim: 40",
+    "konteks": "Doa ini digunakan oleh orang-orang yang beriman untuk memohon ampunan dan rahmat dari Allah.",
+    "keutamaan": "Doa ini memiliki makna yang dalam dan menjadi pengantar untuk mendapatkan kesehatan dan keselamatan.",
+    "mustajab": true,
+    "tema_hajat": [
+      "kesehatan",
+      "taubat"
+    ],
+    "tags": [
+      "Doa & Munajat",
+      "Syukur",
+      "Tawakkal"
+    ]
+  },
+  {
+    "id": "rabbana-53",
+    "judul": "Doa Memohon Hidayah",
+    "kategori": "rabbana",
+    "arab": "رَبَّنَا آمَنَّا فَاغْفِرْ لَنَا وَارْحَمْنَا وَأَنتَ خَيْرُ الرَّاحِمِينَ",
+    "latin": "Rabbana amanna faghfir lana warhamna wa anta khayru ar-rahimin",
+    "terjemah": "Ya Tuhan kami, kami telah beriman, maka ampunilah kami dan rahmatilah kami, dan Engkau adalah sebaik-baik pemberi rahmat.",
+    "surah_id": 3,
+    "surah_nama": "Ali 'Imran",
+    "nomor_ayat": "53",
+    "referensi": "QS. Ali 'Imran: 53",
+    "konteks": "Digunakan dalam doa untuk memohon hidayah dan rahmat Allah di tengah kesulitan.",
+    "keutamaan": "Doa ini sangat baik untuk dipanjatkan agar diberi hidayah dan rahmat dalam hidup.",
+    "mustajab": true,
+    "tema_hajat": [
+      "hidayah",
+      "taubat"
+    ],
+    "tags": [
+      "Doa & Munajat",
+      "Taqwa",
+      "Sabar"
+    ]
+  },
+  {
+    "id": "rabbana-40",
+    "judul": "Doa Memohon Perlindungan dari Kejahatan",
+    "kategori": "rabbi",
+    "arab": "رَبِّ أَعُوذُ بِكَ مِنْ هَمَزَاتِ الشَّيَاطِينِ",
+    "latin": "Rabbi a'udzu bika min hamazatisy-syaithin",
+    "terjemah": "Tuhanku, aku berlindung kepada-Mu dari bisikan-bisikan setan.",
+    "surah_id": 23,
+    "surah_nama": "Al-Mu'minun",
+    "nomor_ayat": "97",
+    "referensi": "QS. Al-Mu'minun: 97",
+    "konteks": "Doa ini dipanjatkan untuk memohon perlindungan dari gangguan setan.",
+    "keutamaan": "Membaca doa ini dapat memberikan perlindungan dari kejahatan dan bisikan setan.",
+    "mustajab": true,
+    "tema_hajat": [
+      "perlindungan"
+    ],
+    "tags": [
+      "Doa & Munajat",
+      "Tawakkal",
+      "Sabar"
+    ]
+  },
+  {
+    "id": "rabbana-10",
+    "judul": "Doa Memohon Kebahagiaan dan Kebaikan",
+    "kategori": "rabbana",
+    "arab": "رَبَّنَا وَأَدْخِلْهُمْ جَنَّاتِ عَدْنٍ الَّتِي وَعَدتَّهُمْ",
+    "latin": "Rabbana wa adkhilhum jannati 'adnin allati wa 'adtahum",
+    "terjemah": "Ya Tuhan kami, masukkanlah mereka ke dalam surga 'Adn yang Engkau janjikan kepada mereka.",
+    "surah_id": 32,
+    "surah_nama": "As-Sajdah",
+    "nomor_ayat": "10",
+    "referensi": "QS. As-Sajdah: 10",
+    "konteks": "Digunakan dalam doa untuk memohon kebahagiaan dan kebaikan di akhirat.",
+    "keutamaan": "Doa ini sangat bermanfaat untuk memohon kebahagiaan dan kebaikan di dunia dan akhirat.",
+    "mustajab": true,
+    "tema_hajat": [
+      "taubat",
+      "hidayah"
+    ],
+    "tags": [
+      "Doa & Munajat",
+      "Syukur",
+      "Tawakkal"
+    ]
+  },
+  {
+    "id": "rabbana-83",
+    "judul": "Doa Memohon Ampunan dan Kesejahteraan",
+    "kategori": "rabbi",
+    "arab": "رَبِّ زِدْنِي عِلْمًا",
+    "latin": "Rabbi zidni 'ilma",
+    "terjemah": "Tuhanku, tambahkanlah kepadaku ilmu.",
+    "surah_id": 20,
+    "surah_nama": "Taha",
+    "nomor_ayat": "114",
+    "referensi": "QS. Taha: 114",
+    "konteks": "Doa ini dipanjatkan ketika seseorang menginginkan pengetahuan yang bermanfaat.",
+    "keutamaan": "Membaca doa ini dapat mendatangkan ilmu yang bermanfaat dan meningkatkan pemahaman.",
+    "mustajab": true,
+    "tema_hajat": [
+      "ilmu"
+    ],
+    "tags": [
+      "Doa & Munajat",
+      "Ilmu",
+      "Taqwa"
+    ]
+  },
+  {
+    "id": "rabbana-302",
+    "judul": "Doa untuk petunjuk dan hidayah",
+    "kategori": "rabbana",
+    "arab": "رَبَّنَا آمِنَّا بِمَا أَنْزَلْتَ وَاتَّبَعْنَا الرَّسُولَ فَاكْتُبْنَا مَعَ الشَّاهِدِينَ",
+    "latin": "Rabbana amanna bima anzalta wa attaba'na ar-rasula faktubna ma'a ash-shahidin",
+    "terjemah": "Ya Tuhan kami, kami beriman kepada apa yang Engkau turunkan dan kami mengikuti Rasul, maka catatlah kami bersama orang-orang yang bersaksi.",
+    "surah_id": 3,
+    "surah_nama": "Ali 'Imran",
+    "nomor_ayat": "53",
+    "referensi": "QS. Ali 'Imran: 53",
+    "konteks": "Doa ini dipanjatkan oleh para pengikut Nabi Isa yang ingin mendapatkan petunjuk dan hidayah.",
+    "keutamaan": "Membaca doa ini akan mendatangkan petunjuk dan hidayah dari Allah.",
+    "mustajab": true,
+    "tema_hajat": [
+      "hidayah"
+    ],
+    "tags": [
+      "Doa & Munajat",
+      "Taqwa",
+      "Ilmu"
+    ]
+  },
+  {
+    "id": "rabbana-303",
+    "judul": "Doa untuk pengampunan dan rahmat",
+    "kategori": "rabbana",
+    "arab": "رَبَّنَا وَآتِهِمْ مَّا أَنتَ مُعَطِّي مَن تَقَى",
+    "latin": "Rabbana wa aati him ma anta mu'ti man taqa",
+    "terjemah": "Ya Tuhan kami, berikanlah kepada mereka apa yang Engkau berikan kepada orang yang bertakwa.",
+    "surah_id": 8,
+    "surah_nama": "Al-Anfal",
+    "nomor_ayat": "74",
+    "referensi": "QS. Al-Anfal: 74",
+    "konteks": "Doa ini digunakan untuk meminta ampunan dan rahmat bagi diri sendiri dan orang lain.",
+    "keutamaan": "Doa ini memiliki keutamaan dalam meminta ampunan dan keberkahan.",
+    "mustajab": true,
+    "tema_hajat": [
+      "taubat"
+    ],
+    "tags": [
+      "Doa & Munajat",
+      "Taqwa",
+      "Syukur"
+    ]
+  },
+  {
+    "id": "rabbana-304",
+    "judul": "Doa untuk kesehatan dan perlindungan",
+    "kategori": "rabbi",
+    "arab": "رَبِّ أَوْزِعْنِي أَنْ أَشْكُرَ نِعْمَتَكَ الَّتِي أَنْعَمْتَ عَلَيَّ",
+    "latin": "Rabbi awzi'ni an ashkura ni'mataka allati an'amta 'alayya",
+    "terjemah": "Ya Tuhanku, berilah aku ilham untuk bersyukur atas nikmat-Mu yang telah Engkau berikan kepadaku.",
+    "surah_id": 27,
+    "surah_nama": "An-Naml",
+    "nomor_ayat": "19",
+    "referensi": "QS. An-Naml: 19",
+    "konteks": "Doa ini digunakan untuk mengingat dan bersyukur atas nikmat kesehatan yang diberikan.",
+    "keutamaan": "Membaca doa ini akan mendatangkan kesehatan dan perlindungan dari Allah.",
+    "mustajab": true,
+    "tema_hajat": [
+      "kesehatan",
+      "perlindungan"
+    ],
+    "tags": [
+      "Doa & Munajat",
+      "Syukur",
+      "Sabar"
+    ]
+  },
+  {
+    "id": "rabbana-305",
+    "judul": "Doa untuk keluarga yang bahagia",
+    "kategori": "rabbana",
+    "arab": "رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ",
+    "latin": "Rabbana hab lana min azwajina wa dhurriyyatina qurrata a'yunin",
+    "terjemah": "Ya Tuhan kami, anugerahilah kami istri-istri dan anak-anak yang menjadi penyenang hati.",
+    "surah_id": 25,
+    "surah_nama": "Al-Furqan",
+    "nomor_ayat": "74",
+    "referensi": "QS. Al-Furqan: 74",
+    "konteks": "Doa ini dipanjatkan untuk memohon keluarga yang harmonis dan saling mendukung.",
+    "keutamaan": "Doa ini sangat mustajab untuk menciptakan ketentraman dalam keluarga.",
+    "mustajab": true,
+    "tema_hajat": [
+      "keluarga"
+    ],
+    "tags": [
+      "Keluarga",
+      "Doa & Munajat",
+      "Syukur"
+    ]
+  },
+  {
+    "id": "rabbana-306",
+    "judul": "Doa untuk rezeki yang berkah",
+    "kategori": "rabbi",
+    "arab": "رَبِّ زِدْنِي عِلْمًا",
+    "latin": "Rabbi zidni 'ilma",
+    "terjemah": "Ya Tuhanku, tambahkanlah kepadaku ilmu.",
+    "surah_id": 20,
+    "surah_nama": "Taha",
+    "nomor_ayat": "114",
+    "referensi": "QS. Taha: 114",
+    "konteks": "Doa ini digunakan ketika seseorang ingin meningkatkan pengetahuannya demi kebaikan.",
+    "keutamaan": "Doa ini sangat mustajab untuk mendapatkan ilmu yang bermanfaat.",
+    "mustajab": true,
+    "tema_hajat": [
+      "ilmu"
+    ],
+    "tags": [
+      "Doa & Munajat",
+      "Ilmu",
+      "Taqwa"
+    ]
+  }
+]

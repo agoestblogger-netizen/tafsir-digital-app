@@ -9,6 +9,12 @@ export interface KhotbahJumatOutput {
   judul: string;
   format: string;
   tema: string;
+  durasi_estimasi?: string;
+  durasi_per_bagian?: {
+    khotbah_pertama: number;
+    duduk_antara: number;
+    khotbah_kedua: number;
+  };
   persiapan_khatib: {
     catatan: string;
     salam_naik_mimbar: string;
@@ -179,7 +185,14 @@ export function KhotbahJumatView({
 
         {/* 2. Khotbah Pertama */}
         <section className="border-l-4 border-[var(--teal-500)] bg-[var(--dark2)] rounded-r-2xl p-6 md:p-8 space-y-8 shadow-lg relative overflow-hidden">
-          <div className="text-sm font-bold tracking-widest text-[var(--teal-400)] mb-6 border-b border-[var(--teal-500)]/30 pb-4">━━━━ KHOTBAH PERTAMA ━━━━</div>
+          <div className="text-sm font-bold tracking-widest text-[var(--teal-400)] mb-6 border-b border-[var(--teal-500)]/30 pb-4 flex items-center justify-between">
+            <span>━━━━ KHOTBAH PERTAMA ━━━━</span>
+            {konten.durasi_per_bagian?.khotbah_pertama && (
+              <span className="font-cairo text-xs text-[var(--text3)] font-normal normal-case flex items-center gap-1 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md">
+                ⏱ ~{konten.durasi_per_bagian.khotbah_pertama} menit
+              </span>
+            )}
+          </div>
           
           <div className="space-y-6">
             {/* Hamdalah */}
@@ -236,7 +249,14 @@ export function KhotbahJumatView({
 
         {/* 3. Duduk Antara Dua Khotbah */}
         <section className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 text-center max-w-2xl mx-auto shadow-inner relative">
-          <div className="text-xs font-bold tracking-widest text-amber-500 mb-4 uppercase">━━━ 🪑 DUDUK ANTARA DUA KHOTBAH ━━━</div>
+          <div className="text-xs font-bold tracking-widest text-amber-500 mb-4 uppercase flex items-center justify-between">
+            <span>━━━ 🪑 DUDUK ANTARA DUA KHOTBAH ━━━</span>
+            {konten.durasi_per_bagian?.duduk_antara && (
+              <span className="font-cairo text-xs text-[var(--text3)] font-normal normal-case flex items-center gap-1 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md">
+                ⏱ ~{konten.durasi_per_bagian.duduk_antara} menit
+              </span>
+            )}
+          </div>
           <p className="text-[var(--text2)] text-sm italic mb-6">{cleanText(konten.duduk_antara_dua_khotbah?.catatan)}</p>
           <div style={{ fontFamily: 'Amiri, serif', direction: 'rtl' }} className="text-3xl leading-loose text-amber-400 mb-4">{cleanText(konten.duduk_antara_dua_khotbah?.doa_duduk?.arab)}</div>
           <p className="italic text-amber-200/70 text-sm mb-2">{cleanText(konten.duduk_antara_dua_khotbah?.doa_duduk?.latin)}</p>
@@ -245,7 +265,14 @@ export function KhotbahJumatView({
 
         {/* 4. Khotbah Kedua */}
         <section className="border-l-4 border-purple-500 bg-[var(--dark2)] rounded-r-2xl p-6 md:p-8 space-y-8 shadow-lg relative overflow-hidden">
-          <div className="text-sm font-bold tracking-widest text-purple-400 mb-6 border-b border-purple-500/30 pb-4">━━━━ KHOTBAH KEDUA ━━━━</div>
+          <div className="text-sm font-bold tracking-widest text-purple-400 mb-6 border-b border-purple-500/30 pb-4 flex items-center justify-between">
+            <span>━━━━ KHOTBAH KEDUA ━━━━</span>
+            {konten.durasi_per_bagian?.khotbah_kedua && (
+              <span className="font-cairo text-xs text-[var(--text3)] font-normal normal-case flex items-center gap-1 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md">
+                ⏱ ~{konten.durasi_per_bagian.khotbah_kedua} menit
+              </span>
+            )}
+          </div>
           
           <div className="space-y-6">
             {/* Pembuka */}

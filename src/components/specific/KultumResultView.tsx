@@ -170,7 +170,14 @@ export function KultumResultView({
 
         {/* 2. Pembuka */}
         <section className="bg-[var(--dark2)] border border-[var(--gold-border)] rounded-2xl p-6">
-          <div className="text-xs font-bold uppercase tracking-widest text-[var(--teal-300)] mb-6">🌟 Pembukaan</div>
+          <div className="text-xs font-bold uppercase tracking-widest text-[var(--teal-300)] mb-6 flex items-center justify-between">
+            <span>🌟 Pembukaan</span>
+            {konten.durasi_per_bagian?.pembukaan && (
+              <span className="font-cairo text-xs text-[var(--text3)] font-normal normal-case flex items-center gap-1 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md">
+                ⏱ ~{konten.durasi_per_bagian.pembukaan} menit
+              </span>
+            )}
+          </div>
           <div className="space-y-4">
             <p className="text-lg font-bold text-[var(--gold)]">{konten.bagian.pembuka?.salam}</p>
             <p className="text-[var(--text1)] leading-relaxed">{konten.bagian.pembuka?.muqaddimah}</p>
@@ -211,8 +218,15 @@ export function KultumResultView({
 
         {/* 4. Penjabaran Tafsir */}
         <section className="bg-gradient-to-br from-[var(--dark2)] to-[var(--dark3)] border border-[var(--gold-border)] rounded-2xl p-6">
-          <div className="text-xs font-bold uppercase tracking-widest text-[var(--gold)] mb-4 flex items-center gap-2">
-            <ScrollText className="w-4 h-4" /> Penjabaran & Tafsir
+          <div className="text-xs font-bold uppercase tracking-widest text-[var(--gold)] mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ScrollText className="w-4 h-4" /> Penjabaran & Tafsir
+            </div>
+            {konten.durasi_per_bagian?.isi_utama && (
+              <span className="font-cairo text-xs text-[var(--text3)] font-normal normal-case flex items-center gap-1 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md">
+                ⏱ ~{konten.durasi_per_bagian.isi_utama} menit
+              </span>
+            )}
           </div>
           <div className="text-[var(--text1)] leading-relaxed space-y-4 whitespace-pre-wrap">
             {konten.bagian.penjabaran_tafsir}
@@ -284,7 +298,14 @@ export function KultumResultView({
 
         {/* 8. Penutup */}
         <section className="bg-[var(--dark2)] border border-[var(--gold-border)] rounded-2xl p-6">
-          <div className="text-xs font-bold uppercase tracking-widest text-[var(--gold)] mb-6">🏁 Kesimpulan & Penutup</div>
+          <div className="text-xs font-bold uppercase tracking-widest text-[var(--gold)] mb-6 flex items-center justify-between">
+            <span>🏁 Kesimpulan & Penutup</span>
+            {konten.durasi_per_bagian?.penutup && (
+              <span className="font-cairo text-xs text-[var(--text3)] font-normal normal-case flex items-center gap-1 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md">
+                ⏱ ~{konten.durasi_per_bagian.penutup} menit
+              </span>
+            )}
+          </div>
           <div className="space-y-4">
             {(isValidText(konten.bagian.kesimpulan) || isValidText(konten.bagian.penutup?.kesimpulan)) && (
               <p className="text-[var(--text1)] leading-relaxed whitespace-pre-line">

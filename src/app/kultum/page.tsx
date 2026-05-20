@@ -70,7 +70,7 @@ export default function KultumGeneratorPage() {
     // Reset subFormat saat format berubah
     setSubFormat('')
     // Reset durasi ke default sesuai format
-    const defaults: Record<string, number> = { tausiyah: 5, kultum: 10, khotbah: 25, ceramah: 45 }
+    const defaults: Record<string, number> = { tausiyah: 7, kultum: 10, khotbah: 20, ceramah: 30 }
     setDurasi(defaults[format.toLowerCase()] ?? 10)
   }, [format])
   
@@ -263,38 +263,6 @@ export default function KultumGeneratorPage() {
               )}
             </div>
 
-{/* ⏱️ Durasi */}
-<div className="mb-6">
-  <p className="font-cinzel text-xs uppercase tracking-widest font-bold text-[var(--text2)] mb-3">⏱️ Durasi Target</p>
-  <div className="flex items-center gap-3 flex-wrap">
-    <input
-      type="number"
-      min={2}
-      max={120}
-      value={durasi}
-      onChange={e => setDurasi(Number(e.target.value))}
-      className="font-cairo w-20 text-center rounded-xl border border-[var(--gold-border)] bg-[var(--dark3)] text-[var(--text1)] p-2 text-base font-bold focus:outline-none focus:border-[var(--gold)]"
-    />
-    <span className="font-cairo text-[var(--text2)] text-sm">menit</span>
-    <div className="flex gap-2 flex-wrap">
-      {[5, 10, 15, 30, 45, 60].map(m => (
-        <button
-          key={m}
-          type="button"
-          onClick={() => setDurasi(m)}
-          className={`font-cairo px-3 py-1 rounded-full text-xs font-bold border transition-all ${
-            durasi === m
-              ? 'bg-[var(--teal-600)] border-[var(--teal-300)] text-white'
-              : 'border-[var(--gold-border)] text-[var(--text3)] hover:border-[var(--gold)]'
-          }`}
-        >
-          {m}m
-        </button>
-      ))}
-    </div>
-  </div>
-</div>
-
             {/* Kategori Tema */}
             <div>
               <label className="font-cinzel flex items-center gap-2 text-xs font-bold text-[var(--gold)] uppercase tracking-widest mb-4">
@@ -367,6 +335,40 @@ export default function KultumGeneratorPage() {
                     {gaya}
                   </button>
                 ))}
+              </div>
+            </div>
+
+            {/* ⏱️ Durasi */}
+            <div>
+              <label className="font-cinzel flex items-center gap-2 text-xs font-bold text-[var(--gold)] uppercase tracking-widest mb-4">
+                <Clock className="w-4 h-4" /> Durasi Target
+              </label>
+              <div className="flex items-center gap-3 flex-wrap">
+                <input
+                  type="number"
+                  min={2}
+                  max={120}
+                  value={durasi}
+                  onChange={e => setDurasi(Number(e.target.value))}
+                  className="font-cairo w-20 text-center rounded-xl border border-[var(--gold-border)] bg-[var(--dark3)] text-[var(--text1)] p-2 text-base font-bold focus:outline-none focus:border-[var(--gold)]"
+                />
+                <span className="font-cairo text-[var(--text2)] text-sm">menit</span>
+                <div className="flex gap-2 flex-wrap">
+                  {[7, 10, 15, 20, 30].map(m => (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => setDurasi(m)}
+                      className={`font-cairo px-3 py-1 rounded-full text-xs font-bold border transition-all ${
+                        durasi === m
+                          ? 'bg-[var(--teal-600)] border-[var(--teal-300)] text-white'
+                          : 'border-[var(--gold-border)] text-[var(--text3)] hover:border-[var(--gold)]'
+                      }`}
+                    >
+                      {m}m
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 

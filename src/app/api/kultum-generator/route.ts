@@ -58,6 +58,14 @@ export interface KultumOutput {
   tema: string
   gaya_bahasa: string
   durasi_estimasi: string
+  durasi_per_bagian?: {
+    pembukaan: number
+    isi_utama: number
+    penutup: number
+    khotbah_pertama?: number
+    duduk_antara?: number
+    khotbah_kedua?: number
+  }
   bagian: {
     doa_pembuka: {
       arab: string
@@ -161,6 +169,7 @@ Buat ${format} dengan tema "${tema}" ${kategori_tema ? `(kategori: ${kategori_te
 Gaya bahasa: ${gaya_bahasa || 'Semi-Formal'}.
 Estimasi durasi: ${targetDurasi} menit. Sesuaikan panjang konten dengan durasi ini.
 Panduan: 5 menit ≈ 500 kata, 10 menit ≈ 1000 kata, 30 menit ≈ 3000 kata
+Wajib sertakan estimasi pembagian durasi per bagian dalam response JSON di field "durasi_per_bagian" (angka dalam menit, total harus = ${targetDurasi} menit).
 
 WAJIB output dalam format JSON berikut PERSIS:
 {
@@ -169,6 +178,11 @@ WAJIB output dalam format JSON berikut PERSIS:
   "tema": "${tema}",
   "gaya_bahasa": "${gaya_bahasa || 'Semi-Formal'}",
   "durasi_estimasi": "${targetDurasi} menit",
+  "durasi_per_bagian": {
+    "pembukaan": 2,
+    "isi_utama": 6,
+    "penutup": 2
+  },
   "bagian": {
     "doa_pembuka": {
       "arab": "اَلْحَمْدُ لِلّٰهِ رَبِّ الْعٰلَمِيْنَ وَبِهِ نَسْتَعِيْنُ عَلٰى أُمُوْرِ الدُّنْيَا وَالدِّيْنِ وَالصَّلاَةُ وَالسَّلاَمُ عَلٰى أَشْرَفِ الْأَنْبِيَاءِ وَالْمُرْسَلِيْنَ وَعَلٰى اٰلِهِ وَصَحْبِهِ أَجْمَعِيْنَ",
@@ -253,11 +267,6 @@ ATURAN PENTING:
       )
     }
 
-    function cleanField(val: unknown): string {
-      if (typeof val !== 'string') return ''
-      return val.replace(/^["']+|["']+$/g, '').replace(/"""/g, '').trim()
-    }
-
     if (!konten.bagian) {
       konten.bagian = {} as KultumOutput['bagian']
     }
@@ -282,11 +291,26 @@ ATURAN PENTING:
       konten.bagian.doa_penutup_tema = konten.bagian.doa_penutup_tema || konten.bagian.penutup.doa_penutup_konten || ''
     }
 
-    // Debug: lihat di mana AI menaruh data
-    console.log('[DEBUG] raw keys di root:', Object.keys(konten))
-    console.log('[DEBUG] raw keys di bagian:', Object.keys(konten.bagian))
-    console.log('[DEBUG] kesimpulan:', konten.bagian.kesimpulan?.slice(0, 80))
-    console.log('[DEBUG] ajakan_penutup:', konten.bagian.ajakan_penutup?.slice(0, 80))
+    // Normalisasi durasi per bagian
+    if (!konten.durasi_per_bagian || typeof konten.durasi_per_bagian !== 'object') {
+      konten.durasi_per_bagian = { pembukaan: 0, isi_utama: 0, penutup: 0 };
+    }
+    const dpb = konten.durasi_per_bagian as Record<string, number>;
+    
+    // Fallback pembagian durasi
+    const fallbackPembukaan = Math.max(1, Math.round(targetDurasi * 0.2));
+    const fallbackPenutup = Math.max(1, Math.round(targetDurasi * 0.2));
+    const fallbackIsiUtama = Math.max(1, targetDurasi - fallbackPembukaan - fallbackPenutup);
+
+    if (typeof dpb.pembukaan !== 'number') dpb.pembukaan = fallbackPembukaan;
+    if (typeof dpb.isi_utama !== 'number') dpb.isi_utama = fallbackIsiUtama;
+    if (typeof dpb.penutup !== 'number') dpb.penutup = fallbackPenutup;
+
+    // Ensure total sum equals targetDurasi
+    const currentTotal = dpb.pembukaan + dpb.isi_utama + dpb.penutup;
+    if (currentTotal !== targetDurasi) {
+      dpb.isi_utama = Math.max(1, targetDurasi - dpb.pembukaan - dpb.penutup);
+    }
 
     // Bersihkan dari karakter """
     const clean = (s: unknown) => typeof s === 'string' ? s.replace(/"""/g, '').trim() : ''
@@ -343,12 +367,19 @@ Buat naskah Khotbah Jum'at lengkap dengan tema "${tema}".
 Gaya bahasa: ${gaya_bahasa || 'Formal'}.
 Estimasi durasi total: ${durasi_menit} menit. Sesuaikan panjang isi khotbah dengan durasi ini.
 Panduan: 10 menit ≈ 1000 kata, 30 menit ≈ 3000 kata.
+Wajib sertakan estimasi pembagian durasi per bagian dalam response JSON di field "durasi_per_bagian" (angka dalam menit: khotbah_pertama, duduk_antara, khotbah_kedua, total harus = ${durasi_menit} menit).
 
 Output JSON dengan struktur PERSIS berikut:
 {
   "judul": "Judul khotbah yang relevan",
   "format": "khotbah_jumat",
   "tema": "${tema}",
+  "durasi_estimasi": "${durasi_menit} menit",
+  "durasi_per_bagian": {
+    "khotbah_pertama": 15,
+    "duduk_antara": 2,
+    "khotbah_kedua": 8
+  },
 
   "persiapan_khatib": {
     "catatan": "Panduan singkat untuk khatib sebelum naik mimbar",
@@ -456,6 +487,28 @@ ATURAN:
 
     const responseText = completion.choices[0].message.content || '{}'
     const konten = JSON.parse(responseText)
+
+    // Normalisasi durasi per bagian
+    if (!konten.durasi_per_bagian || typeof konten.durasi_per_bagian !== 'object') {
+      konten.durasi_per_bagian = { khotbah_pertama: 0, duduk_antara: 0, khotbah_kedua: 0 };
+    }
+    const dpb = konten.durasi_per_bagian as Record<string, number>;
+    
+    // Fallback pembagian durasi untuk Khotbah Jumat:
+    // khotbah_pertama: ~65%, duduk_antara: ~10% (1-2 menit), khotbah_kedua: ~25%
+    const fallbackDudukAntara = Math.max(1, Math.round(durasi_menit * 0.1));
+    const fallbackKhotbahKedua = Math.max(1, Math.round(durasi_menit * 0.25));
+    const fallbackKhotbahPertama = Math.max(1, durasi_menit - fallbackDudukAntara - fallbackKhotbahKedua);
+
+    if (typeof dpb.khotbah_pertama !== 'number') dpb.khotbah_pertama = fallbackKhotbahPertama;
+    if (typeof dpb.duduk_antara !== 'number') dpb.duduk_antara = fallbackDudukAntara;
+    if (typeof dpb.khotbah_kedua !== 'number') dpb.khotbah_kedua = fallbackKhotbahKedua;
+
+    // Ensure total sum equals durasi_menit
+    const currentTotal = dpb.khotbah_pertama + dpb.duduk_antara + dpb.khotbah_kedua;
+    if (currentTotal !== durasi_menit) {
+      dpb.khotbah_pertama = Math.max(1, durasi_menit - dpb.duduk_antara - dpb.khotbah_kedua);
+    }
 
     // Save to Supabase
     let savedId: string | null = null

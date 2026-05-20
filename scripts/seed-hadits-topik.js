@@ -8,7 +8,7 @@ const { createClient } = require('@supabase/supabase-js')
 
 // ── Supabase config ──────────────────────────────────────────────────────────
 const SUPABASE_URL = 'https://crrcijfzujegmeuaffvl.supabase.co'
-const SUPABASE_SERVICE_KEY = 'sb_secret_BKZ_-BlfRXG_0CDhJQDZ1g_b_ffaRLN'
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
 // ── API config ───────────────────────────────────────────────────────────────

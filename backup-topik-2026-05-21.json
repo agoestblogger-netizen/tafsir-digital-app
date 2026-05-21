@@ -1,14 +1,5 @@
 [
   {
-    "id": "bbe3ab29-ab6e-4161-b60b-10a52a8c2c41",
-    "topik_nama": "Birrul Walidain",
-    "tags": [
-      "Shalat",
-      "Birrul Walidain",
-      "Jihad"
-    ]
-  },
-  {
     "id": "74b6aa0e-b3e8-47f8-a6b5-62723dbc2a30",
     "topik_nama": "Shalat",
     "tags": [
@@ -17,26 +8,10 @@
     ]
   },
   {
-    "id": "f016a345-1256-4b47-869f-3cb94c3913e8",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Kepemimpinan & Keadilan"
-    ]
-  },
-  {
     "id": "73da2968-ffa4-4bbb-bf39-e546a9d59544",
     "topik_nama": "Shalat",
     "tags": [
       "Shalat"
-    ]
-  },
-  {
-    "id": "6dc44a69-58c5-467e-8b2b-f4627ca60900",
-    "topik_nama": "Kesehatan & Thibbun Nabawi",
-    "tags": [
-      "Kesehatan & Thibbun Nabawi",
-      "Akhlak Mulia"
     ]
   },
   {
@@ -119,36 +94,20 @@
     ]
   },
   {
-    "id": "bac9581c-11c2-40f6-873a-208129e382b7",
-    "topik_nama": "Akhirat & Kiamat",
-    "tags": [
-      "Akhirat & Kiamat",
-      "Kepemimpinan & Keadilan"
-    ]
-  },
-  {
-    "id": "753eea63-7922-4b23-82e6-078f90f1c85e",
-    "topik_nama": "Pernikahan & Rumah Tangga",
-    "tags": [
-      "Pernikahan & Rumah Tangga",
-      "Keluarga"
-    ]
-  },
-  {
-    "id": "cc1b618f-7aae-470f-907b-e37c230619c1",
-    "topik_nama": "Akhirat & Kiamat",
-    "tags": [
-      "Akhirat & Kiamat",
-      "Doa & Dzikir",
-      "Sosial & Masyarakat"
-    ]
-  },
-  {
     "id": "cecd59cb-e881-4585-aae5-274adc6ced62",
     "topik_nama": "Doa & Dzikir",
     "tags": [
       "Doa & Dzikir",
       "Akhirat & Kiamat"
+    ]
+  },
+  {
+    "id": "cc1b618f-7aae-470f-907b-e37c230619c1",
+    "topik_nama": "Jihad & Dakwah",
+    "tags": [
+      "Akhirat & Kiamat",
+      "Doa & Dzikir",
+      "Sosial & Masyarakat"
     ]
   },
   {
@@ -200,14 +159,6 @@
     ]
   },
   {
-    "id": "8a6d939d-c187-4c6b-aef0-c0e4f6ced475",
-    "topik_nama": "Haji & Umrah",
-    "tags": [
-      "Haji & Umrah",
-      "Kepemimpinan & Keadilan"
-    ]
-  },
-  {
     "id": "e15cc208-fdc7-4e75-81f7-6092507bd852",
     "topik_nama": "Zakat & Sedekah",
     "tags": [
@@ -217,7 +168,7 @@
   },
   {
     "id": "ae02021c-0ffa-4132-a25f-432003277548",
-    "topik_nama": "Shalat",
+    "topik_nama": "Thaharah & Kebersihan",
     "tags": [
       "Shalat",
       "Keluarga"
@@ -225,18 +176,10 @@
   },
   {
     "id": "09c43e51-f75b-453f-8bd1-16e8e588dd3d",
-    "topik_nama": "Haji & Umrah",
+    "topik_nama": "Zuhud & Kesederhanaan",
     "tags": [
       "Haji & Umrah",
       "Akhlak Mulia"
-    ]
-  },
-  {
-    "id": "0e7daa7a-f551-4dd4-909c-ef7e44f85ec1",
-    "topik_nama": "Haji & Umrah",
-    "tags": [
-      "Haji & Umrah",
-      "Shalat"
     ]
   },
   {
@@ -248,27 +191,11 @@
     ]
   },
   {
-    "id": "b02b296b-dfe3-41f7-aee4-2329ffb9503e",
-    "topik_nama": "Rezeki & Kerja",
-    "tags": [
-      "Rezeki & Kerja",
-      "Kejujuran & Amanah"
-    ]
-  },
-  {
     "id": "10fb3c0f-f605-4e17-8ab2-8c1855a0e6c6",
-    "topik_nama": "Rezeki & Kerja",
+    "topik_nama": "Pernikahan & Rumah Tangga",
     "tags": [
       "Rezeki & Kerja",
       "Keluarga"
-    ]
-  },
-  {
-    "id": "291f9e7b-ba9e-4251-80f3-4479d5ce013d",
-    "topik_nama": "Puasa & Ramadan",
-    "tags": [
-      "Puasa & Ramadan",
-      "Shalat"
     ]
   },
   {
@@ -328,14 +255,6 @@
     ]
   },
   {
-    "id": "7f93d69d-7b63-4b10-bb89-03919fc5930e",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Pernikahan & Rumah Tangga"
-    ]
-  },
-  {
     "id": "a28dfc2f-cfc1-44a8-afbe-231396ffd7fe",
     "topik_nama": "Shalat",
     "tags": [
@@ -360,7 +279,7 @@
   },
   {
     "id": "ee226238-36a8-4194-9a83-56ac1b635745",
-    "topik_nama": "Doa & Dzikir",
+    "topik_nama": "Tazkiyatun Nafs",
     "tags": [
       "Doa & Dzikir",
       "Kesehatan Jiwa & Qalbu"
@@ -368,7 +287,7 @@
   },
   {
     "id": "16652d35-84f0-4ace-93bd-f7b7bdac8bbe",
-    "topik_nama": "Shalat",
+    "topik_nama": "Doa & Dzikir",
     "tags": [
       "Doa & Dzikir",
       "Shalat"
@@ -391,27 +310,11 @@
     ]
   },
   {
-    "id": "129ae515-c5b9-48f2-b721-bd7ba09212e8",
-    "topik_nama": "Kesehatan & Thibbun Nabawi",
-    "tags": [
-      "Kesehatan & Thibbun Nabawi",
-      "Akhlak Mulia"
-    ]
-  },
-  {
     "id": "3ed3b723-8fc5-48d7-b4d3-f71510c4bf5c",
     "topik_nama": "Haji & Umrah",
     "tags": [
       "Haji & Umrah",
       "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
-    "id": "f0e6ac08-3dca-4158-85a6-607372c5a815",
-    "topik_nama": "Kesehatan & Thibbun Nabawi",
-    "tags": [
-      "Kesehatan & Thibbun Nabawi",
-      "Doa & Dzikir"
     ]
   },
   {
@@ -493,14 +396,6 @@
     ]
   },
   {
-    "id": "8d56dbd2-e5f2-4b7d-8440-555fc0096455",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
     "id": "67bec3e9-7f5b-4721-b2fb-ef6a74718982",
     "topik_nama": "Pernikahan & Rumah Tangga",
     "tags": [
@@ -573,14 +468,6 @@
     ]
   },
   {
-    "id": "05f0b5a1-3e64-40dc-a1a1-efbb2c6dedaf",
-    "topik_nama": "Kepemimpinan & Keadilan",
-    "tags": [
-      "Kepemimpinan & Keadilan",
-      "Birrul Walidain"
-    ]
-  },
-  {
     "id": "61f883ad-1492-4c2c-a925-efa4da3107dc",
     "topik_nama": "Pernikahan & Rumah Tangga",
     "tags": [
@@ -589,32 +476,8 @@
     ]
   },
   {
-    "id": "8ac13844-575c-42a0-b8a4-68bdd23e32a5",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Keluarga"
-    ]
-  },
-  {
-    "id": "018bc406-118e-42fa-90ff-dc8cce999a28",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Pernikahan & Rumah Tangga"
-    ]
-  },
-  {
-    "id": "3f3567dc-8099-4d93-835a-d4f63eca60b0",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
     "id": "76f4b5d4-2017-4058-9d41-09fa3c95feed",
-    "topik_nama": "Shalat",
+    "topik_nama": "Thaharah & Kebersihan",
     "tags": [
       "Shalat",
       "Kesehatan & Thibbun Nabawi"
@@ -622,26 +485,10 @@
   },
   {
     "id": "9cda3f5e-8120-4946-b255-bebc5290dcde",
-    "topik_nama": "Keluarga",
+    "topik_nama": "Thaharah & Kebersihan",
     "tags": [
       "Keluarga",
       "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
-    "id": "508b9f92-af11-418e-b461-948c972afdda",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
-    "id": "8949810c-ccea-4250-8741-164fa2f9ddc8",
-    "topik_nama": "Haji & Umrah",
-    "tags": [
-      "Haji & Umrah",
-      "Kepemimpinan & Keadilan"
     ]
   },
   {
@@ -717,14 +564,6 @@
     ]
   },
   {
-    "id": "0238cdb4-90dd-4e3c-9279-a57799558cb6",
-    "topik_nama": "Akhirat & Kiamat",
-    "tags": [
-      "Akhirat & Kiamat",
-      "Keluarga"
-    ]
-  },
-  {
     "id": "66a9ff23-fc4e-4e73-800c-459d9df0dd54",
     "topik_nama": "Thaharah & Kebersihan",
     "tags": [
@@ -746,14 +585,6 @@
     "tags": [
       "Shalat",
       "Kesehatan Jiwa & Qalbu"
-    ]
-  },
-  {
-    "id": "010196ef-b42b-4582-ab8d-9ef4c1c2de11",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Kepemimpinan & Keadilan"
     ]
   },
   {
@@ -804,14 +635,6 @@
     ]
   },
   {
-    "id": "041ac3e4-37d9-4f62-b6f4-3e712270986d",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
     "id": "d0fac073-b33e-4cd2-bfd5-17510bd537c3",
     "topik_nama": "Haji & Umrah",
     "tags": [
@@ -843,14 +666,6 @@
     ]
   },
   {
-    "id": "e0ea0670-93ec-4c13-94ab-01af9bfa28a8",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Taubat & Ampunan"
-    ]
-  },
-  {
     "id": "55c41489-f7c4-44c4-9912-9dd1fb6f3c82",
     "topik_nama": "Haji & Umrah",
     "tags": [
@@ -864,22 +679,6 @@
     "tags": [
       "Kesehatan & Thibbun Nabawi",
       "Shalat"
-    ]
-  },
-  {
-    "id": "b25acb41-7131-451c-be4a-afe678bcea6c",
-    "topik_nama": "Kesehatan & Thibbun Nabawi",
-    "tags": [
-      "Kesehatan & Thibbun Nabawi",
-      "Akhlak Mulia"
-    ]
-  },
-  {
-    "id": "2536ffc6-31c4-4743-bd0a-0f1cd5824aeb",
-    "topik_nama": "Haji & Umrah",
-    "tags": [
-      "Haji & Umrah",
-      "Kepemimpinan & Keadilan"
     ]
   },
   {
@@ -938,14 +737,6 @@
     ]
   },
   {
-    "id": "b07b6c63-c647-4d3a-bee4-8d62dd378d56",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Keluarga",
-      "Shalat"
-    ]
-  },
-  {
     "id": "0b9fadbe-8d7f-4afa-99f6-0bcbf24caf3a",
     "topik_nama": "Haji & Umrah",
     "tags": [
@@ -986,35 +777,11 @@
     ]
   },
   {
-    "id": "a599e462-e142-4d92-8543-24efc0e05582",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
-    "id": "335966f7-b032-4cc9-ace9-6611c7da7fbe",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
     "id": "0cfd2781-0e9b-42b6-8628-fbb48a8ce4f9",
     "topik_nama": "Kesehatan & Thibbun Nabawi",
     "tags": [
       "Kesehatan & Thibbun Nabawi",
       "Sosial & Masyarakat"
-    ]
-  },
-  {
-    "id": "16c631ff-1f8e-4bc4-a246-76253983e650",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Zakat & Sedekah"
     ]
   },
   {
@@ -1073,14 +840,6 @@
     ]
   },
   {
-    "id": "85aec0f2-e49a-4b6a-a164-3140a7e6ab85",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
     "id": "2bc6698b-0fbc-42be-ad6d-5896ed5e2878",
     "topik_nama": "Ukhuwah & Persaudaraan",
     "tags": [
@@ -1105,14 +864,6 @@
     ]
   },
   {
-    "id": "dd940e94-0d0b-4bc2-ad7d-1ee583078121",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Akhirat & Kiamat"
-    ]
-  },
-  {
     "id": "41dbd774-b7e4-48db-97f5-35b13d5b7e37",
     "topik_nama": "Thaharah & Kebersihan",
     "tags": [
@@ -1129,22 +880,6 @@
     ]
   },
   {
-    "id": "31e8caa3-474d-4647-a01b-7bfa16b10d06",
-    "topik_nama": "Ukhuwah & Persaudaraan",
-    "tags": [
-      "Ukhuwah & Persaudaraan",
-      "Akhlak Mulia"
-    ]
-  },
-  {
-    "id": "47eed3f7-8d7e-43a0-bc06-8704fee16e45",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
     "id": "332d7f46-03a5-489e-b252-136c89bf4243",
     "topik_nama": "Kesehatan & Thibbun Nabawi",
     "tags": [
@@ -1158,14 +893,6 @@
     "tags": [
       "Keluarga",
       "Pernikahan & Rumah Tangga",
-      "Kepemimpinan & Keadilan"
-    ]
-  },
-  {
-    "id": "9c3e14ec-068e-4e21-88b9-d15e5c9a7179",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
       "Kepemimpinan & Keadilan"
     ]
   },
@@ -1194,14 +921,6 @@
     ]
   },
   {
-    "id": "c5857ded-4b9f-4c5a-a9e2-2b14b16a65a6",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Doa & Dzikir",
-      "Shalat"
-    ]
-  },
-  {
     "id": "dd49e432-921f-4fb1-96d0-2f85565474ed",
     "topik_nama": "Shalat",
     "tags": [
@@ -1226,27 +945,11 @@
     ]
   },
   {
-    "id": "492c08a8-40b8-4cf5-8531-6679e299560d",
-    "topik_nama": "Kesehatan & Thibbun Nabawi",
-    "tags": [
-      "Kesehatan & Thibbun Nabawi",
-      "Muamalah & Jual Beli"
-    ]
-  },
-  {
     "id": "d03bcd39-93f5-4760-8076-5972d1d9d84b",
-    "topik_nama": "Keluarga",
+    "topik_nama": "Warisan & Wasiat",
     "tags": [
       "Keluarga",
       "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
-    "id": "38d1a149-e38c-447c-9a26-6771f56ab3e9",
-    "topik_nama": "Kesehatan & Thibbun Nabawi",
-    "tags": [
-      "Kesehatan & Thibbun Nabawi",
-      "Akhlak Mulia"
     ]
   },
   {
@@ -1263,22 +966,6 @@
     "tags": [
       "Shalat",
       "Ilmu & Pendidikan"
-    ]
-  },
-  {
-    "id": "82007b71-a2e0-4a9d-b0ef-0040f6342017",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Pernikahan & Rumah Tangga"
-    ]
-  },
-  {
-    "id": "f40f2e4a-1b86-4229-9bfc-e07eb2904cc6",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Pernikahan & Rumah Tangga"
     ]
   },
   {
@@ -1353,14 +1040,6 @@
     ]
   },
   {
-    "id": "2150d8a0-3481-4e59-83ee-fc3a72e17e6a",
-    "topik_nama": "Idul Fitri & Silaturahmi",
-    "tags": [
-      "Idul Fitri & Silaturahmi",
-      "Zakat & Sedekah"
-    ]
-  },
-  {
     "id": "c1627ab9-1037-4153-bedf-4319656cfbd8",
     "topik_nama": "Kesehatan & Thibbun Nabawi",
     "tags": [
@@ -1382,14 +1061,6 @@
     "tags": [
       "Keluarga",
       "Iman & Akidah"
-    ]
-  },
-  {
-    "id": "006b815a-3905-4052-b0da-888dd27a5e30",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Taubat & Ampunan"
     ]
   },
   {
@@ -1465,18 +1136,10 @@
   },
   {
     "id": "64547cda-0f69-4fd1-9981-255c6b49c671",
-    "topik_nama": "Keluarga",
+    "topik_nama": "Pernikahan & Rumah Tangga",
     "tags": [
       "Keluarga",
       "Pernikahan & Rumah Tangga"
-    ]
-  },
-  {
-    "id": "d374aff8-2cbf-47db-a135-8f98841c1360",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Kesehatan & Thibbun Nabawi"
     ]
   },
   {
@@ -1512,39 +1175,6 @@
     ]
   },
   {
-    "id": "ccff7bc9-cd2e-4771-93f1-937b577eb5ef",
-    "topik_nama": "Pernikahan & Rumah Tangga",
-    "tags": [
-      "Keluarga",
-      "Pernikahan & Rumah Tangga",
-      "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
-    "id": "9bd7bd2c-f238-4072-ba05-c8a9f6bdaefd",
-    "topik_nama": "Akhlak Mulia",
-    "tags": [
-      "Keluarga",
-      "Pernikahan & Rumah Tangga"
-    ]
-  },
-  {
-    "id": "34eac0d4-c1bd-4d20-9ba3-5ffb1f065b02",
-    "topik_nama": "Iman & Akidah",
-    "tags": [
-      "Iman & Akidah",
-      "Menjaga Lisan"
-    ]
-  },
-  {
-    "id": "5cada813-feda-41a5-a593-7622994c1c68",
-    "topik_nama": "Kisah Para Nabi",
-    "tags": [
-      "Kisah Para Nabi",
-      "Iman & Akidah"
-    ]
-  },
-  {
     "id": "dd7cc6ff-8df6-4677-a3f1-695aa746b03a",
     "topik_nama": "Puasa & Ramadan",
     "tags": [
@@ -1561,20 +1191,20 @@
     ]
   },
   {
+    "id": "5cada813-feda-41a5-a593-7622994c1c68",
+    "topik_nama": "Iman & Akidah",
+    "tags": [
+      "Kisah Para Nabi",
+      "Iman & Akidah"
+    ]
+  },
+  {
     "id": "5eaeb501-a1a8-4350-a5f3-2ff265b4152e",
     "topik_nama": "Doa & Dzikir",
     "tags": [
       "Doa & Dzikir",
       "Akhlak Mulia",
       "Birrul Walidain"
-    ]
-  },
-  {
-    "id": "ce470ff8-48ea-4b40-9ec6-f08ef9a97409",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Doa & Dzikir"
     ]
   },
   {
@@ -1635,14 +1265,6 @@
     ]
   },
   {
-    "id": "49f9e4e0-143f-4bc6-942f-70f9d6346b4a",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
     "id": "8780cc5e-254c-4918-b5cb-efa491f1f20c",
     "topik_nama": "Birrul Walidain",
     "tags": [
@@ -1696,22 +1318,6 @@
     "tags": [
       "Keluarga",
       "Pernikahan & Rumah Tangga"
-    ]
-  },
-  {
-    "id": "72f9745b-e4e2-4ff4-a2d9-3aa6e20069e7",
-    "topik_nama": "Haji & Umrah",
-    "tags": [
-      "Haji & Umrah",
-      "Shalat"
-    ]
-  },
-  {
-    "id": "c9b33cc6-44b4-4086-b851-8f897206c1e7",
-    "topik_nama": "Rezeki & Kerja",
-    "tags": [
-      "Rezeki & Kerja",
-      "Zakat & Sedekah"
     ]
   },
   {
@@ -1818,11 +1424,11 @@
     ]
   },
   {
-    "id": "4df03380-8750-4225-8521-ccdc5e75fe5e",
+    "id": "227014c5-0277-45fb-bd8d-7a62534fac86",
     "topik_nama": "Shalat",
     "tags": [
       "Shalat",
-      "Kesehatan & Thibbun Nabawi"
+      "Kejujuran & Amanah"
     ]
   },
   {
@@ -1831,14 +1437,6 @@
     "tags": [
       "Haji & Umrah",
       "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
-    "id": "227014c5-0277-45fb-bd8d-7a62534fac86",
-    "topik_nama": "Thaharah & Kebersihan",
-    "tags": [
-      "Shalat",
-      "Kejujuran & Amanah"
     ]
   },
   {
@@ -1874,13 +1472,6 @@
     ]
   },
   {
-    "id": "552ebd25-a5c4-437c-a107-387496605f31",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat"
-    ]
-  },
-  {
     "id": "cc8afc55-1073-4ae5-b10d-4b184f3e23aa",
     "topik_nama": "Kisah Para Nabi",
     "tags": [
@@ -1905,26 +1496,10 @@
     ]
   },
   {
-    "id": "2c0bd623-53d6-42c1-a099-f574f3763939",
-    "topik_nama": "Kesehatan & Thibbun Nabawi",
-    "tags": [
-      "Kesehatan & Thibbun Nabawi",
-      "Akhlak Mulia"
-    ]
-  },
-  {
     "id": "086f7cda-4753-4f58-bfc1-010c4d877d49",
     "topik_nama": "Haji & Umrah",
     "tags": [
       "Haji & Umrah"
-    ]
-  },
-  {
-    "id": "e271fcce-9044-4a10-ab35-b27134994126",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Doa & Dzikir",
-      "Shalat"
     ]
   },
   {
@@ -2040,14 +1615,6 @@
     ]
   },
   {
-    "id": "2cd749df-14ea-4c51-abeb-046afde00712",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
     "id": "bb620a94-ee9b-4b1f-9241-a1a4b57d0de2",
     "topik_nama": "Puasa & Ramadan",
     "tags": [
@@ -2070,14 +1637,6 @@
       "Idul Fitri & Silaturahmi",
       "Zakat & Sedekah",
       "Shalat"
-    ]
-  },
-  {
-    "id": "08701bc2-0a48-46a5-af86-add39f5c1bbc",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Kisah Para Nabi"
     ]
   },
   {
@@ -2241,14 +1800,6 @@
     ]
   },
   {
-    "id": "f306068e-871f-40ce-9631-314679d0c17c",
-    "topik_nama": "Kisah Para Nabi",
-    "tags": [
-      "Kisah Para Nabi",
-      "Doa & Dzikir"
-    ]
-  },
-  {
     "id": "6f39090e-e137-4fc8-9526-99a0428998a7",
     "topik_nama": "Thaharah & Kebersihan",
     "tags": [
@@ -2262,14 +1813,6 @@
     "tags": [
       "Shalat",
       "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
-    "id": "2207b3c9-8cbb-417b-be9c-8a2b5bbaecf1",
-    "topik_nama": "Rezeki & Kerja",
-    "tags": [
-      "Rezeki & Kerja",
-      "Muamalah & Jual Beli"
     ]
   },
   {
@@ -2294,14 +1837,6 @@
     "tags": [
       "Puasa & Ramadan",
       "Amal di Bulan Ramadan"
-    ]
-  },
-  {
-    "id": "5e8e12f3-81ea-481d-86d1-bc1f63e79fa2",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Akhlak Mulia"
     ]
   },
   {
@@ -2350,14 +1885,6 @@
     "tags": [
       "Shalat",
       "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
-    "id": "65242c9f-9fba-4dfe-ba54-dcad86d58a5f",
-    "topik_nama": "Kisah Para Nabi",
-    "tags": [
-      "Kisah Para Nabi",
-      "Ilmu & Pendidikan"
     ]
   },
   {
@@ -2536,6 +2063,14 @@
     ]
   },
   {
+    "id": "8d2bb52f-157b-4f7b-8274-f6a3a70759cd",
+    "topik_nama": "Pernikahan & Rumah Tangga",
+    "tags": [
+      "Keluarga",
+      "Pernikahan & Rumah Tangga"
+    ]
+  },
+  {
     "id": "3820f5ad-18f3-4b58-bfdd-36b93ccac166",
     "topik_nama": "Birrul Walidain",
     "tags": [
@@ -2544,27 +2079,11 @@
     ]
   },
   {
-    "id": "8d2bb52f-157b-4f7b-8274-f6a3a70759cd",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Pernikahan & Rumah Tangga"
-    ]
-  },
-  {
     "id": "085e87e8-fe87-4e85-af2b-cf4986fb1987",
     "topik_nama": "Taubat & Ampunan",
     "tags": [
       "Taubat & Ampunan",
       "Ukhuwah & Persaudaraan"
-    ]
-  },
-  {
-    "id": "8b395cf7-a56a-43c8-ba70-1b888c3f61ce",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Kesehatan & Thibbun Nabawi"
     ]
   },
   {
@@ -2690,22 +2209,6 @@
     ]
   },
   {
-    "id": "eca0db7d-2652-4f22-8671-3846bee236f0",
-    "topik_nama": "Sosial & Masyarakat",
-    "tags": [
-      "Sosial & Masyarakat",
-      "Keluarga"
-    ]
-  },
-  {
-    "id": "0a8c057d-3736-45ca-bd27-875bf9867d1b",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
     "id": "0ac6c088-476b-4bde-958c-ea3b6e5cc447",
     "topik_nama": "Puasa & Ramadan",
     "tags": [
@@ -2727,14 +2230,6 @@
     "tags": [
       "Puasa & Ramadan",
       "Amal di Bulan Ramadan"
-    ]
-  },
-  {
-    "id": "0a401328-abe9-4e79-adfe-c3f1c37cd0b1",
-    "topik_nama": "Memaafkan & Menahan Marah",
-    "tags": [
-      "Memaafkan & Menahan Marah",
-      "Ilmu & Pendidikan"
     ]
   },
   {
@@ -2770,23 +2265,6 @@
     ]
   },
   {
-    "id": "dbcac495-307c-4ca0-aaa4-b22dd8231d1c",
-    "topik_nama": "Akhirat & Kiamat",
-    "tags": [
-      "Akhirat & Kiamat",
-      "Sabar & Syukur"
-    ]
-  },
-  {
-    "id": "305aad0a-1d00-457a-b960-23b97a169e2e",
-    "topik_nama": "Iman & Akidah",
-    "tags": [
-      "Iman & Akidah",
-      "Akhlak Mulia",
-      "Pernikahan & Rumah Tangga"
-    ]
-  },
-  {
     "id": "0e54c21a-4295-4a0f-b6d2-b72446f22b09",
     "topik_nama": "Puasa & Ramadan",
     "tags": [
@@ -2803,35 +2281,11 @@
     ]
   },
   {
-    "id": "0a73b050-a88b-44c3-97fb-ea9b76adb161",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
     "id": "0d4862f9-6857-46d7-bcfe-dcf80f95a764",
     "topik_nama": "Iman & Akidah",
     "tags": [
       "Iman & Akidah",
       "Ilmu & Pendidikan"
-    ]
-  },
-  {
-    "id": "72e7f3fe-62a1-4aef-8854-a35946fc556f",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Keluarga"
-    ]
-  },
-  {
-    "id": "01fe8264-6c5c-4dce-bfe3-1c54f3f31d19",
-    "topik_nama": "Zakat & Sedekah",
-    "tags": [
-      "Zakat & Sedekah",
-      "Muamalah & Jual Beli"
     ]
   },
   {
@@ -2884,14 +2338,6 @@
     ]
   },
   {
-    "id": "3a96bc9b-7605-407c-b85f-34e9131dda3a",
-    "topik_nama": "Pernikahan & Rumah Tangga",
-    "tags": [
-      "Pernikahan & Rumah Tangga",
-      "Shalat"
-    ]
-  },
-  {
     "id": "c7cdc4e6-b3ca-4d95-a062-a72dbc40e0de",
     "topik_nama": "Shalat",
     "tags": [
@@ -2900,19 +2346,11 @@
     ]
   },
   {
-    "id": "bf86124f-28f1-4420-a666-40737a975c28",
-    "topik_nama": "Pernikahan & Rumah Tangga",
+    "id": "3a96bc9b-7605-407c-b85f-34e9131dda3a",
+    "topik_nama": "Fikih Wanita",
     "tags": [
       "Pernikahan & Rumah Tangga",
-      "Keluarga"
-    ]
-  },
-  {
-    "id": "a6b9132a-fc79-4444-b317-7c3d8c2d5f94",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Birrul Walidain"
+      "Shalat"
     ]
   },
   {
@@ -2930,14 +2368,6 @@
       "Kepemimpinan & Keadilan",
       "Kisah Para Nabi",
       "Sosial & Masyarakat"
-    ]
-  },
-  {
-    "id": "be895903-df32-4b94-a629-3e0f14df7a5c",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Kesehatan & Thibbun Nabawi"
     ]
   },
   {
@@ -2963,14 +2393,6 @@
     ]
   },
   {
-    "id": "cdc8f1c7-2d92-42d1-a4ed-5407c5c0b70a",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Pernikahan & Rumah Tangga"
-    ]
-  },
-  {
     "id": "b6b528ba-bc60-406d-bff3-cabea3084496",
     "topik_nama": "Kesehatan & Thibbun Nabawi",
     "tags": [
@@ -2984,14 +2406,6 @@
     "tags": [
       "Shalat",
       "Kepemimpinan & Keadilan"
-    ]
-  },
-  {
-    "id": "57f9fb20-7803-4a92-8896-c26c5814ef75",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Pernikahan & Rumah Tangga"
     ]
   },
   {
@@ -3026,19 +2440,19 @@
     ]
   },
   {
-    "id": "3fed72bd-14eb-47f1-a1a3-e67394808995",
-    "topik_nama": "Pernikahan & Rumah Tangga",
-    "tags": [
-      "Pernikahan & Rumah Tangga",
-      "Muamalah & Jual Beli"
-    ]
-  },
-  {
     "id": "ea069b44-60aa-4c38-80b8-b89e25e32772",
     "topik_nama": "Shalat",
     "tags": [
       "Shalat",
       "Istiqomah & Konsisten"
+    ]
+  },
+  {
+    "id": "c91423b8-ab21-40ce-aba2-9509b9e2dad0",
+    "topik_nama": "Fikih Wanita",
+    "tags": [
+      "Pernikahan & Rumah Tangga",
+      "Keluarga"
     ]
   },
   {
@@ -3055,14 +2469,6 @@
     "tags": [
       "Kepemimpinan & Keadilan",
       "Kejujuran & Amanah"
-    ]
-  },
-  {
-    "id": "c91423b8-ab21-40ce-aba2-9509b9e2dad0",
-    "topik_nama": "Pernikahan & Rumah Tangga",
-    "tags": [
-      "Pernikahan & Rumah Tangga",
-      "Keluarga"
     ]
   },
   {
@@ -3098,14 +2504,6 @@
     ]
   },
   {
-    "id": "8551f415-56e2-4125-a723-90d41dc58262",
-    "topik_nama": "Rezeki & Kerja",
-    "tags": [
-      "Rezeki & Kerja",
-      "Muamalah & Jual Beli"
-    ]
-  },
-  {
     "id": "69b58892-e522-4591-a6b4-347487c0d5d8",
     "topik_nama": "Shalat",
     "tags": [
@@ -3115,7 +2513,7 @@
   },
   {
     "id": "41ad1176-5b85-4ee7-8356-96b201449a41",
-    "topik_nama": "Sirah Nabawiyah",
+    "topik_nama": "Kisah Para Nabi",
     "tags": [
       "Haji & Umrah",
       "Kepemimpinan & Keadilan"
@@ -3169,14 +2567,6 @@
     ]
   },
   {
-    "id": "fd0acc25-c7ff-401f-bcef-88c0d5640bcc",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Pernikahan & Rumah Tangga"
-    ]
-  },
-  {
     "id": "70abbaef-5a21-45a9-a192-b74515f0a240",
     "topik_nama": "Shalat",
     "tags": [
@@ -3209,16 +2599,8 @@
     ]
   },
   {
-    "id": "54cfefcf-f1df-4e3e-a073-cc29570d380f",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
     "id": "5cc06404-60c0-4d41-9b77-ece19fa254c9",
-    "topik_nama": "Shalat",
+    "topik_nama": "Thaharah & Kebersihan",
     "tags": [
       "Shalat",
       "Kesehatan & Thibbun Nabawi"
@@ -3246,14 +2628,6 @@
     "tags": [
       "Shalat",
       "Akhirat & Kiamat"
-    ]
-  },
-  {
-    "id": "39cf3371-62f8-4e77-a1ee-1408d7d2b82f",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Kesehatan & Thibbun Nabawi"
     ]
   },
   {
@@ -3408,15 +2782,6 @@
     ]
   },
   {
-    "id": "445be2fa-fc73-4c2f-a31f-0fba7b996ef3",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Pernikahan & Rumah Tangga",
-      "Kejujuran & Amanah"
-    ]
-  },
-  {
     "id": "dff0a945-3ed6-4ff3-b8ea-3975c735cf9e",
     "topik_nama": "Akhirat & Kiamat",
     "tags": [
@@ -3444,14 +2809,6 @@
     "topik_nama": "Haji & Umrah",
     "tags": [
       "Haji & Umrah"
-    ]
-  },
-  {
-    "id": "c2f5a54c-98cd-4281-89cf-b23c7608b3af",
-    "topik_nama": "Akhirat & Kiamat",
-    "tags": [
-      "Akhirat & Kiamat",
-      "Iman & Akidah"
     ]
   },
   {
@@ -3510,19 +2867,19 @@
     ]
   },
   {
-    "id": "0ffa2b20-ef3a-401b-a4ae-3ec523ea93b2",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Pernikahan & Rumah Tangga"
-    ]
-  },
-  {
     "id": "26d5ce87-3dd0-47c6-b0cb-4d75ca5c41ff",
-    "topik_nama": "Shalat",
+    "topik_nama": "Thaharah & Kebersihan",
     "tags": [
       "Shalat",
       "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
+    "id": "199a136c-a05c-4127-8196-275200792fa5",
+    "topik_nama": "Kisah Para Nabi",
+    "tags": [
+      "Keluarga",
+      "Sosial & Masyarakat"
     ]
   },
   {
@@ -3531,14 +2888,6 @@
     "tags": [
       "Shalat",
       "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
-    "id": "199a136c-a05c-4127-8196-275200792fa5",
-    "topik_nama": "Larangan & Dosa Besar",
-    "tags": [
-      "Keluarga",
-      "Sosial & Masyarakat"
     ]
   },
   {
@@ -3558,14 +2907,6 @@
     ]
   },
   {
-    "id": "4508bb75-cb32-4dc6-b596-ea02139b5bcb",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Pernikahan & Rumah Tangga"
-    ]
-  },
-  {
     "id": "e7d39831-672f-4d1e-9fd8-509d24746569",
     "topik_nama": "Pernikahan & Rumah Tangga",
     "tags": [
@@ -3574,11 +2915,11 @@
     ]
   },
   {
-    "id": "111d23b7-3747-4971-ab0e-63f12fa0ceed",
-    "topik_nama": "Shalat",
+    "id": "4508bb75-cb32-4dc6-b596-ea02139b5bcb",
+    "topik_nama": "Fikih Wanita",
     "tags": [
-      "Doa & Dzikir",
-      "Shalat"
+      "Keluarga",
+      "Pernikahan & Rumah Tangga"
     ]
   },
   {
@@ -3688,22 +3029,6 @@
     "tags": [
       "Shalat",
       "Kepemimpinan & Keadilan"
-    ]
-  },
-  {
-    "id": "7470edd2-c1a1-4a71-813c-392d7de604fc",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Pernikahan & Rumah Tangga"
-    ]
-  },
-  {
-    "id": "b1c7a0bc-28c3-45d2-92ca-cac496198a9f",
-    "topik_nama": "Haji & Umrah",
-    "tags": [
-      "Haji & Umrah",
-      "Kesehatan & Thibbun Nabawi"
     ]
   },
   {
@@ -3819,14 +3144,6 @@
     ]
   },
   {
-    "id": "c5aa076b-6229-4773-84e3-7c37ea3083ff",
-    "topik_nama": "Iman & Akidah",
-    "tags": [
-      "Akhlak Mulia",
-      "Iman & Akidah"
-    ]
-  },
-  {
     "id": "6d7ed4f1-b18f-423f-85b3-541515e54987",
     "topik_nama": "Thaharah & Kebersihan",
     "tags": [
@@ -3872,14 +3189,6 @@
     "tags": [
       "Shalat",
       "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
-    "id": "9e21a15e-c138-40bb-9bb7-f5e04db791a2",
-    "topik_nama": "Pernikahan & Rumah Tangga",
-    "tags": [
-      "Pernikahan & Rumah Tangga",
-      "Keluarga"
     ]
   },
   {
@@ -3961,27 +3270,11 @@
     ]
   },
   {
-    "id": "6f5841ec-a548-451e-aad2-e7170a5df4bb",
-    "topik_nama": "Pernikahan & Rumah Tangga",
-    "tags": [
-      "Keluarga",
-      "Ukhuwah & Persaudaraan"
-    ]
-  },
-  {
     "id": "478951ad-01dc-47b3-aa9b-22c20d1328fd",
     "topik_nama": "Shalat",
     "tags": [
       "Shalat",
       "Ilmu & Pendidikan"
-    ]
-  },
-  {
-    "id": "40293aef-8dc9-4a48-adff-e413f0a99fa4",
-    "topik_nama": "Iman & Akidah",
-    "tags": [
-      "Ilmu & Pendidikan",
-      "Iman & Akidah"
     ]
   },
   {
@@ -4128,14 +3421,6 @@
     ]
   },
   {
-    "id": "63bbebec-c29b-46f4-87c9-2bc64d5af750",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
     "id": "679d4ba9-aca8-4fd8-9ab0-142df68bc6c4",
     "topik_nama": "Haji & Umrah",
     "tags": [
@@ -4240,14 +3525,6 @@
     ]
   },
   {
-    "id": "c0c4b411-d309-41a7-8c55-1f49c4e04ff2",
-    "topik_nama": "Pernikahan & Rumah Tangga",
-    "tags": [
-      "Pernikahan & Rumah Tangga",
-      "Keluarga"
-    ]
-  },
-  {
     "id": "f8d9414d-e668-42e2-bca6-de9a6a9d670a",
     "topik_nama": "Akhlak Mulia",
     "tags": [
@@ -4344,14 +3621,6 @@
     ]
   },
   {
-    "id": "007f1227-4b90-49a4-afc0-47b91f4601b7",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Pernikahan & Rumah Tangga"
-    ]
-  },
-  {
     "id": "c5dcb5fc-7aeb-4d05-9928-a3a972eaeb0e",
     "topik_nama": "Shalat",
     "tags": [
@@ -4360,8 +3629,8 @@
     ]
   },
   {
-    "id": "2434f51c-74dc-4798-bb88-6e604bab638b",
-    "topik_nama": "Keluarga",
+    "id": "007f1227-4b90-49a4-afc0-47b91f4601b7",
+    "topik_nama": "Fikih Wanita",
     "tags": [
       "Keluarga",
       "Pernikahan & Rumah Tangga"
@@ -4404,15 +3673,6 @@
     "tags": [
       "Shalat",
       "Kepemimpinan & Keadilan"
-    ]
-  },
-  {
-    "id": "37bcff4e-2c4d-49d0-8e87-28f56d72be22",
-    "topik_nama": "Rezeki & Kerja",
-    "tags": [
-      "Rezeki & Kerja",
-      "Zakat & Sedekah",
-      "Keluarga"
     ]
   },
   {
@@ -4485,14 +3745,6 @@
     "tags": [
       "Haji & Umrah",
       "Akhirat & Kiamat"
-    ]
-  },
-  {
-    "id": "0091a1f9-56e3-4366-8293-57905de0fdbd",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Akhlak Mulia"
     ]
   },
   {
@@ -4585,14 +3837,6 @@
     ]
   },
   {
-    "id": "fe9738eb-d119-4848-8378-ccbcdd486bff",
-    "topik_nama": "Iman & Akidah",
-    "tags": [
-      "Iman & Akidah",
-      "Ilmu & Pendidikan"
-    ]
-  },
-  {
     "id": "a522b6ad-2497-40f8-bcf3-741496bf4d7d",
     "topik_nama": "Shalat",
     "tags": [
@@ -4617,15 +3861,6 @@
     ]
   },
   {
-    "id": "2690168d-1b2b-4d81-8c17-13e6ee73b9e4",
-    "topik_nama": "Pernikahan & Rumah Tangga",
-    "tags": [
-      "Keluarga",
-      "Birrul Walidain",
-      "Muamalah & Jual Beli"
-    ]
-  },
-  {
     "id": "a0652a34-83c0-48f9-a028-a76c3fe12b83",
     "topik_nama": "Akhirat & Kiamat",
     "tags": [
@@ -4639,14 +3874,6 @@
     "tags": [
       "Haji & Umrah",
       "Doa & Dzikir"
-    ]
-  },
-  {
-    "id": "0bbcc0e8-c819-4a7d-8b0e-f06b6be75808",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Pernikahan & Rumah Tangga"
     ]
   },
   {
@@ -4729,14 +3956,6 @@
     ]
   },
   {
-    "id": "4ca82d1d-704e-4714-991e-e761c176389d",
-    "topik_nama": "Haji & Umrah",
-    "tags": [
-      "Haji & Umrah",
-      "Pernikahan & Rumah Tangga"
-    ]
-  },
-  {
     "id": "8643e1ac-88db-4897-a7cd-7bab85e12f07",
     "topik_nama": "Mendidik Anak",
     "tags": [
@@ -4750,15 +3969,6 @@
     "tags": [
       "Shalat",
       "Keluarga"
-    ]
-  },
-  {
-    "id": "17bcd524-5190-4b31-bc2a-207bffd840f7",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Akhirat & Kiamat",
-      "Shalat"
     ]
   },
   {
@@ -4802,27 +4012,11 @@
     ]
   },
   {
-    "id": "05d6fb6c-6a60-452d-8e6a-3dc4568b4165",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Pernikahan & Rumah Tangga"
-    ]
-  },
-  {
     "id": "1bec952c-c5a9-40ea-8bfd-8f7bad8d3828",
     "topik_nama": "Haji & Umrah",
     "tags": [
       "Haji & Umrah",
       "Akhirat & Kiamat"
-    ]
-  },
-  {
-    "id": "75c6389e-8a4f-45bd-8dc9-ac97664a43df",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Kesehatan & Thibbun Nabawi"
     ]
   },
   {
@@ -4850,14 +4044,6 @@
     ]
   },
   {
-    "id": "88043038-d5e2-4abf-a686-e79938ef8fa5",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Pernikahan & Rumah Tangga"
-    ]
-  },
-  {
     "id": "09d87d3d-7784-470c-b04d-c9340e89fbdf",
     "topik_nama": "Shalat",
     "tags": [
@@ -4871,14 +4057,6 @@
     "tags": [
       "Akhirat & Kiamat",
       "Iman & Akidah"
-    ]
-  },
-  {
-    "id": "bef1111d-7455-48f9-8444-f5568a18d45f",
-    "topik_nama": "Kisah Para Nabi",
-    "tags": [
-      "Kisah Para Nabi",
-      "Kepemimpinan & Keadilan"
     ]
   },
   {
@@ -4898,36 +4076,11 @@
     ]
   },
   {
-    "id": "94fdca8e-09ea-4a5d-ac9d-495dfc7ed110",
-    "topik_nama": "Tawadhu & Rendah Hati",
-    "tags": [
-      "Tawadhu & Rendah Hati",
-      "Akhlak Mulia"
-    ]
-  },
-  {
-    "id": "0bddcdde-7f6f-4153-b451-8c8aaacea29b",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Keluarga",
-      "Ilmu & Pendidikan",
-      "Shalat"
-    ]
-  },
-  {
     "id": "734dab0a-ef1b-44a1-95a7-abaefc3e93e1",
     "topik_nama": "Shalat",
     "tags": [
       "Shalat",
       "Kesehatan Jiwa & Qalbu"
-    ]
-  },
-  {
-    "id": "3eb3dc7c-e69e-437f-8716-d388442dfd44",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Kesehatan & Thibbun Nabawi"
     ]
   },
   {
@@ -4955,14 +4108,6 @@
     ]
   },
   {
-    "id": "832ecc38-39fa-4289-bbfc-5ee9f010f4a7",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
     "id": "891e1173-fd99-4c5b-b8ba-abfc171cde21",
     "topik_nama": "Akhlak Mulia",
     "tags": [
@@ -4978,43 +4123,11 @@
     ]
   },
   {
-    "id": "0a85d198-5780-4ee3-8360-5b5ed349ac1e",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Mendidik Anak"
-    ]
-  },
-  {
     "id": "a02490b0-a40c-4d77-b079-f9c5b714cf06",
     "topik_nama": "Puasa & Ramadan",
     "tags": [
       "Puasa & Ramadan",
       "Idul Fitri & Silaturahmi"
-    ]
-  },
-  {
-    "id": "0631e942-ccbf-461b-976d-3f5bbe20c5e4",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Ilmu & Pendidikan",
-      "Shalat"
-    ]
-  },
-  {
-    "id": "e2a76465-0d65-4bd3-be6b-8e56447c1971",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
-    "id": "09d93737-1873-42bf-b68d-edc8ca65b439",
-    "topik_nama": "Akhirat & Kiamat",
-    "tags": [
-      "Akhirat & Kiamat",
-      "Iman & Akidah"
     ]
   },
   {
@@ -5054,14 +4167,6 @@
     "topik_nama": "Haji & Umrah",
     "tags": [
       "Haji & Umrah"
-    ]
-  },
-  {
-    "id": "17165479-36cc-4359-a949-80e0d734f0e5",
-    "topik_nama": "Iman & Akidah",
-    "tags": [
-      "Iman & Akidah",
-      "Isra' Mi'raj"
     ]
   },
   {
@@ -5106,34 +4211,10 @@
     ]
   },
   {
-    "id": "2a36eda7-da8a-4fb0-9bbb-d5dede733a1a",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
     "id": "80ccedd7-b359-449c-b1ae-4688db88537b",
     "topik_nama": "Kejujuran & Amanah",
     "tags": [
       "Kejujuran & Amanah",
-      "Akhlak Mulia"
-    ]
-  },
-  {
-    "id": "dd9d1edb-94a7-4a7c-8bb1-60f73d250aca",
-    "topik_nama": "Pernikahan & Rumah Tangga",
-    "tags": [
-      "Keluarga",
-      "Pernikahan & Rumah Tangga"
-    ]
-  },
-  {
-    "id": "61f8f89b-647c-4ff5-9610-045b25f139f4",
-    "topik_nama": "Akhirat & Kiamat",
-    "tags": [
-      "Akhirat & Kiamat",
       "Akhlak Mulia"
     ]
   },
@@ -5167,14 +4248,6 @@
     "tags": [
       "Birrul Walidain",
       "Iman & Akidah"
-    ]
-  },
-  {
-    "id": "d6a50e6e-5d44-49a3-b2b0-2a727c117171",
-    "topik_nama": "Iman & Akidah",
-    "tags": [
-      "Iman & Akidah",
-      "Akhlak Mulia"
     ]
   },
   {
@@ -5217,14 +4290,6 @@
     ]
   },
   {
-    "id": "da3764a4-2906-48a3-85c5-d6f3c9bf9832",
-    "topik_nama": "Kesehatan & Thibbun Nabawi",
-    "tags": [
-      "Kesehatan & Thibbun Nabawi",
-      "Akhlak Mulia"
-    ]
-  },
-  {
     "id": "32fbd338-793a-4b0e-aa71-531273652207",
     "topik_nama": "Keluarga",
     "tags": [
@@ -5238,22 +4303,6 @@
     "tags": [
       "Shalat",
       "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
-    "id": "1b5b7085-0aba-4b11-8ce7-daacf55b59da",
-    "topik_nama": "Akhirat & Kiamat",
-    "tags": [
-      "Akhirat & Kiamat",
-      "Iman & Akidah"
-    ]
-  },
-  {
-    "id": "94487266-a053-4c28-80d6-5bc3ec75196f",
-    "topik_nama": "Shalat",
-    "tags": [
-      "Shalat",
-      "Akhlak Mulia"
     ]
   },
   {
@@ -5293,14 +4342,6 @@
     "tags": [
       "Shalat",
       "Kesehatan & Thibbun Nabawi"
-    ]
-  },
-  {
-    "id": "3c7cfdd4-9b7c-4e81-9a23-faec6f697f43",
-    "topik_nama": "Keluarga",
-    "tags": [
-      "Keluarga",
-      "Doa & Dzikir"
     ]
   },
   {
@@ -6516,6 +5557,14 @@
     ]
   },
   {
+    "id": "6dc44a69-58c5-467e-8b2b-f4627ca60900",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Kesehatan & Thibbun Nabawi",
+      "Akhlak Mulia"
+    ]
+  },
+  {
     "id": "b5964331-94d2-4251-bb3d-115caf7f3706",
     "topik_nama": "Pernikahan & Rumah Tangga",
     "tags": [
@@ -6529,6 +5578,15 @@
     "tags": [
       "Doa & Dzikir",
       "Shalat"
+    ]
+  },
+  {
+    "id": "bbe3ab29-ab6e-4161-b60b-10a52a8c2c41",
+    "topik_nama": "Shalat",
+    "tags": [
+      "Shalat",
+      "Birrul Walidain",
+      "Jihad"
     ]
   },
   {
@@ -6556,6 +5614,14 @@
     ]
   },
   {
+    "id": "f016a345-1256-4b47-869f-3cb94c3913e8",
+    "topik_nama": "Kepemimpinan & Keadilan",
+    "tags": [
+      "Keluarga",
+      "Kepemimpinan & Keadilan"
+    ]
+  },
+  {
     "id": "ef4dcd49-202d-40f2-b0f7-45e45e2ec07f",
     "topik_nama": "Shalat",
     "tags": [
@@ -6580,6 +5646,22 @@
     ]
   },
   {
+    "id": "bac9581c-11c2-40f6-873a-208129e382b7",
+    "topik_nama": "Larangan & Dosa Besar",
+    "tags": [
+      "Akhirat & Kiamat",
+      "Kepemimpinan & Keadilan"
+    ]
+  },
+  {
+    "id": "753eea63-7922-4b23-82e6-078f90f1c85e",
+    "topik_nama": "Fikih Wanita",
+    "tags": [
+      "Pernikahan & Rumah Tangga",
+      "Keluarga"
+    ]
+  },
+  {
     "id": "34bf1a62-56ca-4a92-9bd5-e987cfb4fe07",
     "topik_nama": "Shalat",
     "tags": [
@@ -6593,6 +5675,14 @@
     "tags": [
       "Haji & Umrah",
       "Iman & Akidah"
+    ]
+  },
+  {
+    "id": "0e7daa7a-f551-4dd4-909c-ef7e44f85ec1",
+    "topik_nama": "Shalat",
+    "tags": [
+      "Haji & Umrah",
+      "Shalat"
     ]
   },
   {
@@ -6662,6 +5752,14 @@
     ]
   },
   {
+    "id": "8a6d939d-c187-4c6b-aef0-c0e4f6ced475",
+    "topik_nama": "Kepemimpinan & Keadilan",
+    "tags": [
+      "Haji & Umrah",
+      "Kepemimpinan & Keadilan"
+    ]
+  },
+  {
     "id": "a237b7af-3151-462d-aae0-c558a68b1662",
     "topik_nama": "Shalat",
     "tags": [
@@ -6675,6 +5773,14 @@
     "tags": [
       "Haji & Umrah",
       "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
+    "id": "291f9e7b-ba9e-4251-80f3-4479d5ce013d",
+    "topik_nama": "Haji & Umrah",
+    "tags": [
+      "Puasa & Ramadan",
+      "Shalat"
     ]
   },
   {
@@ -6692,6 +5798,14 @@
     "tags": [
       "Ukhuwah & Persaudaraan",
       "Kepemimpinan & Keadilan"
+    ]
+  },
+  {
+    "id": "b02b296b-dfe3-41f7-aee4-2329ffb9503e",
+    "topik_nama": "Kejujuran & Amanah",
+    "tags": [
+      "Rezeki & Kerja",
+      "Kejujuran & Amanah"
     ]
   },
   {
@@ -6760,6 +5874,14 @@
     ]
   },
   {
+    "id": "129ae515-c5b9-48f2-b721-bd7ba09212e8",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Kesehatan & Thibbun Nabawi",
+      "Akhlak Mulia"
+    ]
+  },
+  {
     "id": "46611e54-dbc8-486d-9304-50b3e170e907",
     "topik_nama": "Shalat",
     "tags": [
@@ -6816,6 +5938,14 @@
     ]
   },
   {
+    "id": "7f93d69d-7b63-4b10-bb89-03919fc5930e",
+    "topik_nama": "Doa & Dzikir",
+    "tags": [
+      "Keluarga",
+      "Pernikahan & Rumah Tangga"
+    ]
+  },
+  {
     "id": "ac48c775-d454-4f21-a04c-1711608db7b9",
     "topik_nama": "Pernikahan & Rumah Tangga",
     "tags": [
@@ -6861,6 +5991,14 @@
     "tags": [
       "Puasa & Ramadan",
       "Shalat"
+    ]
+  },
+  {
+    "id": "f0e6ac08-3dca-4158-85a6-607372c5a815",
+    "topik_nama": "Doa & Dzikir",
+    "tags": [
+      "Kesehatan & Thibbun Nabawi",
+      "Doa & Dzikir"
     ]
   },
   {
@@ -6951,6 +6089,14 @@
     ]
   },
   {
+    "id": "8d56dbd2-e5f2-4b7d-8440-555fc0096455",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Shalat",
+      "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
     "id": "7cc5a8e3-f4e3-45c6-b87e-3e9bc271c61d",
     "topik_nama": "Shalat",
     "tags": [
@@ -6964,6 +6110,14 @@
     "tags": [
       "Puasa & Ramadan",
       "Amal di Bulan Ramadan"
+    ]
+  },
+  {
+    "id": "05f0b5a1-3e64-40dc-a1a1-efbb2c6dedaf",
+    "topik_nama": "Birrul Walidain",
+    "tags": [
+      "Kepemimpinan & Keadilan",
+      "Birrul Walidain"
     ]
   },
   {
@@ -6988,6 +6142,14 @@
     "tags": [
       "Shalat",
       "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
+    "id": "8ac13844-575c-42a0-b8a4-68bdd23e32a5",
+    "topik_nama": "Fikih Wanita",
+    "tags": [
+      "Shalat",
+      "Keluarga"
     ]
   },
   {
@@ -7036,6 +6198,14 @@
     ]
   },
   {
+    "id": "3f3567dc-8099-4d93-835a-d4f63eca60b0",
+    "topik_nama": "Pernikahan & Rumah Tangga",
+    "tags": [
+      "Keluarga",
+      "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
     "id": "7ad7ea7a-ec7d-4340-bb01-3bde94cf199d",
     "topik_nama": "Muamalah & Jual Beli",
     "tags": [
@@ -7060,6 +6230,14 @@
     ]
   },
   {
+    "id": "018bc406-118e-42fa-90ff-dc8cce999a28",
+    "topik_nama": "Pernikahan & Rumah Tangga",
+    "tags": [
+      "Keluarga",
+      "Pernikahan & Rumah Tangga"
+    ]
+  },
+  {
     "id": "3a2f5f94-160d-450f-9f49-95bcf14cf866",
     "topik_nama": "Akhirat & Kiamat",
     "tags": [
@@ -7081,6 +6259,14 @@
     "tags": [
       "Shalat",
       "Ilmu & Pendidikan"
+    ]
+  },
+  {
+    "id": "508b9f92-af11-418e-b461-948c972afdda",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Shalat",
+      "Kesehatan & Thibbun Nabawi"
     ]
   },
   {
@@ -7140,6 +6326,14 @@
     ]
   },
   {
+    "id": "8949810c-ccea-4250-8741-164fa2f9ddc8",
+    "topik_nama": "Kepemimpinan & Keadilan",
+    "tags": [
+      "Haji & Umrah",
+      "Kepemimpinan & Keadilan"
+    ]
+  },
+  {
     "id": "5df151a1-c487-4c0e-ab47-cbc6e0ef32a8",
     "topik_nama": "Shalat",
     "tags": [
@@ -7161,6 +6355,14 @@
     "tags": [
       "Shalat",
       "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
+    "id": "010196ef-b42b-4582-ab8d-9ef4c1c2de11",
+    "topik_nama": "Adab & Sopan Santun",
+    "tags": [
+      "Shalat",
+      "Kepemimpinan & Keadilan"
     ]
   },
   {
@@ -7188,6 +6390,14 @@
     ]
   },
   {
+    "id": "0238cdb4-90dd-4e3c-9279-a57799558cb6",
+    "topik_nama": "Larangan & Dosa Besar",
+    "tags": [
+      "Akhirat & Kiamat",
+      "Keluarga"
+    ]
+  },
+  {
     "id": "2ec9b770-ddf8-4800-b007-d0212ec310af",
     "topik_nama": "Haji & Umrah",
     "tags": [
@@ -7202,6 +6412,14 @@
       "Keluarga",
       "Akhlak Mulia",
       "Ukhuwah & Persaudaraan"
+    ]
+  },
+  {
+    "id": "041ac3e4-37d9-4f62-b6f4-3e712270986d",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Keluarga",
+      "Kesehatan & Thibbun Nabawi"
     ]
   },
   {
@@ -7228,11 +6446,27 @@
     ]
   },
   {
+    "id": "b25acb41-7131-451c-be4a-afe678bcea6c",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Kesehatan & Thibbun Nabawi",
+      "Akhlak Mulia"
+    ]
+  },
+  {
     "id": "41306d72-4127-4b0e-945a-51b8f9123900",
     "topik_nama": "Ukhuwah & Persaudaraan",
     "tags": [
       "Iman & Akidah",
       "Ukhuwah & Persaudaraan"
+    ]
+  },
+  {
+    "id": "e0ea0670-93ec-4c13-94ab-01af9bfa28a8",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Shalat",
+      "Taubat & Ampunan"
     ]
   },
   {
@@ -7259,6 +6493,14 @@
     "tags": [
       "Shalat",
       "Doa & Dzikir"
+    ]
+  },
+  {
+    "id": "2536ffc6-31c4-4743-bd0a-0f1cd5824aeb",
+    "topik_nama": "Jihad & Dakwah",
+    "tags": [
+      "Haji & Umrah",
+      "Kepemimpinan & Keadilan"
     ]
   },
   {
@@ -7326,6 +6568,14 @@
     ]
   },
   {
+    "id": "b07b6c63-c647-4d3a-bee4-8d62dd378d56",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Keluarga",
+      "Shalat"
+    ]
+  },
+  {
     "id": "bdf1c743-ec5f-41b1-befc-113c08652948",
     "topik_nama": "Birrul Walidain",
     "tags": [
@@ -7374,11 +6624,27 @@
     ]
   },
   {
+    "id": "a599e462-e142-4d92-8543-24efc0e05582",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Shalat",
+      "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
     "id": "d609380d-fa21-44df-8490-1fcd716a9c36",
     "topik_nama": "Pernikahan & Rumah Tangga",
     "tags": [
       "Pernikahan & Rumah Tangga",
       "Memaafkan & Menahan Marah"
+    ]
+  },
+  {
+    "id": "16c631ff-1f8e-4bc4-a246-76253983e650",
+    "topik_nama": "Pernikahan & Rumah Tangga",
+    "tags": [
+      "Keluarga",
+      "Zakat & Sedekah"
     ]
   },
   {
@@ -7429,11 +6695,27 @@
     ]
   },
   {
+    "id": "335966f7-b032-4cc9-ace9-6611c7da7fbe",
+    "topik_nama": "Fikih Wanita",
+    "tags": [
+      "Keluarga",
+      "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
     "id": "795b1727-68ae-4fcf-919c-c816f72b62e7",
     "topik_nama": "Haji & Umrah",
     "tags": [
       "Haji & Umrah",
       "Zakat & Sedekah"
+    ]
+  },
+  {
+    "id": "dd940e94-0d0b-4bc2-ad7d-1ee583078121",
+    "topik_nama": "Akhlak Mulia",
+    "tags": [
+      "Keluarga",
+      "Akhirat & Kiamat"
     ]
   },
   {
@@ -7443,6 +6725,22 @@
       "Shalat",
       "Sosial & Masyarakat",
       "Zakat & Sedekah"
+    ]
+  },
+  {
+    "id": "85aec0f2-e49a-4b6a-a164-3140a7e6ab85",
+    "topik_nama": "Kesehatan & Thibbun Nabawi",
+    "tags": [
+      "Shalat",
+      "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
+    "id": "31e8caa3-474d-4647-a01b-7bfa16b10d06",
+    "topik_nama": "Birrul Walidain",
+    "tags": [
+      "Ukhuwah & Persaudaraan",
+      "Akhlak Mulia"
     ]
   },
   {
@@ -7470,11 +6768,27 @@
     ]
   },
   {
+    "id": "47eed3f7-8d7e-43a0-bc06-8704fee16e45",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Shalat",
+      "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
     "id": "e1e61690-390f-46fe-a6f4-a927dc7fa726",
     "topik_nama": "Pernikahan & Rumah Tangga",
     "tags": [
       "Pernikahan & Rumah Tangga",
       "Akhlak Mulia"
+    ]
+  },
+  {
+    "id": "9c3e14ec-068e-4e21-88b9-d15e5c9a7179",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Shalat",
+      "Kepemimpinan & Keadilan"
     ]
   },
   {
@@ -7490,6 +6804,14 @@
     "topik_nama": "Haji & Umrah",
     "tags": [
       "Haji & Umrah"
+    ]
+  },
+  {
+    "id": "492c08a8-40b8-4cf5-8531-6679e299560d",
+    "topik_nama": "Shalat",
+    "tags": [
+      "Kesehatan & Thibbun Nabawi",
+      "Muamalah & Jual Beli"
     ]
   },
   {
@@ -7575,11 +6897,27 @@
     ]
   },
   {
+    "id": "c5857ded-4b9f-4c5a-a9e2-2b14b16a65a6",
+    "topik_nama": "Doa & Dzikir",
+    "tags": [
+      "Doa & Dzikir",
+      "Shalat"
+    ]
+  },
+  {
     "id": "4dd864dc-ba87-4d56-bdac-aaaf1c0c6149",
     "topik_nama": "Shalat",
     "tags": [
       "Shalat",
       "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
+    "id": "38d1a149-e38c-447c-9a26-6771f56ab3e9",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Kesehatan & Thibbun Nabawi",
+      "Akhlak Mulia"
     ]
   },
   {
@@ -7654,6 +6992,22 @@
     ]
   },
   {
+    "id": "82007b71-a2e0-4a9d-b0ef-0040f6342017",
+    "topik_nama": "Pernikahan & Rumah Tangga",
+    "tags": [
+      "Keluarga",
+      "Pernikahan & Rumah Tangga"
+    ]
+  },
+  {
+    "id": "f40f2e4a-1b86-4229-9bfc-e07eb2904cc6",
+    "topik_nama": "Pernikahan & Rumah Tangga",
+    "tags": [
+      "Keluarga",
+      "Pernikahan & Rumah Tangga"
+    ]
+  },
+  {
     "id": "a34382eb-9d09-4d8f-b0da-adf154fc875b",
     "topik_nama": "Keluarga",
     "tags": [
@@ -7704,6 +7058,14 @@
     ]
   },
   {
+    "id": "006b815a-3905-4052-b0da-888dd27a5e30",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Shalat",
+      "Taubat & Ampunan"
+    ]
+  },
+  {
     "id": "4afdfc92-2ce4-439d-a360-39c978643b86",
     "topik_nama": "Pernikahan & Rumah Tangga",
     "tags": [
@@ -7728,6 +7090,14 @@
     ]
   },
   {
+    "id": "2150d8a0-3481-4e59-83ee-fc3a72e17e6a",
+    "topik_nama": "Shalat",
+    "tags": [
+      "Idul Fitri & Silaturahmi",
+      "Zakat & Sedekah"
+    ]
+  },
+  {
     "id": "815efb8e-d8a0-44dc-bd0b-d0f50ef5a40d",
     "topik_nama": "Kepemimpinan & Keadilan",
     "tags": [
@@ -7749,6 +7119,14 @@
     "tags": [
       "Akhak Mulia",
       "Muamalah & Jual Beli"
+    ]
+  },
+  {
+    "id": "d374aff8-2cbf-47db-a135-8f98841c1360",
+    "topik_nama": "Fikih Wanita",
+    "tags": [
+      "Keluarga",
+      "Kesehatan & Thibbun Nabawi"
     ]
   },
   {
@@ -7784,6 +7162,14 @@
     ]
   },
   {
+    "id": "9bd7bd2c-f238-4072-ba05-c8a9f6bdaefd",
+    "topik_nama": "Larangan & Dosa Besar",
+    "tags": [
+      "Keluarga",
+      "Pernikahan & Rumah Tangga"
+    ]
+  },
+  {
     "id": "2bfea1e2-d6a1-4fbc-8202-e4bf70404f13",
     "topik_nama": "Shalat",
     "tags": [
@@ -7804,6 +7190,14 @@
     "tags": [
       "Pernikahan & Rumah Tangga",
       "Keluarga"
+    ]
+  },
+  {
+    "id": "34eac0d4-c1bd-4d20-9ba3-5ffb1f065b02",
+    "topik_nama": "Larangan & Dosa Besar",
+    "tags": [
+      "Iman & Akidah",
+      "Menjaga Lisan"
     ]
   },
   {
@@ -7855,6 +7249,15 @@
     ]
   },
   {
+    "id": "ccff7bc9-cd2e-4771-93f1-937b577eb5ef",
+    "topik_nama": "Fikih Wanita",
+    "tags": [
+      "Keluarga",
+      "Pernikahan & Rumah Tangga",
+      "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
     "id": "26877a42-ae43-4d57-a049-21b9a214f2d2",
     "topik_nama": "Shalat",
     "tags": [
@@ -7886,6 +7289,14 @@
     ]
   },
   {
+    "id": "ce470ff8-48ea-4b40-9ec6-f08ef9a97409",
+    "topik_nama": "Doa & Dzikir",
+    "tags": [
+      "Shalat",
+      "Doa & Dzikir"
+    ]
+  },
+  {
     "id": "8a501772-91d4-4f3e-acc4-66d67125a183",
     "topik_nama": "Shalat",
     "tags": [
@@ -7899,6 +7310,14 @@
     "tags": [
       "Puasa & Ramadan",
       "Shalat"
+    ]
+  },
+  {
+    "id": "49f9e4e0-143f-4bc6-942f-70f9d6346b4a",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Shalat",
+      "Kesehatan & Thibbun Nabawi"
     ]
   },
   {
@@ -7926,6 +7345,14 @@
     ]
   },
   {
+    "id": "c9b33cc6-44b4-4086-b851-8f897206c1e7",
+    "topik_nama": "Warisan & Wasiat",
+    "tags": [
+      "Rezeki & Kerja",
+      "Zakat & Sedekah"
+    ]
+  },
+  {
     "id": "09410317-1895-4546-b325-6dbb19816405",
     "topik_nama": "Thaharah & Kebersihan",
     "tags": [
@@ -7939,6 +7366,14 @@
     "tags": [
       "Muamalah & Jual Beli",
       "Rezeki & Kerja"
+    ]
+  },
+  {
+    "id": "72f9745b-e4e2-4ff4-a2d9-3aa6e20069e7",
+    "topik_nama": "Shalat",
+    "tags": [
+      "Haji & Umrah",
+      "Shalat"
     ]
   },
   {
@@ -8022,6 +7457,14 @@
     ]
   },
   {
+    "id": "4df03380-8750-4225-8521-ccdc5e75fe5e",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Shalat",
+      "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
     "id": "7158df20-a9c4-4ba6-9d86-84b0a6a12a5e",
     "topik_nama": "Shalat",
     "tags": [
@@ -8051,6 +7494,14 @@
     "tags": [
       "Shalat",
       "Doa & Dzikir"
+    ]
+  },
+  {
+    "id": "2c0bd623-53d6-42c1-a099-f574f3763939",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Kesehatan & Thibbun Nabawi",
+      "Akhlak Mulia"
     ]
   },
   {
@@ -8174,6 +7625,13 @@
     ]
   },
   {
+    "id": "552ebd25-a5c4-437c-a107-387496605f31",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Shalat"
+    ]
+  },
+  {
     "id": "41cc7d8a-2341-4286-97b0-2c20bf603856",
     "topik_nama": "Kisah Para Nabi",
     "tags": [
@@ -8206,11 +7664,27 @@
     ]
   },
   {
+    "id": "e271fcce-9044-4a10-ab35-b27134994126",
+    "topik_nama": "Doa & Dzikir",
+    "tags": [
+      "Doa & Dzikir",
+      "Shalat"
+    ]
+  },
+  {
     "id": "2bd1c7e9-a0a7-4fb4-9ad8-16370a3d226f",
     "topik_nama": "Pernikahan & Rumah Tangga",
     "tags": [
       "Keluarga",
       "Pernikahan & Rumah Tangga"
+    ]
+  },
+  {
+    "id": "2cd749df-14ea-4c51-abeb-046afde00712",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Shalat",
+      "Kesehatan & Thibbun Nabawi"
     ]
   },
   {
@@ -8247,6 +7721,14 @@
     ]
   },
   {
+    "id": "08701bc2-0a48-46a5-af86-add39f5c1bbc",
+    "topik_nama": "Birrul Walidain",
+    "tags": [
+      "Keluarga",
+      "Kisah Para Nabi"
+    ]
+  },
+  {
     "id": "e67dd8f3-ee42-4171-9301-ee3bc652556f",
     "topik_nama": "Taubat & Ampunan",
     "tags": [
@@ -8263,6 +7745,14 @@
     ]
   },
   {
+    "id": "f306068e-871f-40ce-9631-314679d0c17c",
+    "topik_nama": "Jihad & Dakwah",
+    "tags": [
+      "Kisah Para Nabi",
+      "Doa & Dzikir"
+    ]
+  },
+  {
     "id": "254925a9-ad6a-4c90-8537-a8d51c3e21c1",
     "topik_nama": "Muamalah & Jual Beli",
     "tags": [
@@ -8276,6 +7766,14 @@
     "tags": [
       "Shalat",
       "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
+    "id": "2207b3c9-8cbb-417b-be9c-8a2b5bbaecf1",
+    "topik_nama": "Muamalah & Jual Beli",
+    "tags": [
+      "Rezeki & Kerja",
+      "Muamalah & Jual Beli"
     ]
   },
   {
@@ -8352,6 +7850,14 @@
     ]
   },
   {
+    "id": "5e8e12f3-81ea-481d-86d1-bc1f63e79fa2",
+    "topik_nama": "Pernikahan & Rumah Tangga",
+    "tags": [
+      "Keluarga",
+      "Akhlak Mulia"
+    ]
+  },
+  {
     "id": "468492e2-211f-4b19-8d87-d5ec9e463cf7",
     "topik_nama": "Shalat",
     "tags": [
@@ -8376,6 +7882,14 @@
     ]
   },
   {
+    "id": "65242c9f-9fba-4dfe-ba54-dcad86d58a5f",
+    "topik_nama": "Ilmu & Pendidikan",
+    "tags": [
+      "Kisah Para Nabi",
+      "Ilmu & Pendidikan"
+    ]
+  },
+  {
     "id": "dbc7d3e9-86b2-45e7-a203-ced7a3f0abbb",
     "topik_nama": "Shalat",
     "tags": [
@@ -8386,6 +7900,14 @@
   {
     "id": "9f487e46-fc7e-4490-be3f-d337f5021666",
     "topik_nama": "Shalat",
+    "tags": [
+      "Shalat",
+      "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
+    "id": "8b395cf7-a56a-43c8-ba70-1b888c3f61ce",
+    "topik_nama": "Thaharah & Kebersihan",
     "tags": [
       "Shalat",
       "Kesehatan & Thibbun Nabawi"
@@ -8416,12 +7938,28 @@
     ]
   },
   {
+    "id": "0a8c057d-3736-45ca-bd27-875bf9867d1b",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Shalat",
+      "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
     "id": "f22f172b-aab2-4050-b319-9d9e8e857239",
     "topik_nama": "Shalat",
     "tags": [
       "Shalat",
       "Birrul Walidain",
       "Jihad fi Sabilillah"
+    ]
+  },
+  {
+    "id": "eca0db7d-2652-4f22-8671-3846bee236f0",
+    "topik_nama": "Larangan & Dosa Besar",
+    "tags": [
+      "Sosial & Masyarakat",
+      "Keluarga"
     ]
   },
   {
@@ -8465,6 +8003,14 @@
     ]
   },
   {
+    "id": "0a401328-abe9-4e79-adfe-c3f1c37cd0b1",
+    "topik_nama": "Akhlak Mulia",
+    "tags": [
+      "Memaafkan & Menahan Marah",
+      "Ilmu & Pendidikan"
+    ]
+  },
+  {
     "id": "dd07c316-5bbc-4078-ab01-0c60e8cccee1",
     "topik_nama": "Muamalah & Jual Beli",
     "tags": [
@@ -8478,6 +8024,15 @@
     "tags": [
       "Puasa & Ramadan",
       "Doa & Dzikir"
+    ]
+  },
+  {
+    "id": "305aad0a-1d00-457a-b960-23b97a169e2e",
+    "topik_nama": "Birrul Walidain",
+    "tags": [
+      "Iman & Akidah",
+      "Akhlak Mulia",
+      "Pernikahan & Rumah Tangga"
     ]
   },
   {
@@ -8503,6 +8058,14 @@
     "topik_nama": "Haji & Umrah",
     "tags": [
       "Haji & Umrah"
+    ]
+  },
+  {
+    "id": "dbcac495-307c-4ca0-aaa4-b22dd8231d1c",
+    "topik_nama": "Jihad & Dakwah",
+    "tags": [
+      "Akhirat & Kiamat",
+      "Sabar & Syukur"
     ]
   },
   {
@@ -8705,6 +8268,14 @@
     ]
   },
   {
+    "id": "0a73b050-a88b-44c3-97fb-ea9b76adb161",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Shalat",
+      "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
     "id": "023a1725-6bd5-4169-8244-4e9a8f069bae",
     "topik_nama": "Shalat",
     "tags": [
@@ -8761,6 +8332,22 @@
     ]
   },
   {
+    "id": "01fe8264-6c5c-4dce-bfe3-1c54f3f31d19",
+    "topik_nama": "Muamalah & Jual Beli",
+    "tags": [
+      "Zakat & Sedekah",
+      "Muamalah & Jual Beli"
+    ]
+  },
+  {
+    "id": "72e7f3fe-62a1-4aef-8854-a35946fc556f",
+    "topik_nama": "Fikih Wanita",
+    "tags": [
+      "Shalat",
+      "Keluarga"
+    ]
+  },
+  {
     "id": "e4c4d548-f2a5-44d5-8679-40d821490610",
     "topik_nama": "Shalat",
     "tags": [
@@ -8782,6 +8369,14 @@
     "tags": [
       "Pernikahan & Rumah Tangga",
       "Iman & Akidah"
+    ]
+  },
+  {
+    "id": "bf86124f-28f1-4420-a666-40737a975c28",
+    "topik_nama": "Fikih Wanita",
+    "tags": [
+      "Pernikahan & Rumah Tangga",
+      "Keluarga"
     ]
   },
   {
@@ -8877,6 +8472,14 @@
     ]
   },
   {
+    "id": "a6b9132a-fc79-4444-b317-7c3d8c2d5f94",
+    "topik_nama": "Birrul Walidain",
+    "tags": [
+      "Keluarga",
+      "Birrul Walidain"
+    ]
+  },
+  {
     "id": "049f24f5-716a-448d-b5bd-bcc3d9093727",
     "topik_nama": "Puasa & Ramadan",
     "tags": [
@@ -8932,6 +8535,14 @@
     ]
   },
   {
+    "id": "be895903-df32-4b94-a629-3e0f14df7a5c",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Keluarga",
+      "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
     "id": "8890da30-ab10-4ab3-9709-45b7d8b7ca42",
     "topik_nama": "Kesehatan & Thibbun Nabawi",
     "tags": [
@@ -8953,6 +8564,14 @@
     "tags": [
       "Shalat",
       "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
+    "id": "3fed72bd-14eb-47f1-a1a3-e67394808995",
+    "topik_nama": "Fikih Wanita",
+    "tags": [
+      "Pernikahan & Rumah Tangga",
+      "Muamalah & Jual Beli"
     ]
   },
   {
@@ -9052,6 +8671,14 @@
     ]
   },
   {
+    "id": "57f9fb20-7803-4a92-8896-c26c5814ef75",
+    "topik_nama": "Pernikahan & Rumah Tangga",
+    "tags": [
+      "Keluarga",
+      "Pernikahan & Rumah Tangga"
+    ]
+  },
+  {
     "id": "4c55b5bb-0592-4148-a9e3-8c383b8dfdea",
     "topik_nama": "Akhlak Mulia",
     "tags": [
@@ -9065,6 +8692,14 @@
     "tags": [
       "Kepemimpinan & Keadilan",
       "Zakat & Sedekah"
+    ]
+  },
+  {
+    "id": "cdc8f1c7-2d92-42d1-a4ed-5407c5c0b70a",
+    "topik_nama": "Pernikahan & Rumah Tangga",
+    "tags": [
+      "Keluarga",
+      "Pernikahan & Rumah Tangga"
     ]
   },
   {
@@ -9161,6 +8796,14 @@
     "tags": [
       "Keluarga",
       "Pernikahan & Rumah Tangga"
+    ]
+  },
+  {
+    "id": "8551f415-56e2-4125-a723-90d41dc58262",
+    "topik_nama": "Muamalah & Jual Beli",
+    "tags": [
+      "Rezeki & Kerja",
+      "Muamalah & Jual Beli"
     ]
   },
   {
@@ -9680,6 +9323,14 @@
     ]
   },
   {
+    "id": "fd0acc25-c7ff-401f-bcef-88c0d5640bcc",
+    "topik_nama": "Fikih Wanita",
+    "tags": [
+      "Keluarga",
+      "Pernikahan & Rumah Tangga"
+    ]
+  },
+  {
     "id": "8b58c5f0-7e09-4984-a5c9-ca12c28ec6de",
     "topik_nama": "Kisah Para Nabi",
     "tags": [
@@ -10069,6 +9720,14 @@
     ]
   },
   {
+    "id": "39cf3371-62f8-4e77-a1ee-1408d7d2b82f",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Keluarga",
+      "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
     "id": "8d3176fe-601c-40bf-afcc-717fd113779e",
     "topik_nama": "Kesehatan & Thibbun Nabawi",
     "tags": [
@@ -10153,6 +9812,14 @@
     "tags": [
       "Shalat",
       "Doa & Dzikir"
+    ]
+  },
+  {
+    "id": "54cfefcf-f1df-4e3e-a073-cc29570d380f",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Shalat",
+      "Kesehatan & Thibbun Nabawi"
     ]
   },
   {
@@ -10241,6 +9908,15 @@
     "tags": [
       "Shalat",
       "Penciptaan & Tanda Kebesaran Allah"
+    ]
+  },
+  {
+    "id": "445be2fa-fc73-4c2f-a31f-0fba7b996ef3",
+    "topik_nama": "Kejujuran & Amanah",
+    "tags": [
+      "Keluarga",
+      "Pernikahan & Rumah Tangga",
+      "Kejujuran & Amanah"
     ]
   },
   {
@@ -10382,6 +10058,14 @@
     ]
   },
   {
+    "id": "c2f5a54c-98cd-4281-89cf-b23c7608b3af",
+    "topik_nama": "Doa & Dzikir",
+    "tags": [
+      "Akhirat & Kiamat",
+      "Iman & Akidah"
+    ]
+  },
+  {
     "id": "42cc5510-42ba-4b67-9fe5-d1ab59b82732",
     "topik_nama": "Thaharah & Kebersihan",
     "tags": [
@@ -10420,6 +10104,14 @@
     "tags": [
       "Ilmu & Pendidikan",
       "Akhirat & Kiamat"
+    ]
+  },
+  {
+    "id": "0ffa2b20-ef3a-401b-a4ae-3ec523ea93b2",
+    "topik_nama": "Fikih Wanita",
+    "tags": [
+      "Keluarga",
+      "Pernikahan & Rumah Tangga"
     ]
   },
   {
@@ -10469,6 +10161,14 @@
     "tags": [
       "Shalat",
       "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
+    "id": "111d23b7-3747-4971-ab0e-63f12fa0ceed",
+    "topik_nama": "Doa & Dzikir",
+    "tags": [
+      "Doa & Dzikir",
+      "Shalat"
     ]
   },
   {
@@ -10600,6 +10300,14 @@
     ]
   },
   {
+    "id": "b1c7a0bc-28c3-45d2-92ca-cac496198a9f",
+    "topik_nama": "Kesehatan & Thibbun Nabawi",
+    "tags": [
+      "Haji & Umrah",
+      "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
     "id": "5f35327f-04b2-4083-b875-c3b534959df6",
     "topik_nama": "Shalat",
     "tags": [
@@ -10621,6 +10329,14 @@
     "tags": [
       "Doa & Dzikir",
       "Kesehatan Jiwa & Qalbu"
+    ]
+  },
+  {
+    "id": "7470edd2-c1a1-4a71-813c-392d7de604fc",
+    "topik_nama": "Pernikahan & Rumah Tangga",
+    "tags": [
+      "Keluarga",
+      "Pernikahan & Rumah Tangga"
     ]
   },
   {
@@ -10648,6 +10364,14 @@
     ]
   },
   {
+    "id": "c5aa076b-6229-4773-84e3-7c37ea3083ff",
+    "topik_nama": "Akhlak Mulia",
+    "tags": [
+      "Akhlak Mulia",
+      "Iman & Akidah"
+    ]
+  },
+  {
     "id": "b44a5c80-be18-4736-9a84-1247fc022a45",
     "topik_nama": "Shalat",
     "tags": [
@@ -10664,6 +10388,14 @@
     ]
   },
   {
+    "id": "9e21a15e-c138-40bb-9bb7-f5e04db791a2",
+    "topik_nama": "Fikih Wanita",
+    "tags": [
+      "Pernikahan & Rumah Tangga",
+      "Keluarga"
+    ]
+  },
+  {
     "id": "7903e770-d1c7-44fa-9e72-1cab48c903ae",
     "topik_nama": "Taubat & Ampunan",
     "tags": [
@@ -10677,6 +10409,14 @@
     "tags": [
       "Shalat",
       "Ilmu & Pendidikan"
+    ]
+  },
+  {
+    "id": "40293aef-8dc9-4a48-adff-e413f0a99fa4",
+    "topik_nama": "Ilmu & Pendidikan",
+    "tags": [
+      "Ilmu & Pendidikan",
+      "Iman & Akidah"
     ]
   },
   {
@@ -10697,6 +10437,14 @@
     ]
   },
   {
+    "id": "6f5841ec-a548-451e-aad2-e7170a5df4bb",
+    "topik_nama": "Birrul Walidain",
+    "tags": [
+      "Keluarga",
+      "Ukhuwah & Persaudaraan"
+    ]
+  },
+  {
     "id": "6a5285cc-af7b-49f8-82c2-62078fcdeb40",
     "topik_nama": "Ilmu & Pendidikan",
     "tags": [
@@ -10710,6 +10458,14 @@
     "tags": [
       "Shalat",
       "Ilmu & Pendidikan"
+    ]
+  },
+  {
+    "id": "63bbebec-c29b-46f4-87c9-2bc64d5af750",
+    "topik_nama": "Kesehatan & Thibbun Nabawi",
+    "tags": [
+      "Keluarga",
+      "Kesehatan & Thibbun Nabawi"
     ]
   },
   {
@@ -10736,6 +10492,14 @@
     ]
   },
   {
+    "id": "c0c4b411-d309-41a7-8c55-1f49c4e04ff2",
+    "topik_nama": "Fikih Wanita",
+    "tags": [
+      "Pernikahan & Rumah Tangga",
+      "Keluarga"
+    ]
+  },
+  {
     "id": "2f08f4bd-14db-4cee-ab2b-6ce002967105",
     "topik_nama": "Akhirat & Kiamat",
     "tags": [
@@ -10753,11 +10517,36 @@
     ]
   },
   {
+    "id": "2434f51c-74dc-4798-bb88-6e604bab638b",
+    "topik_nama": "Pernikahan & Rumah Tangga",
+    "tags": [
+      "Keluarga",
+      "Pernikahan & Rumah Tangga"
+    ]
+  },
+  {
     "id": "d8344090-cf0c-40ca-af56-c5979d5ce8d3",
     "topik_nama": "Shalat",
     "tags": [
       "Shalat",
       "Kepemimpinan & Keadilan"
+    ]
+  },
+  {
+    "id": "37bcff4e-2c4d-49d0-8e87-28f56d72be22",
+    "topik_nama": "Zakat & Sedekah",
+    "tags": [
+      "Rezeki & Kerja",
+      "Zakat & Sedekah",
+      "Keluarga"
+    ]
+  },
+  {
+    "id": "0091a1f9-56e3-4366-8293-57905de0fdbd",
+    "topik_nama": "Akhlak Mulia",
+    "tags": [
+      "Shalat",
+      "Akhlak Mulia"
     ]
   },
   {
@@ -10785,6 +10574,14 @@
     ]
   },
   {
+    "id": "fe9738eb-d119-4848-8378-ccbcdd486bff",
+    "topik_nama": "Ilmu & Pendidikan",
+    "tags": [
+      "Iman & Akidah",
+      "Ilmu & Pendidikan"
+    ]
+  },
+  {
     "id": "1635eafc-36b0-4d95-939f-839ec8eb2fc0",
     "topik_nama": "Puasa & Ramadan",
     "tags": [
@@ -10800,11 +10597,28 @@
     ]
   },
   {
+    "id": "2690168d-1b2b-4d81-8c17-13e6ee73b9e4",
+    "topik_nama": "Warisan & Wasiat",
+    "tags": [
+      "Keluarga",
+      "Birrul Walidain",
+      "Muamalah & Jual Beli"
+    ]
+  },
+  {
     "id": "9a2fbfb9-3643-4c7d-81c8-ae4e6cb22a8c",
     "topik_nama": "Puasa & Ramadan",
     "tags": [
       "Puasa & Ramadan",
       "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
+    "id": "0bbcc0e8-c819-4a7d-8b0e-f06b6be75808",
+    "topik_nama": "Fikih Wanita",
+    "tags": [
+      "Keluarga",
+      "Pernikahan & Rumah Tangga"
     ]
   },
   {
@@ -10820,6 +10634,14 @@
     "tags": [
       "Puasa & Ramadan",
       "Amal di Bulan Ramadan"
+    ]
+  },
+  {
+    "id": "4ca82d1d-704e-4714-991e-e761c176389d",
+    "topik_nama": "Pernikahan & Rumah Tangga",
+    "tags": [
+      "Haji & Umrah",
+      "Pernikahan & Rumah Tangga"
     ]
   },
   {
@@ -10840,11 +10662,28 @@
     ]
   },
   {
+    "id": "17bcd524-5190-4b31-bc2a-207bffd840f7",
+    "topik_nama": "Shalat",
+    "tags": [
+      "Keluarga",
+      "Akhirat & Kiamat",
+      "Shalat"
+    ]
+  },
+  {
     "id": "79dd38a3-f59f-4876-91eb-ab1b3b05d8d0",
     "topik_nama": "Keluarga",
     "tags": [
       "Shalat",
       "Keluarga"
+    ]
+  },
+  {
+    "id": "88043038-d5e2-4abf-a686-e79938ef8fa5",
+    "topik_nama": "Pernikahan & Rumah Tangga",
+    "tags": [
+      "Keluarga",
+      "Pernikahan & Rumah Tangga"
     ]
   },
   {
@@ -10856,11 +10695,27 @@
     ]
   },
   {
+    "id": "05d6fb6c-6a60-452d-8e6a-3dc4568b4165",
+    "topik_nama": "Fikih Wanita",
+    "tags": [
+      "Keluarga",
+      "Pernikahan & Rumah Tangga"
+    ]
+  },
+  {
     "id": "d45d5ec7-8c9f-4c82-8564-f20be438f541",
     "topik_nama": "Shalat",
     "tags": [
       "Shalat",
       "Keluarga"
+    ]
+  },
+  {
+    "id": "75c6389e-8a4f-45bd-8dc9-ac97664a43df",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Shalat",
+      "Kesehatan & Thibbun Nabawi"
     ]
   },
   {
@@ -10876,6 +10731,15 @@
     "tags": [
       "Zakat & Sedekah",
       "Idul Fitri & Silaturahmi"
+    ]
+  },
+  {
+    "id": "0bddcdde-7f6f-4153-b451-8c8aaacea29b",
+    "topik_nama": "Fikih Wanita",
+    "tags": [
+      "Keluarga",
+      "Ilmu & Pendidikan",
+      "Shalat"
     ]
   },
   {
@@ -10903,6 +10767,14 @@
     ]
   },
   {
+    "id": "94fdca8e-09ea-4a5d-ac9d-495dfc7ed110",
+    "topik_nama": "Akhlak Mulia",
+    "tags": [
+      "Tawadhu & Rendah Hati",
+      "Akhlak Mulia"
+    ]
+  },
+  {
     "id": "3f58ee54-85ac-403b-9041-97fad8cd9548",
     "topik_nama": "Shalat",
     "tags": [
@@ -10916,6 +10788,14 @@
     "tags": [
       "Shalat",
       "Kepemimpinan & Keadilan"
+    ]
+  },
+  {
+    "id": "3eb3dc7c-e69e-437f-8716-d388442dfd44",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Keluarga",
+      "Kesehatan & Thibbun Nabawi"
     ]
   },
   {
@@ -10943,11 +10823,35 @@
     ]
   },
   {
+    "id": "bef1111d-7455-48f9-8444-f5568a18d45f",
+    "topik_nama": "Kepemimpinan & Keadilan",
+    "tags": [
+      "Kisah Para Nabi",
+      "Kepemimpinan & Keadilan"
+    ]
+  },
+  {
+    "id": "832ecc38-39fa-4289-bbfc-5ee9f010f4a7",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Shalat",
+      "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
     "id": "7e96f006-1928-40df-8fa3-7c134372153e",
     "topik_nama": "Kepemimpinan & Keadilan",
     "tags": [
       "Kepemimpinan & Keadilan",
       "Iman & Akidah"
+    ]
+  },
+  {
+    "id": "0631e942-ccbf-461b-976d-3f5bbe20c5e4",
+    "topik_nama": "Ikhlas & Niat",
+    "tags": [
+      "Ilmu & Pendidikan",
+      "Shalat"
     ]
   },
   {
@@ -10975,11 +10879,27 @@
     ]
   },
   {
+    "id": "09d93737-1873-42bf-b68d-edc8ca65b439",
+    "topik_nama": "Taubat & Ampunan",
+    "tags": [
+      "Akhirat & Kiamat",
+      "Iman & Akidah"
+    ]
+  },
+  {
     "id": "b9066983-2678-4e13-8baf-9011904b2511",
     "topik_nama": "Kesehatan & Thibbun Nabawi",
     "tags": [
       "Kesehatan & Thibbun Nabawi",
       "Akhlak Mulia"
+    ]
+  },
+  {
+    "id": "0a85d198-5780-4ee3-8360-5b5ed349ac1e",
+    "topik_nama": "Mendidik Anak",
+    "tags": [
+      "Keluarga",
+      "Mendidik Anak"
     ]
   },
   {
@@ -10991,10 +10911,34 @@
     ]
   },
   {
+    "id": "e2a76465-0d65-4bd3-be6b-8e56447c1971",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Shalat",
+      "Kesehatan & Thibbun Nabawi"
+    ]
+  },
+  {
+    "id": "17165479-36cc-4359-a949-80e0d734f0e5",
+    "topik_nama": "Ilmu & Pendidikan",
+    "tags": [
+      "Iman & Akidah",
+      "Isra' Mi'raj"
+    ]
+  },
+  {
     "id": "2a953680-f0c8-454c-b7e3-86ec9e7b20c0",
     "topik_nama": "Haji & Umrah",
     "tags": [
       "Haji & Umrah"
+    ]
+  },
+  {
+    "id": "2a36eda7-da8a-4fb0-9bbb-d5dede733a1a",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Shalat",
+      "Kesehatan & Thibbun Nabawi"
     ]
   },
   {
@@ -11006,6 +10950,14 @@
     ]
   },
   {
+    "id": "dd9d1edb-94a7-4a7c-8bb1-60f73d250aca",
+    "topik_nama": "Fikih Wanita",
+    "tags": [
+      "Keluarga",
+      "Pernikahan & Rumah Tangga"
+    ]
+  },
+  {
     "id": "8277a337-3c2d-46b3-9141-12cea196d33d",
     "topik_nama": "Shalat",
     "tags": [
@@ -11014,11 +10966,27 @@
     ]
   },
   {
+    "id": "d6a50e6e-5d44-49a3-b2b0-2a727c117171",
+    "topik_nama": "Akhlak Mulia",
+    "tags": [
+      "Iman & Akidah",
+      "Akhlak Mulia"
+    ]
+  },
+  {
     "id": "41b36968-66b8-4b21-bf26-1a6d67d106f1",
     "topik_nama": "Muamalah & Jual Beli",
     "tags": [
       "Keluarga",
       "Muamalah & Jual Beli"
+    ]
+  },
+  {
+    "id": "61f8f89b-647c-4ff5-9610-045b25f139f4",
+    "topik_nama": "Akhlak Mulia",
+    "tags": [
+      "Akhirat & Kiamat",
+      "Akhlak Mulia"
     ]
   },
   {
@@ -11038,6 +11006,14 @@
     ]
   },
   {
+    "id": "94487266-a053-4c28-80d6-5bc3ec75196f",
+    "topik_nama": "Sabar & Syukur",
+    "tags": [
+      "Shalat",
+      "Akhlak Mulia"
+    ]
+  },
+  {
     "id": "d7cf99f2-865c-4402-a34e-081eece0e86c",
     "topik_nama": "Shalat",
     "tags": [
@@ -11050,6 +11026,14 @@
     "tags": [
       "Muamalah & Jual Beli",
       "Kejujuran & Amanah"
+    ]
+  },
+  {
+    "id": "1b5b7085-0aba-4b11-8ce7-daacf55b59da",
+    "topik_nama": "Iman & Akidah",
+    "tags": [
+      "Akhirat & Kiamat",
+      "Iman & Akidah"
     ]
   },
   {
@@ -11077,6 +11061,14 @@
     ]
   },
   {
+    "id": "da3764a4-2906-48a3-85c5-d6f3c9bf9832",
+    "topik_nama": "Thaharah & Kebersihan",
+    "tags": [
+      "Kesehatan & Thibbun Nabawi",
+      "Akhlak Mulia"
+    ]
+  },
+  {
     "id": "3e67ad83-d28f-4ce4-860e-880b286bff14",
     "topik_nama": "Muamalah & Jual Beli",
     "tags": [
@@ -11098,6 +11090,14 @@
     "tags": [
       "Shalat",
       "Isra' Mi'raj"
+    ]
+  },
+  {
+    "id": "3c7cfdd4-9b7c-4e81-9a23-faec6f697f43",
+    "topik_nama": "Shalat",
+    "tags": [
+      "Keluarga",
+      "Doa & Dzikir"
     ]
   },
   {

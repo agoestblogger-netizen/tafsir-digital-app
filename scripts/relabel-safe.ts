@@ -27,6 +27,7 @@ ${TOPIK_UTAMA.map((t, i) => `${i+1}. ${t}`).join('\n')}
 Jawab HANYA dengan angka (1-${TOPIK_UTAMA.length}). Tidak ada kata lain.`
 
 const MODE = process.argv[2] ?? 'test' // 'test' = 100 hadits dry-run, 'gass' = full update
+const START_OFFSET = parseInt(process.argv[3] ?? '0', 10) || 0
 const BATCH_SIZE = 10
 const JEDA_MS = 1000
 
@@ -61,22 +62,26 @@ async function labelWithRetry(ringkasan: string, pelajaran: string, retries = 2)
 }
 
 async function main() {
-  // STEP 1: Backup data lama
-  console.log('💾 Step 1: Backup topik_nama lama...')
-  const allPages: any[] = []
-  let bOffset = 0
-  while (true) {
-    const { data } = await sb
-      .from('hadits_topik_index')
-      .select('id, topik_nama, tags')
-      .range(bOffset, bOffset + 999)
-    if (!data || data.length === 0) break
-    allPages.push(...data)
-    bOffset += 1000
+  // STEP 1: Backup data lama (skip jika resume dari offset > 0)
+  if (START_OFFSET === 0) {
+    console.log('💾 Step 1: Backup topik_nama lama...')
+    const allPages: any[] = []
+    let bOffset = 0
+    while (true) {
+      const { data } = await sb
+        .from('hadits_topik_index')
+        .select('id, topik_nama, tags')
+        .range(bOffset, bOffset + 999)
+      if (!data || data.length === 0) break
+      allPages.push(...data)
+      bOffset += 1000
+    }
+    const backupFile = `backup-topik-${new Date().toISOString().slice(0,10)}.json`
+    fs.writeFileSync(backupFile, JSON.stringify(allPages, null, 2))
+    console.log(`✅ Backup ${allPages.length} hadits → ${backupFile}\n`)
+  } else {
+    console.log(`⏩ Resume mode: skip backup (START_OFFSET = ${START_OFFSET})\n`)
   }
-  const backupFile = `backup-topik-${new Date().toISOString().slice(0,10)}.json`
-  fs.writeFileSync(backupFile, JSON.stringify(allPages, null, 2))
-  console.log(`✅ Backup ${allPages.length} hadits → ${backupFile}\n`)
 
   // STEP 2: Fetch hadits
   const limit = MODE === 'test' ? 100 : 99999
@@ -87,9 +92,10 @@ async function main() {
   const totalBatch = Math.ceil(total / BATCH_SIZE)
   
   console.log(`🚀 Mode: ${MODE === 'test' ? 'TEST (100 hadits, dry-run)' : 'GASS (full update)'}`)
+  if (START_OFFSET > 0) console.log(`⏩ Start offset: ${START_OFFSET} (lanjut dari hadits ke-${START_OFFSET + 1})`)
   console.log(`📋 ${TOPIK_UTAMA.length} topik | ${total} hadits | ${totalBatch} batches\n`)
 
-  let offset = 0
+  let offset = START_OFFSET
   let updated = 0, skipped = 0, unchanged = 0
   const changes: Array<{id: string, lama: string, baru: string}> = []
   const skippedIds: string[] = []

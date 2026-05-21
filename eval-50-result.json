@@ -1,0 +1,302 @@
+[
+  {
+    "topik_lama": "Shalat",
+    "topik_baru": "Shalat",
+    "berubah": false,
+    "ringkasan": "Hadits ini menjelaskan tata cara tasyahud dalam shalat yang diajarkan oleh Rasulullah."
+  },
+  {
+    "topik_lama": "Shalat",
+    "topik_baru": "Shalat",
+    "berubah": false,
+    "ringkasan": "Hadits ini menjelaskan kesamaan dalam thu'maninah antara berbagai gerakan dalam shalat Nabi Muhammad SAW."
+  },
+  {
+    "topik_lama": "Shalat",
+    "topik_baru": "Shalat",
+    "berubah": false,
+    "ringkasan": "Hadits ini menjelaskan tentang perubahan pelaksanaan shalat dan pentingnya adzan serta puasa dalam kehidupan umat Islam."
+  },
+  {
+    "topik_lama": "Shalat",
+    "topik_baru": "Shalat",
+    "berubah": false,
+    "ringkasan": "Hadits ini menggambarkan pengalaman Anas bin Malik shalat bersama anak yatim di belakang Nabi Muhammad SAW."
+  },
+  {
+    "topik_lama": "Shalat",
+    "topik_baru": "Shalat",
+    "berubah": false,
+    "ringkasan": "Hadits ini menjelaskan bahwa Nabi Muhammad SAW membuka shalat dengan membaca 'BISMILLAHIR RAHMAANIR RAHIIM'."
+  },
+  {
+    "topik_lama": "Shalat",
+    "topik_baru": "Thaharah & Kebersihan",
+    "berubah": true,
+    "ringkasan": "Hadits ini menjelaskan kewajiban mandi bagi wanita yang bermimpi basah, sama seperti laki-laki."
+  },
+  {
+    "topik_lama": "Shalat",
+    "topik_baru": "Shalat",
+    "berubah": false,
+    "ringkasan": "Nabi Muhammad shallallahu 'alaihi wasallam melaksanakan shalat jenazah untuk an Najasyi dengan empat kali takbir."
+  },
+  {
+    "topik_lama": "Shalat",
+    "topik_baru": "Shalat",
+    "berubah": false,
+    "ringkasan": "Hadits ini menekankan pentingnya shalat berjama'ah dan dampaknya terhadap emosi seseorang."
+  },
+  {
+    "topik_lama": "Shalat",
+    "topik_baru": "Shalat",
+    "berubah": false,
+    "ringkasan": "Hadits ini menjelaskan keistimewaan yang diberikan kepada Nabi Muhammad SAW, termasuk kemudahan dalam beribadah dan syaf"
+  },
+  {
+    "topik_lama": "Shalat",
+    "topik_baru": "Shalat",
+    "berubah": false,
+    "ringkasan": "Hadits ini menggambarkan reaksi Nabi Muhammad SAW terhadap gerhana matahari dengan melaksanakan shalat secara berjamaah."
+  },
+  {
+    "topik_lama": "Keluarga",
+    "topik_baru": "Kepemimpinan & Keadilan",
+    "berubah": true,
+    "ringkasan": "Hadits ini menjelaskan tentang keputusan Nabi Muhammad SAW dalam menangani kasus pembunuhan janin akibat tindakan kekera"
+  },
+  {
+    "topik_lama": "Keluarga",
+    "topik_baru": "Iman & Akidah",
+    "berubah": true,
+    "ringkasan": "Hadits ini menjelaskan tentang konsekuensi dari tindakan azl dan ketentuan Allah dalam hal kehamilan."
+  },
+  {
+    "topik_lama": "Keluarga",
+    "topik_baru": "Pernikahan & Rumah Tangga",
+    "berubah": true,
+    "ringkasan": "Hadits ini menggambarkan pentingnya doa dan harapan berkah dalam pernikahan."
+  },
+  {
+    "topik_lama": "Keluarga",
+    "topik_baru": "Pernikahan & Rumah Tangga",
+    "berubah": true,
+    "ringkasan": "Rasulullah memberikan pilihan kepada istri-istrinya tanpa menjadikannya sebagai penceraian."
+  },
+  {
+    "topik_lama": "Keluarga",
+    "topik_baru": "Pernikahan & Rumah Tangga",
+    "berubah": true,
+    "ringkasan": "Hadits ini menggambarkan interaksi intim antara Aisyah dan Rasulullah dalam konteks mandi bersama, menunjukkan kedekatan"
+  },
+  {
+    "topik_lama": "Keluarga",
+    "topik_baru": "Thaharah & Kebersihan",
+    "berubah": true,
+    "ringkasan": "Hadits ini menjelaskan tentang kewajiban mandi bagi wanita setelah mengalami ihtilam."
+  },
+  {
+    "topik_lama": "Keluarga",
+    "topik_baru": "Mendidik Anak",
+    "berubah": true,
+    "ringkasan": "Hadits ini menggambarkan interaksi Rasulullah dengan Aisyah dan anak-anak, menunjukkan pentingnya kebahagiaan dan keceri"
+  },
+  {
+    "topik_lama": "Keluarga",
+    "topik_baru": "Fikih Wanita",
+    "berubah": true,
+    "ringkasan": "Hadits ini menjelaskan batasan waktu berkabung bagi wanita beriman setelah kehilangan anggota keluarga, terutama suami."
+  },
+  {
+    "topik_lama": "Keluarga",
+    "topik_baru": "Kesehatan & Thibbun Nabawi",
+    "berubah": true,
+    "ringkasan": "Hadits ini menggambarkan interaksi antara Aisyah dan Rasulullah melalui penggunaan siwak, menunjukkan pentingnya kebersi"
+  },
+  {
+    "topik_lama": "Keluarga",
+    "topik_baru": "Pernikahan & Rumah Tangga",
+    "berubah": true,
+    "ringkasan": "Hadits ini menjelaskan tentang hukum talak yang dilakukan saat istri dalam keadaan haid dan pentingnya merujuk istri hin"
+  },
+  {
+    "topik_lama": "Haji & Umrah",
+    "topik_baru": "Haji & Umrah",
+    "berubah": false,
+    "ringkasan": "Hadits ini menjelaskan tentang tindakan yang harus dilakukan ketika seseorang mengalami gangguan saat ihram."
+  },
+  {
+    "topik_lama": "Haji & Umrah",
+    "topik_baru": "Haji & Umrah",
+    "berubah": false,
+    "ringkasan": "Hadits ini menjelaskan perintah Nabi Muhammad SAW kepada Ummu Habibah untuk pergi dari Muzdalifah menuju Mina pada malam"
+  },
+  {
+    "topik_lama": "Haji & Umrah",
+    "topik_baru": "Kepemimpinan & Keadilan",
+    "berubah": true,
+    "ringkasan": "Hadits ini menggambarkan perhatian Umar bin Al Khaththab terhadap kondisi masyarakat saat musim haji dan tanggung jawab "
+  },
+  {
+    "topik_lama": "Haji & Umrah",
+    "topik_baru": "Zuhud & Kesederhanaan",
+    "berubah": true,
+    "ringkasan": "Hadits ini menekankan pentingnya kesederhanaan dalam beribadah dan menghindari berlebih-lebihan dalam agama."
+  },
+  {
+    "topik_lama": "Haji & Umrah",
+    "topik_baru": "Shalat",
+    "berubah": true,
+    "ringkasan": "Hadits ini menjelaskan tentang shalat yang dilakukan oleh Rasulullah di tempat-tempat tertentu saat perjalanan haji."
+  },
+  {
+    "topik_lama": "Haji & Umrah",
+    "topik_baru": "Haji & Umrah",
+    "berubah": false,
+    "ringkasan": "Hadits ini menyatakan bahwa Rasulullah tidak pernah melakukan umrah kecuali di bulan Dzulqa'dah."
+  },
+  {
+    "topik_lama": "Haji & Umrah",
+    "topik_baru": "Haji & Umrah",
+    "berubah": false,
+    "ringkasan": "Aisyah menyatakan bahwa ia memakaikan wewangian kepada Rasulullah saat berihram dan bertahalul."
+  },
+  {
+    "topik_lama": "Haji & Umrah",
+    "topik_baru": "Haji & Umrah",
+    "berubah": false,
+    "ringkasan": "Hadits ini menjelaskan tentang pelaksanaan talbiyah oleh Nabi Muhammad SAW saat melontar jumrah Aqabah dalam ibadah haji"
+  },
+  {
+    "topik_lama": "Haji & Umrah",
+    "topik_baru": "Haji & Umrah",
+    "berubah": false,
+    "ringkasan": "Hadits ini menggambarkan perjalanan spiritual Tsumamah bin Utsal yang beralih dari kebencian terhadap Rasulullah menjadi"
+  },
+  {
+    "topik_lama": "Haji & Umrah",
+    "topik_baru": "Haji & Umrah",
+    "berubah": false,
+    "ringkasan": "Hadits ini menggambarkan pelaksanaan ritual lempar jumrah oleh Nabi Muhammad SAW pada hari 'Iedul Adha."
+  },
+  {
+    "topik_lama": "Iman & Akidah",
+    "topik_baru": "Iman & Akidah",
+    "berubah": false,
+    "ringkasan": "Hadits ini menceritakan tentang pengalaman Rasulullah SAW saat menerima wahyu pertama dan ketakutannya yang mendalam."
+  },
+  {
+    "topik_lama": "Iman & Akidah",
+    "topik_baru": "Iman & Akidah",
+    "berubah": false,
+    "ringkasan": "Seorang Muslim harus mencintai Rasulullah lebih dari orang tua dan anaknya sebagai bagian dari iman."
+  },
+  {
+    "topik_lama": "Iman & Akidah",
+    "topik_baru": "Iman & Akidah",
+    "berubah": false,
+    "ringkasan": "Hadits ini menjelaskan pentingnya mengaitkan sumpah dengan kehendak Allah."
+  },
+  {
+    "topik_lama": "Iman & Akidah",
+    "topik_baru": "Iman & Akidah",
+    "berubah": false,
+    "ringkasan": "Hadits ini menegaskan pentingnya menjadikan Allah sebagai satu-satunya kekasih dan menunjukkan kedekatan Rasulullah deng"
+  },
+  {
+    "topik_lama": "Iman & Akidah",
+    "topik_baru": "Larangan & Dosa Besar",
+    "berubah": true,
+    "ringkasan": "Hadits ini mengingatkan bahwa menyebut seseorang kafir dapat berakibat pada kekufuran bagi yang mengucapkannya jika tida"
+  },
+  {
+    "topik_lama": "Iman & Akidah",
+    "topik_baru": "Iman & Akidah",
+    "berubah": false,
+    "ringkasan": "Hadits ini menekankan bahwa iman berada di hati dan bukan pada penampilan luar, serta mengingatkan akan bahaya kekerasan"
+  },
+  {
+    "topik_lama": "Iman & Akidah",
+    "topik_baru": "Muamalah & Jual Beli",
+    "berubah": true,
+    "ringkasan": "Hadits ini menjelaskan perintah Rasulullah kepada utusan Abdul Qais mengenai pokok-pokok ajaran Islam dan larangan terka"
+  },
+  {
+    "topik_lama": "Iman & Akidah",
+    "topik_baru": "Birrul Walidain",
+    "berubah": true,
+    "ringkasan": "Hadits ini menjelaskan tentang pahala bagi tiga kelompok orang yang berbuat baik dan beriman."
+  },
+  {
+    "topik_lama": "Iman & Akidah",
+    "topik_baru": "Iman & Akidah",
+    "berubah": false,
+    "ringkasan": "Hadits ini menegaskan bahwa klaim-klaim tertentu tentang Allah dan Rasul-Nya adalah bentuk kebohongan yang besar."
+  },
+  {
+    "topik_lama": "Iman & Akidah",
+    "topik_baru": "Iman & Akidah",
+    "berubah": false,
+    "ringkasan": "Hadits ini menggambarkan bagaimana keimanan akan menyebar dan mengakar di dalam masyarakat seperti ular yang masuk ke sa"
+  },
+  {
+    "topik_lama": "Rezeki & Kerja",
+    "topik_baru": "Kejujuran & Amanah",
+    "berubah": true,
+    "ringkasan": "Hadits ini menegaskan pentingnya kejujuran dan amanah dalam bertransaksi dan bekerja."
+  },
+  {
+    "topik_lama": "Rezeki & Kerja",
+    "topik_baru": "Pernikahan & Rumah Tangga",
+    "berubah": true,
+    "ringkasan": "Hadits ini menjelaskan tentang hak seorang istri untuk mengambil nafkah dari suaminya jika suami tidak memberikan cukup "
+  },
+  {
+    "topik_lama": "Rezeki & Kerja",
+    "topik_baru": "Warisan & Wasiat",
+    "berubah": true,
+    "ringkasan": "Hadits ini menjelaskan tentang cara memerdekakan budak dengan menggunakan undian dan pembagian harta warisan."
+  },
+  {
+    "topik_lama": "Rezeki & Kerja",
+    "topik_baru": "Akhlak Mulia",
+    "berubah": true,
+    "ringkasan": "Hadits ini menekankan pentingnya membayar hutang dengan baik sebagai tanda keutamaan seseorang."
+  },
+  {
+    "topik_lama": "Rezeki & Kerja",
+    "topik_baru": "Rezeki & Kerja",
+    "berubah": false,
+    "ringkasan": "Hadits ini menegaskan bahwa memperbanyak riba akan mengakibatkan kerugian di akhirat."
+  },
+  {
+    "topik_lama": "Rezeki & Kerja",
+    "topik_baru": "Muamalah & Jual Beli",
+    "berubah": true,
+    "ringkasan": "Hadits ini menekankan pentingnya membebaskan budak secara penuh jika memiliki kemampuan, dan jika tidak, budak tersebut "
+  },
+  {
+    "topik_lama": "Rezeki & Kerja",
+    "topik_baru": "Zakat & Sedekah",
+    "berubah": true,
+    "ringkasan": "Hadits ini menekankan bahwa wanita yang berinfak di rumah suaminya mendapatkan pahala yang setara dengan suaminya tanpa "
+  },
+  {
+    "topik_lama": "Rezeki & Kerja",
+    "topik_baru": "Pernikahan & Rumah Tangga",
+    "berubah": true,
+    "ringkasan": "Hadits ini menjelaskan tentang kebolehan mengambil harta suami untuk kebutuhan keluarga jika suami tidak mampu memberika"
+  },
+  {
+    "topik_lama": "Rezeki & Kerja",
+    "topik_baru": "Muamalah & Jual Beli",
+    "berubah": true,
+    "ringkasan": "Hadits ini menjelaskan tentang cara mengelola barang temuan dan hak pemiliknya."
+  },
+  {
+    "topik_lama": "Rezeki & Kerja",
+    "topik_baru": "Rezeki & Kerja",
+    "berubah": false,
+    "ringkasan": "Hadits ini menekankan pentingnya melunasi utang dan berdoa untuk keberkahan dalam harta dan keluarga."
+  }
+]

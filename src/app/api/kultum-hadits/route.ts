@@ -5,6 +5,22 @@ import OpenAI from 'openai'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const TEMA_TAG_MAPPING: Record<string, string[]> = {
+  'Sabar & Syukur': ['Sabar & Syukur', 'Sabar', 'Syukur'],
+  'Birrul Walidain': ['Birrul Walidain', 'Keluarga'],
+  'Taubat & Ampunan': ['Taubat & Ampunan', 'Taubat'],
+  'Ikhlas': ['Jihad & Niat'],
+  'Ukhuwah & Persaudaraan': ['Ukhuwah & Persaudaraan', 'Ukhuwah'],
+  'Mendidik Anak': ['Keluarga', 'Mendidik Anak'],
+  'Kematian & Akhirat': ['Akhirat & Kiamat', 'Kematian & Akhirat'],
+  'Sedekah & Zakat': ['Zakat & Sedekah', 'Sedekah & Zakat'],
+  'Ilmu & Pendidikan': ['Ilmu & Pendidikan', 'Ilmu'],
+  'Shalat': ['Shalat'],
+  'Rezeki & Kerja': ['Rezeki & Kerja', 'Rezeki'],
+  'Pernikahan & Rumah Tangga': ['Pernikahan & Rumah Tangga'],
+}
+
 async function generateQueryEmbedding(text: string): Promise<number[]> {
   const response = await openai.embeddings.create({
     model: 'text-embedding-3-small',
@@ -87,8 +103,8 @@ export async function POST(req: Request) {
     // Hadits
     supabase.rpc('match_hadits', {
       query_embedding: embedding,
-      match_threshold: 0.35,
-      match_count: 3
+      match_threshold: 0.25,
+      match_count: 15
     }),
     
     // Doa — text search, tidak perlu embedding
@@ -102,18 +118,69 @@ export async function POST(req: Request) {
   const ayatData = ayatResult.data ?? []
   if (ayatResult.error) console.error('Ayat vector search error:', ayatResult.error)
 
-  const haditsData = haditsResult.data ?? []
+  const haditsVectorData: any[] = haditsResult.data ?? []
   if (haditsResult.error) console.error('Hadits vector search error:', haditsResult.error)
 
   const doaData = doaResult.data ?? []
-  
+
+  // 3. Hadits via tag matching (setelah Promise.all, pakai supabaseAdmin)
+  const temaTags: string[] = TEMA_TAG_MAPPING[tema] ?? [tema]
+  const haditsTagResults = await Promise.all(
+    temaTags.map(tag =>
+      supabaseAdmin
+        .from('hadits_topik_index')
+        .select('id, arab, matan, terjemah, perawi, topik_nama, tags, konteks_hadits')
+        .contains('tags', [tag])
+        .limit(8)
+    )
+  )
+  const haditsTagRaw: any[] = haditsTagResults.flatMap((r: any) => r.data ?? [])
+
+  // Gabungkan vector + tag, deduplicate by id
+  // Vector (A) lebih prioritas karena punya similarity score
+  const seenIds = new Set<string>()
+  const mergedHadits: any[] = []
+
+  for (const h of haditsVectorData) {
+    if (!seenIds.has(h.id)) {
+      seenIds.add(h.id)
+      mergedHadits.push({ ...h, _source: 'vector' })
+    }
+  }
+  for (const h of haditsTagRaw) {
+    if (!seenIds.has(h.id)) {
+      seenIds.add(h.id)
+      mergedHadits.push({ ...h, similarity: undefined, _source: 'tag' })
+    }
+  }
+
+  // Sort: topik_nama match > vector similarity > tag only
+  mergedHadits.sort((a, b) => {
+    const topikMatchA = a.topik_nama === tema ? 0.2 : 0
+    const topikMatchB = b.topik_nama === tema ? 0.2 : 0
+    const scoreA = (typeof a.similarity === 'number' ? a.similarity : 0.5) + topikMatchA
+    const scoreB = (typeof b.similarity === 'number' ? b.similarity : 0.5) + topikMatchB
+    return scoreB - scoreA
+  })
+
+  // Filter: hanya hadits yang topik_nama atau tags match dengan tema
+  const haditsFiltered = mergedHadits.filter(h => {
+    const topikMatch = h.topik_nama === tema
+    const tagMatch = Array.isArray(h.tags) && h.tags.some((t: string) => 
+      t === tema || (TEMA_TAG_MAPPING[tema] ?? []).includes(t)
+    )
+    return topikMatch || tagMatch
+  })
+  const haditsData = haditsFiltered.slice(0, 15)
+
   // Format Hadits
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const haditsFormatted = haditsData.map((h: any) => ({
     id: h.id,
     type: 'hadits',
     judul: `Hadits ${h.perawi ? `(${h.perawi})` : ''} — ${h.topik_nama}`,
     deskripsi_singkat: h.konteks_hadits?.ringkasan ?? (h.terjemah ?? h.matan ?? '').slice(0, 120) + '...',
-    relevansi_score: Math.round((h.similarity ?? 0) * 100),
+    relevansi_score: typeof h.similarity === 'number' ? Math.round(h.similarity * 100) : 70,
     data: {
       id: h.id,
       arab: h.arab,
@@ -129,12 +196,10 @@ export async function POST(req: Request) {
 
   console.log('=== HADITS DEBUG ===')
   console.log('queryText:', queryText)
-  console.log('hadits embedding generated:', !!embedding)
-  console.log('match_hadits result count:', haditsData?.length)
-  console.log('match_hadits error:', haditsResult.error)
-  console.log('haditsData[0]:', JSON.stringify(haditsData?.[0] || null).slice(0, 200))
-  console.log('haditsFormatted count:', haditsFormatted?.length)
-  console.log('===================')
+  console.log('tema:', tema, '| temaTags:', temaTags)
+  console.log('vector:', haditsVectorData.length, '| tag:', haditsTagRaw.length)
+  console.log('merged+dedup total:', haditsData.length)
+  console.log('===================', haditsResult.error ?? '')
 
   // Format Doa
   const doaFormatted = doaData.map((d: any) => ({

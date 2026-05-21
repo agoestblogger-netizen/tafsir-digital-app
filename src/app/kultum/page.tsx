@@ -92,7 +92,7 @@ function KultumGeneratorInner() {
   const [expandedRef, setExpandedRef] = useState<string | null>(null)
   const [showSemuaReferensi, setShowSemuaReferensi] = useState(false)
   const [filterTipe, setFilterTipe] = useState<string>('semua')
-  const PER_TIPE_AWAL = 3
+  const PER_TIPE_AWAL = 5
 
   const handleToggleExpand = (id: string) => {
     setExpandedRef(prev => {

@@ -1,0 +1,35 @@
+name: Seed Hadits Konteks
+
+on:
+  workflow_dispatch:  # trigger manual dari GitHub UI
+    inputs:
+      batch_limit:
+        description: 'Jumlah hadits per run (default 500)'
+        required: false
+        default: '500'
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120  # max 2 jam
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run seed hadits konteks
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          BATCH_LIMIT: ${{ github.event.inputs.batch_limit }}
+        run: npx tsx scripts/seed-hadits-konteks.ts

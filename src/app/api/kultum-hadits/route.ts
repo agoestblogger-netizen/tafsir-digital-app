@@ -165,7 +165,8 @@ export async function POST(req: Request) {
 
   // Filter: hanya hadits yang topik_nama atau tags match dengan tema
   const haditsFiltered = mergedHadits.filter(h => {
-    const topikMatch = h.topik_nama === tema
+    const temaMapped = (TEMA_TAG_MAPPING[tema] ?? [tema])[0]
+  const topikMatch = h.topik_nama === tema || h.topik_nama === temaMapped
     const tagMatch = Array.isArray(h.tags) && h.tags.some((t: string) => 
       t === tema || (TEMA_TAG_MAPPING[tema] ?? []).includes(t)
     )

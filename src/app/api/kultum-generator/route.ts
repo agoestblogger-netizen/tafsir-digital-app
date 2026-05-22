@@ -364,7 +364,14 @@ Terjemah: "${d.terjemah ?? ''}"
 Sumber: QS. ${d.surah_nama_latin ?? d.surah_nama ?? ''}: ${d.nomor_ayat ?? ''}`
         }
         
-        if (r.type === 'doa_quran' || d.arab || d.kategori === 'nabi' || d.kategori === 'rabbana') {
+        if (r.type === 'hadits' || d.matan || d.perawi) {
+          return `[HADITS ${i+1} - WAJIB DISEBUT]
+Arab: ${d.arab ?? d.matan ?? ''}
+Terjemah: "${d.terjemah ?? ''}"
+Perawi: ${d.perawi ?? ''}`
+        }
+        
+        if (r.type === 'doa_quran' || d.kategori === 'nabi' || d.kategori === 'rabbana') {
           return `[DOA ${i+1} - WAJIB DISEBUT DAN DIBACAKAN]
 Nama: ${d.judul ?? r.judul ?? ''}
 Arab: ${d.arab ?? ''}
@@ -372,13 +379,6 @@ Latin: ${d.latin ?? ''}
 Terjemah: "${d.terjemah ?? ''}"
 Konteks: ${d.konteks ?? ''}
 Sumber: ${d.referensi ?? ''}`
-        }
-        
-        if (r.type === 'hadits' || d.matan || d.arab) {
-          return `[HADITS ${i+1} - WAJIB DISEBUT]
-Arab: ${d.arab ?? d.matan ?? ''}
-Terjemah: "${d.terjemah ?? ''}"
-Perawi: ${d.perawi ?? ''}`
         }
         
         return `[REFERENSI ${i+1}]: ${r.judul ?? JSON.stringify(d).slice(0, 100)}`

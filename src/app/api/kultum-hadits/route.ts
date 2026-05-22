@@ -100,8 +100,8 @@ export async function POST(req: Request) {
     // Ayat Al-Qur'an
     supabaseAdmin.rpc('match_ayat_quran', {
       query_embedding: embedding,
-      match_threshold: 0.4,
-      match_count: 5
+      match_threshold: 0.55,
+      match_count: 3
     }),
     
     // Hadits

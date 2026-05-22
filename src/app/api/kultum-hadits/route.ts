@@ -13,6 +13,7 @@ const TEMA_TAG_MAPPING: Record<string, string[]> = {
   'Ikhlas': ['Jihad & Niat'],
   'Ukhuwah & Persaudaraan': ['Ukhuwah & Persaudaraan', 'Ukhuwah'],
   'Mendidik Anak': ['Mendidik Anak'],
+  'Keluarga': ['Keluarga'],
   'Kematian & Akhirat': ['Akhirat & Kiamat', 'Kematian & Akhirat'],
   'Sedekah & Zakat': ['Zakat & Sedekah', 'Sedekah & Zakat'],
   'Ilmu & Pendidikan': ['Ilmu & Pendidikan', 'Ilmu'],

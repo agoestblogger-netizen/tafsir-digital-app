@@ -23,6 +23,11 @@ const TEMA_TAG_MAPPING: Record<string, string[]> = {
   'Thaharah': ['Thaharah & Kebersihan'],
   'Thaharah & Kebersihan': ['Thaharah & Kebersihan'],
   'Bersuci': ['Thaharah & Kebersihan'],
+  'Kematian & Akhirat': ['Akhirat & Kiamat'],
+  'Akhirat & Kiamat': ['Akhirat & Kiamat'],
+  'Birrul Walidain': ['Birrul Walidain'],
+  'Sabar & Syukur': ['Sabar & Syukur'],
+  'Taubat & Ampunan': ['Taubat & Ampunan'],
 }
 
 async function generateQueryEmbedding(text: string): Promise<number[]> {

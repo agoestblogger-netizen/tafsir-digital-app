@@ -19,8 +19,8 @@ const GAYA_BAHASA = ['Formal', 'Semi-Formal', 'Santai', 'Bilingual']
 const TOPIK_POPULER = [
   'Sabar & Syukur', 'Birrul Walidain', 'Rezeki & Kerja',
   'Taubat & Ampunan', 'Shalat', 'Pernikahan & Rumah Tangga',
-  'Mendidik Anak', 'Ukhuwah & Persaudaraan', 'Ikhlas',
-  'Kematian & Akhirat', 'Ilmu & Pendidikan', 'Sedekah & Zakat'
+  'Mendidik Anak', 'Ukhuwah & Persaudaraan', 'Ikhlas & Niat',
+  'Akhirat & Kiamat', 'Ilmu & Pendidikan', 'Zakat & Sedekah'
 ]
 
 const arabColorMap: Record<string, string> = {

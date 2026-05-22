@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     .map((r: any) => {
       const d = r.data ?? r
       if (r.type === 'ayat_quran_db') return `Ayat ${r.judul}: "${d.terjemah?.slice(0, 120)}"`
-      if (r.type === 'hadits') return `Hadits (${d.perawi}): "${d.matan?.slice(0, 100)}"`
+      if (r.type === 'hadits') return `Hadits: "${d.matan?.slice(0, 100)}"`
       if (r.type === 'ayat_sains') return `Sains: ${r.judul} - ${r.deskripsi_singkat}`
       if (r.type === 'tokoh_sains') return `Tokoh: ${r.judul}`
       return ''

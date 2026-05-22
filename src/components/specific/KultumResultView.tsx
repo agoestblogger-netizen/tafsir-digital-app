@@ -348,7 +348,6 @@ export function KultumResultView({
               <section className="bg-[var(--dark2)] border border-[var(--gold-border)] rounded-2xl p-6">
                 <div className="text-xs font-bold uppercase tracking-widest text-[var(--teal-300)] mb-6">🌟 Pembukaan</div>
                 <div className="space-y-4">
-                  <p className="text-lg font-bold text-[var(--gold)]">{toStr(konten.bagian?.pembuka?.salam)}</p>
                   <p className="text-[var(--text1)] leading-relaxed">{toStr(konten.bagian?.pembuka?.muqaddimah)}</p>
                   <p className="text-[var(--text1)] leading-relaxed font-semibold text-[var(--teal-100)]">{toStr(konten.bagian?.pembuka?.pengantar_tema)}</p>
                 </div>

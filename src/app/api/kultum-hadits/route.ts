@@ -12,7 +12,7 @@ const TEMA_TAG_MAPPING: Record<string, string[]> = {
   'Taubat & Ampunan': ['Taubat & Ampunan', 'Taubat'],
   'Ikhlas': ['Jihad & Niat'],
   'Ukhuwah & Persaudaraan': ['Ukhuwah & Persaudaraan', 'Ukhuwah'],
-  'Mendidik Anak': ['Keluarga', 'Mendidik Anak'],
+  'Mendidik Anak': ['Mendidik Anak'],
   'Kematian & Akhirat': ['Akhirat & Kiamat', 'Kematian & Akhirat'],
   'Sedekah & Zakat': ['Zakat & Sedekah', 'Sedekah & Zakat'],
   'Ilmu & Pendidikan': ['Ilmu & Pendidikan', 'Ilmu'],
@@ -23,11 +23,6 @@ const TEMA_TAG_MAPPING: Record<string, string[]> = {
   'Thaharah': ['Thaharah & Kebersihan'],
   'Thaharah & Kebersihan': ['Thaharah & Kebersihan'],
   'Bersuci': ['Thaharah & Kebersihan'],
-  'Kematian & Akhirat': ['Akhirat & Kiamat'],
-  'Akhirat & Kiamat': ['Akhirat & Kiamat'],
-  'Birrul Walidain': ['Birrul Walidain'],
-  'Sabar & Syukur': ['Sabar & Syukur'],
-  'Taubat & Ampunan': ['Taubat & Ampunan'],
 }
 
 async function generateQueryEmbedding(text: string): Promise<number[]> {
@@ -132,56 +127,21 @@ export async function POST(req: Request) {
 
   const doaData = doaResult.data ?? []
 
-  // 3. Hadits via tag matching (setelah Promise.all, pakai supabaseAdmin)
-  const temaTags: string[] = TEMA_TAG_MAPPING[tema] ?? [tema]
-  const haditsTagResults = await Promise.all(
-    temaTags.map(tag =>
-      supabaseAdmin
-        .from('hadits_topik_index')
-        .select('id, arab, matan, terjemah, perawi, topik_nama, tags, konteks_hadits')
-        .contains('tags', [tag])
-        .limit(8)
-    )
-  )
-  const haditsTagRaw: any[] = haditsTagResults.flatMap((r: any) => r.data ?? [])
-
-  // Gabungkan vector + tag, deduplicate by id
-  // Vector (A) lebih prioritas karena punya similarity score
-  const seenIds = new Set<string>()
-  const mergedHadits: any[] = []
-
-  for (const h of haditsVectorData) {
-    if (!seenIds.has(h.id)) {
-      seenIds.add(h.id)
-      mergedHadits.push({ ...h, _source: 'vector' })
-    }
-  }
-  for (const h of haditsTagRaw) {
-    if (!seenIds.has(h.id)) {
-      seenIds.add(h.id)
-      mergedHadits.push({ ...h, similarity: undefined, _source: 'tag' })
-    }
-  }
-
-  // Sort: topik_nama match > vector similarity > tag only
-  mergedHadits.sort((a, b) => {
-    const topikMatchA = a.topik_nama === tema ? 0.2 : 0
-    const topikMatchB = b.topik_nama === tema ? 0.2 : 0
-    const scoreA = (typeof a.similarity === 'number' ? a.similarity : 0.5) + topikMatchA
-    const scoreB = (typeof b.similarity === 'number' ? b.similarity : 0.5) + topikMatchB
-    return scoreB - scoreA
-  })
-
-  // Filter: hanya hadits yang topik_nama atau tags match dengan tema
-  const haditsFiltered = mergedHadits.filter(h => {
-    const temaMapped = (TEMA_TAG_MAPPING[tema] ?? [tema])[0]
-  const topikMatch = h.topik_nama === tema || h.topik_nama === temaMapped
-    const tagMatch = Array.isArray(h.tags) && h.tags.some((t: string) => 
-      t === tema || (TEMA_TAG_MAPPING[tema] ?? []).includes(t)
-    )
-    return topikMatch || tagMatch
-  })
-  const haditsData = haditsFiltered.slice(0, 15)
+  // 3. Hadits via topik_nama langsung (akurat, tidak pakai vector)
+  const temaMapped = (TEMA_TAG_MAPPING[tema] ?? [tema])[0]
+  const haditsQ = supabaseAdmin
+    .from('hadits_topik_index')
+    .select('id, arab, matan, terjemah, perawi, topik_nama, tags, konteks_hadits')
+    .limit(15)
+  const temaVariants = Array.from(new Set([tema, temaMapped].filter(Boolean)))
+  const { data: haditsTopikDirect } = temaVariants.length === 1
+    ? await haditsQ.eq('topik_nama', temaVariants[0])
+    : await haditsQ.in('topik_nama', temaVariants)
+  const haditsData = haditsTopikDirect ?? []
+  console.log('DEBUG tema:', JSON.stringify(tema))
+  console.log('DEBUG temaMapped:', JSON.stringify(temaMapped))
+  console.log('DEBUG temaVariants:', JSON.stringify(temaVariants))
+  console.log('DEBUG haditsData.length:', haditsData.length)
 
   // Format Hadits
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -204,12 +164,7 @@ export async function POST(req: Request) {
     }
   }))
 
-  console.log('=== HADITS DEBUG ===')
-  console.log('queryText:', queryText)
-  console.log('tema:', tema, '| temaTags:', temaTags)
-  console.log('vector:', haditsVectorData.length, '| tag:', haditsTagRaw.length)
-  console.log('merged+dedup total:', haditsData.length)
-  console.log('===================', haditsResult.error ?? '')
+
 
   // Format Doa
   const doaFormatted = doaData.map((d: any) => ({

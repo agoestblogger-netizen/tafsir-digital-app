@@ -962,7 +962,7 @@ WAJIB: tidak ada duplikasi konten antar section.`
       async start(controller) {
         let fullContent = ''
         try {
-          const maxTokens = Math.max(2000, targetDurasi * 400)
+          const maxTokens = Math.min(16000, Math.max(2000, targetDurasi * 400))
           const response = await openai.chat.completions.create({
             model: 'gpt-4o-mini',
             messages,

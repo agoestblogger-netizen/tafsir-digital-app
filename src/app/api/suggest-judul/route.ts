@@ -7,12 +7,16 @@ export async function POST(req: Request) {
   const { topik, referensi } = await req.json()
 
   // Ekstrak konteks dari referensi terpilih
-  const konteksReferensi = referensi.map((r: any) => {
-    if (r.terjemah) return `Ayat: "${r.terjemah}" (${r.surah_nama}: ${r.ayat_ke})`
-    if (r.matan) return `Hadits: "${r.matan?.slice(0, 100)}..."`
-    if (r.nama_doa) return `Doa: ${r.nama_doa}`
-    return ''
-  }).filter(Boolean).join('\n')
+  const konteksReferensi = referensi
+    .filter((r: any) => r.type !== 'doa')
+    .map((r: any) => {
+      const d = r.data ?? r
+      if (r.type === 'ayat_quran_db') return `Ayat ${r.judul}: "${d.terjemah?.slice(0, 120)}"`
+      if (r.type === 'hadits') return `Hadits (${d.perawi}): "${d.matan?.slice(0, 100)}"`
+      if (r.type === 'ayat_sains') return `Sains: ${r.judul} - ${r.deskripsi_singkat}`
+      if (r.type === 'tokoh_sains') return `Tokoh: ${r.judul}`
+      return ''
+    }).filter(Boolean).join('\n')
 
   const prompt = `
 Kamu adalah asisten yang membantu menyusun judul kultum Islam.

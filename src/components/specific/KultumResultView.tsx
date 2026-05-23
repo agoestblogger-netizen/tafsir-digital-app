@@ -203,7 +203,7 @@ export function KultumResultView({
     fullText += `[Doa Pembuka]\n${toStr(konten.bagian?.doa_pembuka?.arab)}\n${toStr(konten.bagian?.doa_pembuka?.latin)}\nArtinya: ${toStr(konten.bagian?.doa_pembuka?.terjemah)}\n\n`
     
     // Pembuka
-    fullText += `[Pembukaan]\n${toStr(konten.bagian?.pembuka?.salam)}\n${toStr(konten.bagian?.pembuka?.muqaddimah)}\n${toStr(konten.bagian?.pembuka?.pengantar_tema)}\n\n`
+    fullText += `[Pembukaan]\n${toStr(konten.bagian?.pembuka?.salam)}\n${toStr(konten.bagian?.pembuka?.muqaddimah).replace(/^(Assalamu.alaikum\s+warahmatullahi\s+wabarakatuh[.,]?\s*)/i, "")}\n${toStr(konten.bagian?.pembuka?.pengantar_tema)}\n\n`
     
     // Ayat
     ;(konten.bagian?.ayat_quran ?? []).forEach(a => {
@@ -349,7 +349,7 @@ export function KultumResultView({
                 <div className="text-xs font-bold uppercase tracking-widest text-[var(--teal-300)] mb-6">🌟 Pembukaan</div>
                 <div className="space-y-4">
                   <p className="text-lg font-bold text-[var(--gold)]">{toStr(konten.bagian?.pembuka?.salam)}</p>
-                  <p className="text-[var(--text1)] leading-relaxed">{toStr(konten.bagian?.pembuka?.muqaddimah)}</p>
+                  <p className="text-[var(--text1)] leading-relaxed">{toStr(konten.bagian?.pembuka?.muqaddimah).replace(/^(Assalamu.alaikum\s+warahmatullahi\s+wabarakatuh[.,]?\s*)/i, "")}</p>
                   <p className="text-[var(--text1)] leading-relaxed font-semibold text-[var(--teal-100)]">{toStr(konten.bagian?.pembuka?.pengantar_tema)}</p>
                 </div>
               </section>

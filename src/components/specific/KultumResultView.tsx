@@ -349,8 +349,8 @@ export function KultumResultView({
                 <div className="text-xs font-bold uppercase tracking-widest text-[var(--teal-300)] mb-6">🌟 Pembukaan</div>
                 <div className="space-y-4">
                   <p className="text-lg font-bold text-[var(--gold)]">{toStr(konten.bagian?.pembuka?.salam)}</p>
-                  <p className="text-[var(--text1)] leading-relaxed">{toStr(konten.bagian?.pembuka?.muqaddimah).replace(/^Assalamu[''\u2019]?alaikum\s*wa\s*rahmatullahi\s*wa\s*barakatuh[.,]?\s*/i, '').replace(/^Assalamu[''\u2019]?alaikum\s+warahmatullahi\s+wabarakatuh[.,]?\s*/i, '')}</p>
-                  <p className="text-[var(--text1)] leading-relaxed font-semibold text-[var(--teal-100)]">{toStr(konten.bagian?.pembuka?.pengantar_tema)}</p>
+                  <p className="text-[var(--text1)] leading-relaxed whitespace-pre-wrap">{toStr(konten.bagian?.pembuka?.muqaddimah).replace(/Assalamu[''\u2019]?alaikum[\s\S]*?(?:barakatuh|wabarakatuh)[.,\s]*/i, '')}</p>
+                  <p className="text-[var(--text1)] leading-relaxed font-semibold text-[var(--teal-100)] whitespace-pre-wrap">{toStr(konten.bagian?.pembuka?.pengantar_tema).replace(/Assalamu[''\u2019]?alaikum[\s\S]*?(?:barakatuh|wabarakatuh)[.,\s]*/i, '')}</p>
                 </div>
               </section>
             </div>

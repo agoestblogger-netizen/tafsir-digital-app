@@ -466,6 +466,16 @@ export default function KultumHasilPage() {
           })),
           ayat_sains: referensi.filter((r: any) => r.type === 'ayat_sains').map((a: any) => ({
             ...(a.data || a)
+          })),
+          ayat_quran_db: referensi.filter((r: any) => r.type === 'ayat_quran_db').map((a: any) => ({
+            arab: a.data?.teks_arab ?? a.arab ?? a.data?.arab ?? '',
+            latin: a.data?.teks_latin ?? a.latin ?? a.data?.latin ?? '',
+            terjemah: a.data?.terjemah ?? a.terjemah ?? '',
+            referensi: a.judul ?? a.referensi ?? '',
+            surah_id: a.data?.surah_id,
+            nomor_ayat: a.data?.nomor_ayat,
+            surah_nama: a.data?.surah_nama_latin ?? a.data?.surah_nama ?? '',
+            is_resolved: true
           }))
         }
       }
@@ -480,6 +490,8 @@ export default function KultumHasilPage() {
           : ''),
         syarah: h.topik_nama ?? h.bab ?? ''
       })).filter((h: any) => h.terjemah || h.arab)
+
+      let ayatQuranDb = referensi.ayat_quran_db ?? []
 
       const normalized = normalizeKonten(rawParsed, {
         format: data.format,
@@ -580,14 +592,14 @@ export default function KultumHasilPage() {
         )
 
         const existingAyat = normalized.bagian.ayat_quran ?? []
+        const allAyat = [...existingAyat, ...ayatDariKisah, ...ayatQuranDb]
 
-        if (ayatDariKisah.length > 0) {
-          const allAyat = [...existingAyat, ...ayatDariKisah]
+        if (allAyat.length > 0) {
           normalized.bagian.ayat_quran = allAyat.filter(
             (ayat: any, index: number, self: any[]) =>
               index === self.findIndex(
-                (a: any) => a.surah_id === ayat.surah_id && 
-                            a.nomor_ayat === ayat.nomor_ayat
+                (a: any) => (a.surah_id === ayat.surah_id && a.nomor_ayat === ayat.nomor_ayat) ||
+                            (a.referensi && a.referensi === ayat.referensi)
               )
           )
         }
@@ -764,11 +776,12 @@ export default function KultumHasilPage() {
 
         // Helper: normalize nama surah → lookup id
         const resolveSurahId = (surahName: string): number | null => {
-          // Bersihkan: lowercase, hapus "QS.", hapus apostrophe, trim spasi
+          // Bersihkan: lowercase, hapus "QS.", hapus apostrophe, trim spasi, ganti spasi/underscore dengan strip (-)
           const clean = surahName
             .toLowerCase()
             .replace(/^qs\.?\s*/i, '')
             .replace(/[':]/g, '')
+            .replace(/[\s_]+/g, '-')
             .trim()
           
           return SURAH_NAME_TO_ID[clean] ?? null

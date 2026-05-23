@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/client'
+import { getSupabaseAdmin } from '@/lib/supabase'
 
 // ──────────────────────────────────────────────────────
 // TYPES
@@ -214,7 +214,7 @@ export async function validasiHaditsStrict(
   nomor: string
 ): Promise<HaditsTerverifikasi['data'] | null> {
   try {
-    const supabase = createClient()
+    const supabase = getSupabaseAdmin()
     const { data, error } = await supabase
       .from('hadits_topik_index')
       .select('arab, terjemah, perawi, nomor, topik_nama')
@@ -246,11 +246,17 @@ export async function validasiHaditsStrict(
  * Pakai /api/kultum-hadits yang sudah ada (reuse hitungScoreEnhanced).
  */
 export async function validasiHaditsFuzzy(
-  konteks: string
+  konteks: string,
+  origin?: string
 ): Promise<HaditsTerverifikasi['data'] | null> {
   try {
+    if (!origin) {
+      console.warn('[Verifier] Fuzzy validation skipped because request origin is not provided')
+      return null
+    }
+    
     // Reuse endpoint kultum-hadits yang sudah pakai hitungScoreEnhanced
-    const res = await fetch('/api/kultum-hadits', {
+    const res = await fetch(`${origin}/api/kultum-hadits`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ tema: konteks }),
@@ -272,7 +278,8 @@ export async function validasiHaditsFuzzy(
       nomor: String(top.data?.nomor ?? top.nomor ?? ''),
       topik_nama: top.data?.topik_nama ?? top.judul ?? ''
     }
-  } catch {
+  } catch (err) {
+    console.error('[Verifier] Fuzzy validation error:', err)
     return null
   }
 }
@@ -285,7 +292,8 @@ export async function validasiHaditsFuzzy(
  * Pipeline verifikasi: strict match dulu → fallback fuzzy match.
  */
 export async function verifikasiHadits(
-  detected: HaditsTerdeteksi
+  detected: HaditsTerdeteksi,
+  origin?: string
 ): Promise<HaditsTerverifikasi> {
   // Step 1: Strict match
   const strict = await validasiHaditsStrict(detected.perawi, detected.nomor)
@@ -299,7 +307,7 @@ export async function verifikasiHadits(
   }
   
   // Step 2: Fuzzy match
-  const fuzzy = await validasiHaditsFuzzy(detected.konteks)
+  const fuzzy = await validasiHaditsFuzzy(detected.konteks, origin)
   if (fuzzy) {
     return {
       found: true,
@@ -322,14 +330,15 @@ export async function verifikasiHadits(
 // ──────────────────────────────────────────────────────
 
 export async function verifikasiSemuaHadits(
-  narasi: string
+  narasi: string,
+  origin?: string
 ): Promise<HaditsTerverifikasi[]> {
   const detected = extractHaditsDariNarasi(narasi)
   if (detected.length === 0) return []
   
   // Parallel verification
   const results = await Promise.all(
-    detected.map(d => verifikasiHadits(d))
+    detected.map(d => verifikasiHadits(d, origin))
   )
   
   return results

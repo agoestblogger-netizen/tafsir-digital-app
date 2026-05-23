@@ -133,7 +133,7 @@ export async function POST(req: Request) {
   const temaMapped = (TEMA_TAG_MAPPING[tema] ?? [tema])[0]
   const haditsQ = supabaseAdmin
     .from('hadits_topik_index')
-    .select('id, arab, matan, terjemah, perawi, topik_nama, tags, konteks_hadits')
+    .select('id, arab, matan, terjemah, perawi, nomor, topik_nama, tags, konteks_hadits')
     .limit(15)
   const temaVariants = Array.from(new Set([tema, temaMapped].filter(Boolean)))
   const { data: haditsTopikDirect } = temaVariants.length === 1
@@ -159,6 +159,7 @@ export async function POST(req: Request) {
       matan: h.matan,
       terjemah: h.terjemah,
       perawi: h.perawi,
+      nomor: h.nomor,
       topik_nama: h.topik_nama,
       tags: h.tags,
       konteks_hadits: h.konteks_hadits,

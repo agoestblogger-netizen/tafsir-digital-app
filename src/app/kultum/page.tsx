@@ -220,7 +220,40 @@ function KultumGeneratorInner() {
       const keywords = expandData?.keywords ?? []
       const refs = await cariSemuaReferensi(topik, keywords, {}, expandData)
       
-      const referensiUnik = refs.filter((ref, index, self) =>
+      // Fetch semantic search references concurrently (only if topic is not in TOPIK_STANDAR)
+      const TOPIK_STANDAR = ['Sabar & Syukur', 'Birrul Walidain', 'Rezeki & Kerja', 'Taubat & Ampunan', 'Shalat', 'Pernikahan & Rumah Tangga', 'Mendidik Anak', 'Ukhuwah & Persaudaraan', 'Ikhlas & Niat', 'Akhirat & Kiamat', 'Ilmu & Pendidikan', 'Zakat & Sedekah', 'Keluarga', 'Thaharah & Kebersihan', 'Jihad & Dakwah', 'Fikih Wanita']
+      
+      const isTopikStandar = TOPIK_STANDAR.some(t => t.toLowerCase() === topik.toLowerCase())
+      
+      let semanticRefs: any[] = []
+      if (!isTopikStandar) {
+        try {
+          const semSearchRes = await fetch('/api/semantic-search-referensi', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: topik })
+          })
+          if (semSearchRes.ok) {
+            const semSearchData = await semSearchRes.json()
+            const rawSemRefs = [
+              ...(semSearchData.ayat ?? []),
+              ...(semSearchData.hadits ?? [])
+            ]
+            semanticRefs = rawSemRefs.map((r: any) => ({
+              ...r,
+              isSemanticSearch: true
+            }))
+          }
+        } catch (semErr) {
+          console.error('Error fetching semantic search references:', semErr)
+        }
+      } else {
+        console.log(`[Semantic Search] skipped fetch because topic "${topik}" is in TOPIK_STANDAR`)
+      }
+
+      const mergedRefs = [...refs, ...semanticRefs]
+      
+      const referensiUnik = mergedRefs.filter((ref, index, self) =>
         index === self.findIndex(r => 
           (r.id && r.id === ref.id) || 
           ((r.data as any)?.nama_doa && (r.data as any)?.nama_doa === (ref.data as any)?.nama_doa) ||
@@ -658,21 +691,32 @@ function KultumGeneratorInner() {
                         {referensiTampil.map((ref, index) => {
                           const isSelected = referensiDipilih.some(r => r.id === ref.id)
                           
-                          let badgeLabel = 'REFERENSI'
-                          let badgeColor = 'text-[var(--gold-light)] border-[var(--gold-border)]/30 bg-[var(--gold)]/5'
+                          const isSemantic = !!(ref as any).isSemanticSearch
+                          let badgeLabel = isSemantic ? '🔎 RELEVAN SEMANTIK' : 'REFERENSI'
+                          let badgeColor = isSemantic 
+                            ? 'text-cyan-400 border-cyan-500/30 bg-cyan-500/5'
+                            : 'text-[var(--gold-light)] border-[var(--gold-border)]/30 bg-[var(--gold)]/5'
                           
-                          if (ref.type === 'ayat_sains' || ref.type === 'ayat_quran_db') {
-                            badgeLabel = "AYAT AL-QUR'AN"
-                            badgeColor = 'text-blue-400 border-blue-500/30 bg-blue-500/5'
-                          } else if (ref.type === 'hadits') {
-                            badgeLabel = 'HADITS SHAHIH'
-                            badgeColor = 'text-emerald-400 border-emerald-500/30 bg-emerald-500/5'
-                          } else if (ref.type === 'doa_quran') {
-                            badgeLabel = "DOA AL-QUR'AN"
-                            badgeColor = 'text-purple-400 border-purple-500/30 bg-purple-500/5'
-                          } else if (ref.type === 'kaum_lampau') {
-                            badgeLabel = 'KISAH KAUM LAMPAU'
-                            badgeColor = 'text-amber-400 border-amber-500/30 bg-amber-500/5'
+                          if (!isSemantic) {
+                            if (ref.type === 'ayat_sains' || ref.type === 'ayat_quran_db') {
+                              badgeLabel = "AYAT AL-QUR'AN"
+                              badgeColor = 'text-blue-400 border-blue-500/30 bg-blue-500/5'
+                            } else if (ref.type === 'hadits') {
+                              badgeLabel = 'HADITS SHAHIH'
+                              badgeColor = 'text-emerald-400 border-emerald-500/30 bg-emerald-500/5'
+                            } else if (ref.type === 'doa_quran') {
+                              badgeLabel = "DOA AL-QUR'AN"
+                              badgeColor = 'text-purple-400 border-purple-500/30 bg-purple-500/5'
+                            } else if (ref.type === 'kaum_lampau') {
+                              badgeLabel = 'KISAH KAUM LAMPAU'
+                              badgeColor = 'text-amber-400 border-amber-500/30 bg-amber-500/5'
+                            }
+                          } else {
+                            let prefix = ''
+                            if (ref.type === 'ayat_quran_db') prefix = 'AYAT - '
+                            else if (ref.type === 'hadits') prefix = 'HADITS - '
+                            badgeLabel = `${prefix}RELEVAN SEMANTIK`
+                            badgeColor = 'text-cyan-400 border-cyan-500/30 bg-cyan-500/5 shadow-[0_0_10px_rgba(34,211,238,0.1)]'
                           }
                           
                           const d = ref.data as any

@@ -195,7 +195,8 @@ function extractKalimatMengandung(
 }
 
 async function jalankanVerifikasiHadits(
-  narasiLengkap: string
+  narasiLengkap: string,
+  origin: string
 ): Promise<VerifikasiResult> {
   const detected = extractHaditsDariNarasi(narasiLengkap)
   const detectedImplisit = extractKalimatHaditsImplisit(narasiLengkap)
@@ -209,7 +210,7 @@ async function jalankanVerifikasiHadits(
   }
   
   const results = await Promise.all(
-    detected.map(d => verifikasiHadits(d))
+    detected.map(d => verifikasiHadits(d, origin))
   )
   
   let narasiBersih = narasiLengkap
@@ -269,6 +270,12 @@ async function jalankanVerifikasiHadits(
       kalimat_dihapus: kalimat
     })
   }
+
+  // Cleanup orphaned quotes/dashes/spaces/punctuation at the start of any paragraph
+  narasiBersih = narasiBersih
+    .split('\n')
+    .map(p => p.trim().replace(/^['"\s\-–—,;.:?!]+/, '').trim())
+    .join('\n')
   
   return {
     referensi_terverifikasi: { hadits: haditsTerverifikasi },
@@ -287,6 +294,7 @@ export async function POST(request: NextRequest) {
     console.log('========================')
     
     const { format, sub_format, tema, judul_override, kategori_tema, gaya_bahasa, user_id, durasi_menit, referensiDipilih, referensi_dipilih, semantic_expanded, kisah_id } = body
+    const origin = request.nextUrl.origin
 
     console.log('=== GENERATOR FORMAT DEBUG ===')
     console.log('format received:', format)
@@ -365,10 +373,13 @@ Sumber: QS. ${d.surah_nama_latin ?? d.surah_nama ?? ''}: ${d.nomor_ayat ?? ''}`
         }
         
         if (r.type === 'hadits' || d.matan || d.perawi) {
+          const noHadits = d.nomor ?? d.no_hadits ?? d.nomor_hadits ?? d.id ?? ''
           return `[HADITS ${i+1} - WAJIB DISEBUT]
 Arab: ${d.arab ?? d.matan ?? ''}
 Terjemah: "${d.terjemah ?? ''}"
-Perawi: ${d.perawi ?? ''}`
+Perawi: ${d.perawi ?? ''}
+Nomor Hadits: ${noHadits}
+Atribusi Wajib: HR. ${d.perawi ?? ''} No. ${noHadits}`
         }
         
         if (r.type === 'doa_quran' || d.kategori === 'nabi' || d.kategori === 'rabbana') {
@@ -388,6 +399,88 @@ Sumber: ${d.referensi ?? ''}`
     const refAktif = referensi_dipilih ?? referensiDipilih ?? []
     console.log('referensi_dipilih full:', JSON.stringify(refAktif, null, 2).slice(0, 1000))
     const referensiFormatted = formatReferensiUntukPrompt(refAktif)
+    
+    // Separate references for dynamic prompt blueprint mapping
+    const ayatList = refAktif.filter((r: any) => {
+      const d = r.data ?? r
+      return r.type === 'ayat_quran_db' || d.teks_arab || d.nomor_ayat
+    })
+    const haditsList = refAktif.filter((r: any) => {
+      const d = r.data ?? r
+      return r.type === 'hadits' || d.matan || d.perawi
+    })
+    
+    let isiStructurePrompt = ''
+    if (refAktif.length > 0) {
+      const isiPoinInstructions: string[] = []
+      
+      // Poin 1: Pembukaan
+      isiPoinInstructions.push(`    {
+      "judul": "Judul poin pembuka yang menarik (misalnya tentang esensi tema)",
+      "paragraf": "Isi paragraf pembukaan: salam, hamdalah, shalawat, pengantar tema. Rujuk secara umum tema hari ini."
+    }`)
+      
+      // Poin untuk Ayat
+      ayatList.forEach((r: any, idx: number) => {
+        const d = r.data ?? r
+        const surahNama = d.surah_nama_latin ?? d.surah_nama ?? ''
+        const nomorAyat = d.nomor_ayat ?? ''
+        isiPoinInstructions.push(`    {
+      "judul": "Judul poin tentang QS. ${surahNama}: ${nomorAyat} (buat judul spesifik yang sesuai dengan pesan ayat ini)",
+      "paragraf": "Bahas dan kupas secara mendalam QS. ${surahNama}: ${nomorAyat} yang berbunyi '${d.terjemah ?? ''}'. Masukkan placeholder [[AYAT:${d.surah_id}:${nomorAyat}]] di dalam teks paragraf ini agar card ayat ter-render. Minimal 4 kalimat penjelasan tafsir/maknanya."
+    }`)
+      })
+      
+      // Poin untuk Hadits
+      haditsList.forEach((r: any, idx: number) => {
+        const d = r.data ?? r
+        const noHadits = d.nomor ?? d.no_hadits ?? d.nomor_hadits ?? d.id ?? ''
+        const perawi = d.perawi ?? ''
+        const atribusi = `HR. ${perawi} No. ${noHadits}`
+        isiPoinInstructions.push(`    {
+      "judul": "Judul poin tentang Hadits Riwayat ${perawi} (buat judul spesifik yang sesuai dengan pesan hadits ini)",
+      "paragraf": "Bahas dan kupas secara mendalam sabda Nabi SAW: '${d.terjemah ?? ''}'. PENTING: DILARANG keras menuliskan rantai sanad perawi panjang (seperti 'Telah menceritakan kepada kami...', 'dari...', dll) ke dalam paragraf. Cukup buat kalimat pembuka halus (seperti 'Dalam hadits riwayat ${perawi} nomor ${noHadits}, Rasulullah SAW bersabda...' atau '...diriwayatkan dari [Sahabat] bahwa Rasulullah SAW bersabda...') diikuti langsung oleh inti sabda/matan haditsnya saja. Kamu WAJIB menyertakan atribusi '${atribusi}' secara eksak dalam kalimat paragraf ini (misalnya: 'HR. ${perawi} No. ${noHadits}'). Minimal 4 kalimat."
+    }`)
+      })
+      
+      // Poin untuk Aplikasi Kehidupan
+      isiPoinInstructions.push(`    {
+      "judul": "Judul poin tentang Aplikasi Praktis Sehari-hari (buat judul spesifik dan menarik)",
+      "paragraf": "Hubungkan seluruh dalil di atas (baik ayat maupun hadits) dengan penerapan praktis, contoh konkret, dan solusi dalam kehidupan nyata sehari-hari kita. Minimal 4 kalimat."
+    }`)
+      
+      // Poin untuk Penutup
+      isiPoinInstructions.push(`    {
+      "judul": "Judul poin penutup (buat judul spesifik yang menginspirasi)",
+      "paragraf": "Kesimpulan penutup kultum yang menyentuh hati, memotivasi jamaah untuk beramal shalih, dan ditutup dengan doa ringkas/ajakan introspeksi. Minimal 4 kalimat."
+    }`)
+      
+      isiStructurePrompt = `[\n${isiPoinInstructions.join(',\n')}\n  ]`
+    } else {
+      // Default structure
+      isiStructurePrompt = `[
+    {
+      "judul": "Judul poin spesifik sesuai konten (bukan 'Poin 1')",
+      "paragraf": "Isi paragraf pembukaan: salam, hamdalah, shalawat, pengantar tema. Sebut referensi QS/HR secara tekstual dalam narasi."
+    },
+    {
+      "judul": "Judul poin spesifik tentang dalil utama",
+      "paragraf": "Penjabaran tema dengan menyebut dalil: 'Allah berfirman dalam QS. X:Y bahwa...' dan [[AYAT:X:Y]] untuk card. Minimal 3 kalimat."
+    },
+    {
+      "judul": "Judul poin spesifik tentang hadits",
+      "paragraf": "Hadits pendukung: 'Rasulullah SAW bersabda dalam HR. Kitab No. X...' Minimal 3 kalimat."
+    },
+    {
+      "judul": "Judul poin spesifik tentang aplikasi",
+      "paragraf": "Aplikasi dalam kehidupan sehari-hari. Minimal 3 kalimat."
+    },
+    {
+      "judul": "Judul poin penutup yang spesifik",
+      "paragraf": "Kesimpulan dan penutup. Minimal 3 kalimat."
+    }
+  ]`
+    }
     
     const referensiSection = refAktif.length > 0 ? `
 ══════════════════════════════════
@@ -484,6 +577,11 @@ Output JSON dengan struktur PERSIS berikut:
 
 ${referensiContext}
 
+ATURAN BAHASA YANG WAJIB DIIKUTI:
+- Ketika merujuk kepada Nabi Muhammad SAW, WAJIB gunakan kata "Beliau" bukan "Dia" atau "Ia"
+- Contoh BENAR: "Beliau bersabda...", "Beliau mengajarkan...", "Beliau mencontohkan..."
+- Contoh SALAH: "Dia bersabda...", "Ia mengajarkan...", "Dia mencontohkan..."
+
 ATURAN KETAT TENTANG HADITS (WAJIB DIPATUHI):
 
 1. Setiap kali menyebut sabda Nabi atau hadits, WAJIB menyertakan 
@@ -505,9 +603,8 @@ ATURAN KETAT TENTANG HADITS (WAJIB DIPATUHI):
    - Berikan refleksi/aplikasi praktis
    DARIPADA mengarang hadits yang tidak jelas sumbernya.
 
-4. Jika SUDAH ADA [HADITS SHAHIH] di referensi yang diberikan, 
-   GUNAKAN itu sebagai sumber utama. Sebut atribusi sesuai yang 
-   diberikan di referensi.
+4. Jika SUDAH ADA [HADITS SHAHIH] atau [HADITS X - WAJIB DISEBUT] di referensi yang diberikan, 
+   GUNAKAN itu sebagai sumber utama. Sebut Atribusi Wajib (misal: "HR. Bukhari No. X") persis seperti yang diberikan di referensi.
 
 5. PENTING: Hadits palsu/dhaif lebih berbahaya daripada tidak ada 
    hadits. Lebih baik khotbah tanpa hadits daripada hadits yang 
@@ -561,11 +658,9 @@ ATURAN AYAT AL-QUR'AN:
 - CONTOH SALAH: [[AYAT:17:2317]], [[AYAT:al_isra:23]]
 
 CARA MENYISIPKAN AYAT & TEKS ARAB YANG BENAR (WAJIB DIPATUHI):
-- Sebutkan referensi dalam narasi/paragraf/teks/isi/pembuka/penjabaran/penekanan_makna/kesimpulan: "Allah berfirman dalam QS. An-Nisa: 1..."
-- Teks Arab dan terjemah akan di-render otomatis oleh sistem
-- JANGAN tulis teks Arab dalam field narasi/paragraf/isi/pembuka/penjabaran/penekanan_makna/kesimpulan
-- Field ayat_pendukung atau ayat_quran sudah ada untuk menampilkan Arab — gunakan itu
-- Dalam field teks/paragraf/isi/pembuka/penjabaran/penekanan_makna/kesimpulan: cukup sebutkan "QS. Surah: ayat" secara tekstual saja tanpa menulis teks Arab
+- Sebutkan referensi dalam narasi/paragraf/teks/isi/pembuka/penjabaran/penekanan_makna/kesimpulan: "Allah berfirman dalam QS. An-Nisa: 1 yang artinya '...'"
+- JANGAN PERNAH MENULIS HURUF/TEKS ARAB DI DALAM PARAGRAF ATAU NARASI APAPUN (pembuka, penjabaran, penekanan, kesimpulan, dll). Teks Arab dan terjemah card akan di-render otomatis oleh sistem.
+- Dalam field teks/paragraf/isi/pembuka/penjabaran/penekanan_makna/kesimpulan: cukup sebutkan "QS. Surah: ayat" dan artinya saja secara tekstual tanpa menulis huruf Arab.
 
 Output JSON dengan struktur PERSIS berikut (WAJIB ikuti nama field):
 {
@@ -574,28 +669,7 @@ Output JSON dengan struktur PERSIS berikut (WAJIB ikuti nama field):
   "tema": "${tema}",
   "durasi_menit": ${targetDurasi},
   "gaya_bahasa": "${gaya_bahasa || 'Semi-Formal'}",
-  "isi": [
-    {
-      "judul": "Judul poin spesifik sesuai konten (bukan 'Poin 1')",
-      "paragraf": "Isi paragraf pembukaan: salam, hamdalah, shalawat, pengantar tema. Sebut referensi QS/HR secara tekstual dalam narasi."
-    },
-    {
-      "judul": "Judul poin spesifik tentang dalil utama",
-      "paragraf": "Penjabaran tema dengan menyebut dalil: 'Allah berfirman dalam QS. X:Y bahwa...' dan [[AYAT:X:Y]] untuk card. Minimal 3 kalimat."
-    },
-    {
-      "judul": "Judul poin spesifik tentang hadits",
-      "paragraf": "Hadits pendukung: 'Rasulullah SAW bersabda dalam HR. Kitab No. X...' Minimal 3 kalimat."
-    },
-    {
-      "judul": "Judul poin spesifik tentang aplikasi",
-      "paragraf": "Aplikasi dalam kehidupan sehari-hari. Minimal 3 kalimat."
-    },
-    {
-      "judul": "Judul poin penutup yang spesifik",
-      "paragraf": "Kesimpulan dan penutup. Minimal 3 kalimat."
-    }
-  ],
+  "isi": ${isiStructurePrompt},
   "penekanan_makna": "Satu paragraf penekanan inti pesan — kalimat kuat yang merangkum esensi tema, bukan ringkasan biasa",
   "kesimpulan": "2-3 paragraf kesimpulan yang mengajak muhasabah dan amal nyata",
   "ajakan_penutup": "Satu kalimat ajakan kuat dan inspiratif yang menjadi pesan utama kultum ini — akan ditampilkan sebagai quote highlight",
@@ -611,6 +685,11 @@ Output JSON dengan struktur PERSIS berikut (WAJIB ikuti nama field):
   "doa_sapu_jagad": "Rabbana atina fid dunya hasanah wa fil akhirati hasanah wa qina azabannar",
   "doa_penutup": "Teks doa penutup kultum dalam bahasa Indonesia/latin saja (setelah doa sapu jagad)"
 }
+
+ATURAN BAHASA YANG WAJIB DIIKUTI:
+- Ketika merujuk kepada Nabi Muhammad SAW, WAJIB gunakan kata "Beliau" bukan "Dia" atau "Ia"
+- Contoh BENAR: "Beliau bersabda...", "Beliau mengajarkan...", "Beliau mencontohkan..."
+- Contoh SALAH: "Dia bersabda...", "Ia mengajarkan...", "Dia mencontohkan..."
 
 ATURAN KETAT TENTANG HADITS (WAJIB DIPATUHI):
 
@@ -633,9 +712,8 @@ ATURAN KETAT TENTANG HADITS (WAJIB DIPATUHI):
    - Berikan refleksi/aplikasi praktis
    DARIPADA mengarang hadits yang tidak jelas sumbernya.
 
-4. Jika SUDAH ADA [HADITS SHAHIH] di referensi yang diberikan, 
-   GUNAKAN itu sebagai sumber utama. Sebut atribusi sesuai yang 
-   diberikan di referensi.
+4. Jika SUDAH ADA [HADITS SHAHIH] atau [HADITS X - WAJIB DISEBUT] di referensi yang diberikan, 
+   GUNAKAN itu sebagai sumber utama. Sebut Atribusi Wajib (misal: "HR. Bukhari No. X") persis seperti yang diberikan di referensi.
 
 5. PENTING: Hadits palsu/dhaif lebih berbahaya daripada tidak ada 
    hadits. Lebih baik kultum tanpa hadits daripada hadits yang 
@@ -659,6 +737,10 @@ ATURAN KETAT TENTANG HADITS (WAJIB DIPATUHI):
    - "Shahih Bukhari, hadits ke-2231"
    Jika tidak ada referensi hadits → SAMA SEKALI tidak boleh menyebut
    nama perawi (Bukhari, Muslim, Tirmidzi, dll) beserta nomor apapun.
+
+8. DILARANG KERAS MENULISKAN/MENYALIN RANTAI SANAD NARRATOR LENGKAP ke dalam paragraf/narasi (seperti: "Telah menceritakan kepada kami [Nama] dari [Nama]... berkata: '...'"). Pembicara ceramah/kultum tidak membaca silsilah perawi panjang ini secara lisan.
+   - Cara mengutip yang BENAR: Cukup buat kalimat pembuka halus, contoh: "Dalam hadits riwayat [Perawi] nomor [Nomor], diriwayatkan dari [Sahabat] bahwa Rasulullah SAW bersabda..." atau "...bahwa Beliau bersabda..." kemudian langsung sambung ke inti sabda/matan hadits tersebut.
+   - Cara mengutip yang SALAH (Jangan lakukan ini): "Dalam hadits riwayat Tirmidzi nomor 1099, disebutkan: 'Telah menceritakan kepada kami Muhammad bin Basyar, telah menceritakan kepada kami Abdurrahman...'"
 
 ATURAN WAJIB:
 - Jumlah item "isi" WAJIB sesuai durasi:
@@ -762,11 +844,9 @@ ATURAN AYAT AL-QUR'AN:
 - CONTOH BENAR: [[AYAT:44:37]], [[AYAT:50:14]]
 
 CARA MENYISIPKAN AYAT & TEKS ARAB YANG BENAR (WAJIB DIPATUHI):
-- Sebutkan referensi dalam narasi/paragraf/teks/penjabaran/penekanan_makna: "Allah berfirman dalam QS. An-Nisa: 1..."
-- Teks Arab dan terjemah akan di-render otomatis oleh sistem
-- JANGAN tulis teks Arab dalam field narasi/paragraf/penjabaran/penekanan_makna/kesimpulan
-- Field ayat_pendukung sudah ada untuk menampilkan Arab — gunakan itu
-- Dalam field teks/paragraf/penjabaran/penekanan_makna/kesimpulan: cukup sebutkan "QS. Surah: ayat" secara tekstual saja tanpa menulis teks Arab
+- Sebutkan referensi dalam narasi/paragraf/penjabaran/penekanan_makna: "Allah berfirman dalam QS. An-Nisa: 1 yang artinya '...'"
+- JANGAN PERNAH MENULIS HURUF/TEKS ARAB DI DALAM PARAGRAF ATAU NARASI APAPUN. Teks Arab dan terjemah card akan di-render otomatis oleh sistem.
+- Dalam field teks/paragraf/penjabaran/penekanan_makna/kesimpulan: cukup sebutkan "QS. Surah: ayat" dan artinya saja secara tekstual tanpa menulis huruf Arab.
 
 Respond ONLY with valid JSON. No markdown, no code fences, no explanation.
 `
@@ -794,7 +874,13 @@ Respond ONLY with valid JSON. No markdown, no code fences, no explanation.
     }
 
     const warningPenekanan = refAktif.length > 0
-      ? `\n\nPERINGATAN: Kamu HANYA boleh menggunakan ${refAktif.length} referensi yang telah ditetapkan. Menambah ayat atau hadits di luar daftar adalah pelanggaran serius. Jumlah referensi di output harus tepat ${refAktif.length}.`
+      ? `\n\n══════════════════════════════════
+PENTING & WAJIB (SEKALI LAGI):
+- Kamu HARUS menyertakan, merujuk, dan membahas SEMUA ${refAktif.length} referensi (baik ayat Al-Qur'an maupun hadits) yang ada di daftar REFERENSI WAJIB di atas ke dalam isi naskah kultum/khotbah. DILARANG melewatkan/skip satu pun!
+- Ketika merujuk hadits di dalam paragraf isi, gunakan Atribusi Wajib yang ditentukan (misalnya: "HR. Bukhari No. 1930") secara eksak agar terdeteksi oleh verifikator.
+- Ketika merujuk ayat Al-Qur'an di dalam paragraf isi, cukup sebutkan nama surah dan nomor ayatnya (misalnya: "QS. Luqman: 13") serta artinya saja, JANGAN tulis huruf Arab-nya.
+- DILARANG keras berhalusinasi membuat atau mengarang nomor/atribusi hadits lain di luar daftar REFERENSI WAJIB di atas!
+══════════════════════════════════`
       : ''
 
     let messages: any[] = []
@@ -820,11 +906,9 @@ LARANGAN KHUSUS DOA PILIHAN:
 - Array ayat_pendukung HANYA boleh berisi ayat Al-Qur'an umum/bukan doa pilihan. Doa pilihan akan dirender secara terpisah oleh sistem dari referensi doa yang dipilih user.
 
 CARA MENYISIPKAN AYAT YANG BENAR:
-- Sebutkan referensi dalam narasi: "Allah berfirman dalam QS. An-Nisa: 1..."
-- Teks Arab dan terjemah akan di-render otomatis oleh sistem
-- JANGAN tulis teks Arab dalam field narasi/paragraf/wasiat_taqwa/isi_utama/isi_ringkas
-- Field ayat_pendukung atau hadits_pendukung sudah ada untuk menampilkan Arab — gunakan itu
-- Dalam field teks/paragraf/isi/wasiat_taqwa/isi_ringkas: cukup sebutkan "QS. Surah: ayat" tanpa Arab
+- Sebutkan referensi dalam narasi: "Allah berfirman dalam QS. An-Nisa: 1 yang artinya '...'"
+- JANGAN PERNAH MENULIS HURUF/TEKS ARAB DI DALAM PARAGRAF ATAU NARASI APAPUN. Teks Arab dan terjemah card akan di-render otomatis oleh sistem.
+- Dalam field teks/paragraf/isi/wasiat_taqwa/isi_ringkas: cukup sebutkan "QS. Surah: ayat" dan artinya saja tanpa menulis huruf Arab.
 
 PAKEM WAJIB KHOTBAH JUM'AT:
 Khotbah terdiri dari DUA khotbah terpisah dengan jeda duduk di antaranya.
@@ -1087,7 +1171,7 @@ WAJIB: tidak ada duplikasi konten antar section.`
               ].join('\n\n')
               
               // Jalankan verifikasi
-              const hasilVerifikasi = await jalankanVerifikasiHadits(narasiGabungan)
+              const hasilVerifikasi = await jalankanVerifikasiHadits(narasiGabungan, origin)
               
               // SEMENTARA log hasil verifikasi
               console.log('=== HASIL VERIFIKASI ===')
@@ -1324,6 +1408,11 @@ nomor_ayat = angka ayat saja (BUKAN gabungan surah+ayat)
 CONTOH BENAR: [[AYAT:22:78]] → Surah Al-Hajj ayat 78
 CONTOH SALAH: [[AYAT:22:2278]] atau [[AYAT:1813]]
 
+ATURAN BAHASA YANG WAJIB DIIKUTI:
+- Ketika merujuk kepada Nabi Muhammad SAW, WAJIB gunakan kata "Beliau" bukan "Dia" atau "Ia"
+- Contoh BENAR: "Beliau bersabda...", "Beliau mengajarkan...", "Beliau mencontohkan..."
+- Contoh SALAH: "Dia bersabda...", "Ia mengajarkan...", "Dia mencontohkan..."
+
 ATURAN KETAT TENTANG HADITS (WAJIB DIPATUHI):
 
 1. Setiap kali menyebut sabda Nabi atau hadits, WAJIB menyertakan 
@@ -1345,9 +1434,8 @@ ATURAN KETAT TENTANG HADITS (WAJIB DIPATUHI):
    - Berikan refleksi/aplikasi praktis
    DARIPADA mengarang hadits yang tidak jelas sumbernya.
 
-4. Jika SUDAH ADA [HADITS SHAHIH] di referensi yang diberikan, 
-   GUNAKAN itu sebagai sumber utama. Sebut atribusi sesuai yang 
-   diberikan di referensi.
+4. Jika SUDAH ADA [HADITS SHAHIH] atau [HADITS X - WAJIB DISEBUT] di referensi yang diberikan, 
+   GUNAKAN itu sebagai sumber utama. Sebut Atribusi Wajib (misal: "HR. Bukhari No. X") persis seperti yang diberikan di referensi.
 
 5. PENTING: Hadits palsu/dhaif lebih berbahaya daripada tidak ada 
    hadits. Lebih baik khotbah tanpa hadits daripada hadits yang 
@@ -1444,7 +1532,7 @@ Respond ONLY with valid JSON. No markdown, no code fences, no explanation outsid
       ].join('\n\n')
       
       // Jalankan verifikasi
-      const hasilVerifikasi = await jalankanVerifikasiHadits(narasiGabungan)
+      const hasilVerifikasi = await jalankanVerifikasiHadits(narasiGabungan, origin)
       
       // SEMENTARA log hasil verifikasi
       console.log('=== HASIL VERIFIKASI KHOTBAH ===')

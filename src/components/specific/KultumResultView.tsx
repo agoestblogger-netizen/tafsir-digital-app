@@ -446,6 +446,47 @@ export function KultumResultView({
               </div>
             )}
 
+            {/* 6.5 Isi Interleaved (format baru dengan referensi_id) */}
+            {((konten.bagian as any)?.isi ?? []).length > 0 && (
+              <div id="row-isi-interleaved" className="space-y-6">
+                {((konten.bagian as any)?.isi ?? []).map((poin: any, i: number) => {
+                  const matchedRef = poin.referensi_id
+                    ? (referensiDipilih ?? []).find((r: any) => r.id === poin.referensi_id)
+                    : null
+                  const d = matchedRef?.data
+                  return (
+                    <div key={i} className="space-y-4">
+                      {matchedRef && matchedRef.type === 'ayat_quran_db' && d?.teks_arab && (
+                        <div className="bg-[var(--dark2)] border border-blue-500/30 rounded-2xl p-6">
+                          <div className="text-3xl leading-loose text-right text-[var(--gold-light)] font-amiri" dir="rtl">{d.teks_arab}</div>
+                          <div className="text-sm italic text-right text-[var(--teal-200)] mt-2">{d.teks_latin}</div>
+                          <div className="w-full h-px bg-gradient-to-r from-transparent via-[var(--gold-border)] to-transparent opacity-50 my-4" />
+                          <div className="text-[var(--text1)] text-base leading-relaxed">&quot;{d.terjemah}&quot;</div>
+                          <div className="pt-3 border-t border-[var(--dark3)]">
+                            <span className="text-xs font-bold bg-[var(--dark)] px-3 py-1 rounded-full text-[var(--gold)] border border-[var(--gold-border)]">{matchedRef.judul}</span>
+                          </div>
+                        </div>
+                      )}
+                      {matchedRef && matchedRef.type === 'hadits' && d?.arab && (
+                        <div className="bg-[var(--dark2)] border border-emerald-500/30 rounded-2xl p-6">
+                          <div className="text-3xl leading-loose text-right text-[var(--gold-light)] font-amiri" dir="rtl">{d.arab}</div>
+                          <div className="w-full h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent opacity-50 my-4" />
+                          <div className="text-[var(--text1)] text-base leading-relaxed">&quot;{d.terjemah}&quot;</div>
+                          <div className="pt-3 border-t border-[var(--dark3)]">
+                            <span className="text-xs font-bold bg-[var(--dark)] px-3 py-1 rounded-full text-emerald-400 border border-emerald-500/30">{matchedRef.judul}</span>
+                          </div>
+                        </div>
+                      )}
+                      <div className="bg-[var(--dark2)] border border-[var(--dark3)] rounded-2xl p-6">
+                        <h3 className="font-bold text-[var(--gold)] mb-3">{poin.judul}</h3>
+                        <p className="text-[var(--text1)] leading-relaxed">{poin.paragraf ?? poin.isi}</p>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
             {/* 7. Poin Utama */}
             {(konten.bagian?.poin_utama ?? []).length > 0 && (
               <div id="row-poin_utama">

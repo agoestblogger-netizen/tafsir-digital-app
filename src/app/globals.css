@@ -15,6 +15,11 @@
    CSS VARIABLES — Dark Forest Theme
    ============================================================ */
 :root {
+  /* Theme variables requested */
+  --bg1:         #060d12;
+  --bg2:         #0a1520;
+  --forest-green:#0A6B4F;
+
   /* Dark backgrounds */
   --dark:        #060d12;
   --dark2:       #0a1520;

@@ -35,6 +35,32 @@ const toStr = (val: any): string => {
   return String(val)
 }
 
+function stripSanad(terjemah: string): string {
+  if (!terjemah) return ''
+
+  let result = terjemah
+
+  // 1. Hapus sanad perawi di AWAL saja
+  //    Pola: 'Telah menceritakan ... [Nama] ... dia berkata;'
+  //    Hanya potong jika diawali 'Telah/Dan telah menceritakan'
+  const awalMatch = result.match(
+    /^(?:Dan\s+)?[Tt]elah\s+(?:menceritakan|mengabarkan|memberitahukan)\s+kepada\s+kami[\s\S]*?(?:dia\s+berkata\s*[;:]|ia\s+berkata\s*[;:])/
+  )
+  if (awalMatch && awalMatch[0].length > 30) {
+    const sisa = result.slice(awalMatch[0].length).trim()
+    if (sisa.length > 30) result = sisa
+  }
+
+  // 2. Hapus sanad jalur KEDUA di tengah/akhir
+  //    Muncul setelah matan selesai: 'Dan telah menceritakan kepada kami [X]...'
+  result = result
+    .replace(/\s*Dan telah\s+(?:menceritakan|mengabarkan|memberitahukan)\s+kepada\s+kami[\s\S]*/i, '')
+    .replace(/\s*semakna dengan hadits[\s\S]*/i, '')
+    .replace(/\s*dengan makna yang serupa[\s\S]*/i, '')
+
+  return result.trim() || terjemah
+}
+
 const KATA_PER_MENIT = 140
 
 const hitungKataStr = (val: any): number => {
@@ -406,7 +432,7 @@ export function KultumResultView({
                         </div>
                         <div className="w-full h-px bg-gradient-to-r from-transparent via-[var(--gold-border)] to-transparent opacity-50 my-4" />
                         <div className="text-[var(--text1)] text-base leading-relaxed">
-                          &quot;{toStr(hadits.terjemah)}&quot;
+                          &quot;{stripSanad(toStr(hadits.terjemah))}&quot;
                         </div>
                         <div className="pt-3 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--dark3)]">
                           <span className="text-xs font-bold bg-[var(--dark)] px-3 py-1 rounded-full text-[var(--gold)] border border-[var(--gold-border)]">
@@ -602,7 +628,7 @@ export function KultumResultView({
                           </span>
                         </div>
                         <h4 className="font-cinzel text-sm font-bold text-[var(--text1)] mb-1">{toStr(ref.judul)}</h4>
-                        <p className="font-cairo text-xs text-[var(--text2)] leading-relaxed">{toStr(ref.deskripsi_singkat)}</p>
+                        <p className="font-cairo text-xs text-[var(--text2)] leading-relaxed">{ref.type === 'hadits' ? stripSanad(toStr(ref.deskripsi_singkat)) : toStr(ref.deskripsi_singkat)}</p>
                       </div>
                     )
                   })}

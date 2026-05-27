@@ -100,48 +100,87 @@ Jawab HANYA JSON array, tidak ada teks lain.`
 
     const queryEmbedding = await queryEmbeddingPromise
 
-    // Step 4, 5, 6, 7 & 8: Calculate similarity and format results
-    const results: any[] = []
+    // Step 4–8: Calculate similarity in parallel, then enrich passing hadits with GPT
+    const candidateResults = await Promise.all(
+      fetchedHaditsList
+        .filter(h => h.id && h.id.trim().length > 0)
+        .map(async (h) => {
+          try {
+            const matanEmbedding = await getEmbedding(h.id)
+            const similarity = cosineSimilarity(queryEmbedding, matanEmbedding)
+            console.log(`[Hadits External] Similarity for ${h.perawi}/${h.nomor}:`, similarity.toFixed(4))
+            if (similarity < 0.20) return null
+            return { h, similarity }
+          } catch (err) {
+            console.error(`[Hadits External] Embedding/similarity error for ${h.perawi}/${h.nomor}:`, err)
+            return null
+          }
+        })
+    )
 
-    for (const h of fetchedHaditsList) {
-      if (!h.id || h.id.trim().length === 0) continue
+    const passing = candidateResults.filter((r): r is NonNullable<typeof r> => r !== null)
 
-      try {
-        const matanEmbedding = await getEmbedding(h.id)
-        const similarity = cosineSimilarity(queryEmbedding, matanEmbedding)
-        
-        console.log(`[Hadits External] Similarity for ${h.perawi}/${h.nomor}:`, similarity.toFixed(4))
+    // Enrich each passing hadits with GPT-generated ringkasan/pelajaran/aplikasi in parallel
+    const enriched = await Promise.all(
+      passing.map(async ({ h, similarity }) => {
+        const capitalizedPerawi = h.perawi.charAt(0).toUpperCase() + h.perawi.slice(1)
+        const fallbackSingkat = h.id.slice(0, 120) + '...'
 
-        if (similarity >= 0.20) {
-          const capitalizedPerawi = h.perawi.charAt(0).toUpperCase() + h.perawi.slice(1)
-          
-          results.push({
-            id: `ext-${h.perawi}-${h.nomor}`,
-            type: 'hadits' as const,
-            judul: `Hadits (${capitalizedPerawi}) — No. ${h.nomor} (Eksternal)`,
-            deskripsi_singkat: h.id.slice(0, 120) + '...',
-            relevansi_score: Math.round(similarity * 100),
-            data: {
-              id: `ext-${h.perawi}-${h.nomor}`,
-              arab: h.arab,
-              matan: h.arab,
-              terjemah: h.id,
-              perawi: h.perawi,
-              nomor: String(h.nomor),
-              topik_nama: `Hadits Eksternal ${capitalizedPerawi}`,
-              tags: [],
-              konteks_hadits: { ringkasan: h.id.slice(0, 120) + '...' },
-              similarity: similarity,
-              sumber: 'external'
-            }
+        let ringkasan = fallbackSingkat
+        let pelajaran = ''
+        let aplikasi = ''
+
+        try {
+          const enrichPrompt = `Dari terjemah hadits berikut, berikan dalam JSON:
+{
+  "ringkasan": "1 kalimat inti pesan hadits tanpa menyebut sanad/perawi",
+  "pelajaran": "1 kalimat pelajaran",
+  "aplikasi": "1 kalimat penerapan praktis"
+}
+Terjemah: ${h.id}
+Jawab HANYA JSON, tidak ada teks lain.`
+
+          const enrichResp = await openai.chat.completions.create({
+            model: 'gpt-4o-mini',
+            messages: [{ role: 'user', content: enrichPrompt }],
+            response_format: { type: 'json_object' },
+            max_tokens: 150,
+            temperature: 0.3,
           })
-        }
-      } catch (err) {
-        console.error(`[Hadits External] Error processing embedding/similarity for ${h.perawi}/${h.nomor}:`, err)
-      }
-    }
 
-    return results
+          const raw = enrichResp.choices[0]?.message?.content ?? '{}'
+          const parsed = JSON.parse(raw.trim())
+          ringkasan = parsed.ringkasan ?? fallbackSingkat
+          pelajaran = parsed.pelajaran ?? ''
+          aplikasi = parsed.aplikasi ?? ''
+        } catch (gpterr) {
+          console.warn(`[Hadits External] GPT enrich failed for ${h.perawi}/${h.nomor}, using fallback:`, gpterr)
+        }
+
+        return {
+          id: `ext-${h.perawi}-${h.nomor}`,
+          type: 'hadits' as const,
+          judul: `Hadits (${capitalizedPerawi}) — No. ${h.nomor} (Eksternal)`,
+          deskripsi_singkat: ringkasan,
+          relevansi_score: Math.round(similarity * 100),
+          data: {
+            id: `ext-${h.perawi}-${h.nomor}`,
+            arab: h.arab,
+            matan: h.arab,
+            terjemah: h.id,
+            perawi: h.perawi,
+            nomor: String(h.nomor),
+            topik_nama: `Hadits Eksternal ${capitalizedPerawi}`,
+            tags: [],
+            konteks_hadits: { ringkasan, pelajaran, aplikasi },
+            similarity,
+            sumber: 'external',
+          },
+        }
+      })
+    )
+
+    return enriched
 
   } catch (err) {
     console.error('[Hadits External] Main workflow error:', err)

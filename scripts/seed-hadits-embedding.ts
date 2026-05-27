@@ -30,7 +30,7 @@ async function sleep(ms: number) {
 async function seedHaditsEmbeddings() {
   console.log('🚀 Mulai seed embedding hadits...')
 
-  const FORCE_RESEED = true
+  const FORCE_RESEED = false
 
   const query = supabase
     .from('hadits_topik_index')
@@ -75,7 +75,7 @@ async function seedHaditsEmbeddings() {
             tagsStr ? `Tema terkait: ${tagsStr}` : '',
             konteks?.ringkasan ? `Ringkasan: ${konteks.ringkasan}` : '',
             konteks?.pelajaran ? `Pelajaran: ${konteks.pelajaran}` : '',
-            `Isi hadits: ${hadits.terjemah ?? hadits.matan ?? ''}`
+            `Isi hadits: ${(hadits.terjemah ?? hadits.matan ?? '').slice(0, 1500)}`
           ].filter(Boolean).join('. ')
 
           const embedding = await generateEmbedding(inputText)

@@ -34,7 +34,7 @@ export async function POST(req: Request) {
       }),
       supabaseAdmin.rpc('match_hadits', {
         query_embedding: embedding,
-        match_threshold: 0.45,
+        match_threshold: 0.35,
         match_count: 5
       }),
       searchHaditsExternal(query.trim()).catch(err => {

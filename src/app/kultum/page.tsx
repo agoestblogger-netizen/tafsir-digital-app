@@ -163,12 +163,14 @@ function KultumGeneratorInner() {
   })()
 
   const loadingSteps = [
-    { icon: '📖', text: `Menganalisa tema ${formatLabel}...`, delay: 0 },
-    { icon: '🔍', text: 'Mencari ayat Al-Qur\'an yang relevan...', delay: 2000 },
-    { icon: '📜', text: 'Mencari hadits pendukung...', delay: 5000 },
-    { icon: '✍️', text: `Menyusun struktur ${formatLabel}...`, delay: 10000 },
-    { icon: '✨', text: `Menyempurnakan ${formatLabel}...`, delay: 20000 },
+    { icon: '🔍', title: 'Membaca Referensi', text: 'Membaca referensi yang dipilih...' },
+    { icon: '🧩', title: 'Menganalisa Makna', text: 'Menganalisa makna dan konteks...' },
+    { icon: '✍️', title: 'Menyusun Struktur', text: `Menyusun struktur ${formatLabel.toLowerCase()}...` },
+    { icon: '📖', title: 'Menulis Naskah', text: `Menulis naskah ${formatLabel.toLowerCase()}...` },
+    { icon: '✨', title: 'Finalisasi', text: 'Menyelesaikan dan memverifikasi...' },
   ]
+  // Step durations: 3s, 3s, 8s, 8s, sampai API selesai
+  const STEP_DELAYS = [0, 3000, 6000, 14000, 22000]
 
   useEffect(() => {
     const supabase = createClient()
@@ -334,10 +336,12 @@ function KultumGeneratorInner() {
     setLoading(true)
     setLoadingStep(0)
 
-    // Start loading steps animation
-    const stepTimers = loadingSteps.map((step, i) =>
-      setTimeout(() => setLoadingStep(i), step.delay)
-    )
+    // Timer-based step progression (bukan berdasarkan API response)
+    const stepTimers: ReturnType<typeof setTimeout>[] = []
+    STEP_DELAYS.forEach((delay, i) => {
+      if (i === 0) return // step 0 langsung dari setLoadingStep(0)
+      stepTimers.push(setTimeout(() => setLoadingStep(i), delay))
+    })
 
     // Saat build payload — gunakan referensiDipilih langsung (sudah flat array):
     const payload = {
@@ -444,6 +448,114 @@ function KultumGeneratorInner() {
 
   return (
     <div className="min-h-screen pb-24 font-cairo">
+
+      {/* ===== FULLSCREEN LOADING OVERLAY ===== */}
+      {loading && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+          style={{ background: 'rgba(6,13,18,0.97)', backdropFilter: 'blur(12px)' }}
+        >
+          {/* Radial forest glow in background */}
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background: 'radial-gradient(ellipse 60% 50% at 50% 60%, rgba(10,107,79,0.18) 0%, transparent 70%)'
+            }}
+          />
+
+          <div
+            className="relative w-full max-w-lg rounded-2xl p-8 shadow-2xl"
+            style={{
+              background: 'rgba(10,21,32,0.97)',
+              border: '1px solid rgba(201,163,90,0.30)',
+            }}
+          >
+            {/* Title */}
+            <div className="text-center mb-7">
+              <h2 className="font-cinzel text-xl font-bold tracking-widest" style={{ color: 'var(--gold-light)' }}>
+                Menyusun {formatLabel}
+              </h2>
+              <p className="font-cairo text-xs mt-1" style={{ color: 'var(--text2)' }}>
+                AI sedang bekerja — mohon tunggu sebentar
+              </p>
+            </div>
+
+            {/* Progress bar */}
+            <div
+              className="w-full h-2 rounded-full mb-8 overflow-hidden"
+              style={{ background: 'rgba(255,255,255,0.06)' }}
+            >
+              <div
+                className="h-full rounded-full transition-all duration-700 ease-out"
+                style={{
+                  width: `${Math.round(((loadingStep + 1) / loadingSteps.length) * 100)}%`,
+                  background: 'linear-gradient(90deg, var(--forest-green, #0A6B4F), var(--gold-light, #E8C46A))',
+                  boxShadow: '0 0 12px rgba(201,163,90,0.5)',
+                }}
+              />
+            </div>
+
+            {/* Steps list */}
+            <div className="space-y-3">
+              {loadingSteps.map((step, idx) => {
+                const isPast = loadingStep > idx
+                const isCurrent = loadingStep === idx
+                return (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-4 rounded-xl px-4 py-3 transition-all duration-500"
+                    style={{
+                      opacity: isPast ? 0.75 : isCurrent ? 1 : 0.28,
+                      background: isCurrent ? 'rgba(201,163,90,0.07)' : 'transparent',
+                      border: isCurrent ? '1px solid rgba(201,163,90,0.25)' : '1px solid transparent',
+                    }}
+                  >
+                    {/* Icon */}
+                    <div
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0 transition-all duration-300 ${isCurrent ? 'animate-pulse' : ''}`}
+                      style={{
+                        background: isPast
+                          ? 'rgba(10,107,79,0.20)'
+                          : isCurrent
+                          ? 'rgba(201,163,90,0.18)'
+                          : 'rgba(14,30,42,0.8)',
+                        border: isPast
+                          ? '1px solid rgba(10,107,79,0.40)'
+                          : isCurrent
+                          ? '1px solid rgba(201,163,90,0.50)'
+                          : '1px solid transparent',
+                        color: isPast ? '#4DC99A' : isCurrent ? 'var(--gold-light)' : 'var(--text3)',
+                      }}
+                    >
+                      {isPast ? '✓' : step.icon}
+                    </div>
+
+                    {/* Text */}
+                    <div className="flex-1 min-w-0">
+                      <p
+                        className="font-cinzel text-xs font-bold uppercase tracking-wider truncate"
+                        style={{ color: isPast ? 'var(--teal-300, #1aaa78)' : isCurrent ? 'var(--gold-light)' : 'var(--text3)' }}
+                      >
+                        {step.title}
+                      </p>
+                      <p className="font-cairo text-sm truncate" style={{ color: 'var(--text2)' }}>
+                        {step.text}
+                      </p>
+                    </div>
+
+                    {/* Status badge */}
+                    <div className="font-cairo text-[10px] uppercase tracking-widest font-bold shrink-0 hidden sm:block">
+                      {isPast && <span style={{ color: '#4DC99A' }}>Selesai</span>}
+                      {isCurrent && <span className="animate-pulse" style={{ color: 'var(--gold)' }}>Memproses</span>}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-[var(--dark3)] to-[var(--dark)] pt-20 pb-12 px-4 sm:px-6 lg:px-8 border-b border-[var(--gold-border)]">
         <div className="arabesque-bg opacity-30"></div>
@@ -464,33 +576,7 @@ function KultumGeneratorInner() {
         
         {/* Form Generator */}
         <section className="glass-card p-6 md:p-8 rounded-[2rem] border-[var(--gold-border)] relative overflow-hidden">
-          {loading && (
-            <div className="absolute inset-0 z-50 bg-[var(--dark)]/80 backdrop-blur-sm flex flex-col items-center justify-center p-6">
-              <div className="w-full max-w-md bg-[var(--dark2)] border border-[var(--gold-border)] rounded-3xl p-6 shadow-2xl">
-                <div className="flex justify-center mb-6">
-                  <div className="w-16 h-16 border-4 border-[var(--dark3)] border-t-[var(--gold)] rounded-full animate-spin"></div>
-                </div>
-                <h3 className="font-cinzel text-xl font-bold text-[var(--gold-light)] text-center mb-6">Menyusun {formatLabel}...</h3>
-                
-                <div className="space-y-4">
-                  {loadingSteps.map((step, idx) => {
-                    const isPast = loadingStep > idx
-                    const isCurrent = loadingStep === idx
-                    return (
-                      <div key={idx} className={`flex items-center gap-3 transition-all duration-500 ${isPast ? 'opacity-100' : isCurrent ? 'opacity-100' : 'opacity-30'}`}>
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${isPast ? 'bg-[var(--teal-500)]/20 text-[var(--teal-300)]' : isCurrent ? 'bg-[var(--gold)]/20 text-[var(--gold)] animate-pulse' : 'bg-[var(--dark3)] text-[var(--text3)]'}`}>
-                          {isPast ? <CheckCircle className="w-5 h-5" /> : step.icon}
-                        </div>
-                        <span className={`font-cairo text-sm font-medium ${isCurrent ? 'text-[var(--text1)]' : 'text-[var(--text2)]'}`}>
-                          {step.text}
-                        </span>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            </div>
-          )}
+
 
           <div className="space-y-8">
             {error && (

@@ -1,9 +1,10 @@
 'use client'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { getMustajab, HAJAT_INFO, TemaHajat, DOA_QURANI, NABI_LIST } from '@/data/doa_qurani'
-import { ArrowRight, BookOpen, Search, Heart, Sparkles, Shield, User, HeartHandshake } from 'lucide-react'
+import { ArrowRight, BookOpen, Search, Heart, Sparkles, Shield, User, HeartHandshake, ChevronDown, ChevronUp } from 'lucide-react'
 import { useRestoreScroll } from '@/hooks/useScrollRestore'
+import { createClient } from '@/lib/supabase/client'
 
 // Icon mapping for categories
 const CATEGORY_CARDS = [
@@ -13,14 +14,121 @@ const CATEGORY_CARDS = [
   { id: 'semua', title: 'Semua Doa', icon: <Sparkles className="w-6 h-6" />, desc: 'Jelajahi seluruh koleksi doa dalam Al-Qur&apos;an', count: DOA_QURANI.length, color: 'from-purple-500/20 to-purple-700/20', borderColor: 'border-purple-500/30' },
 ]
 
+function derajatBadge(derajat: string | null) {
+  if (!derajat) return null
+  const d = derajat.toLowerCase()
+  let cls = ''
+  if (d.includes('shahih') && d.includes('hasan')) cls = 'bg-cyan-500/15 border-cyan-500/30 text-cyan-300'
+  else if (d.includes('shahih')) cls = 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
+  else if (d.includes('hasan')) cls = 'bg-blue-500/15 border-blue-500/30 text-blue-300'
+  else cls = 'bg-[var(--gold)]/10 border-[var(--gold-border)] text-[var(--gold-light)]'
+  return (
+    <span className={`font-cairo text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full border font-semibold ${cls}`}>
+      {derajat}
+    </span>
+  )
+}
+
+function DoaMasterCard({ doa }: { doa: any }) {
+  const [expanded, setExpanded] = useState(false)
+  return (
+    <div className="glass-card rounded-2xl border border-[var(--gold-border)]/40 p-5 flex flex-col gap-3 transition-all hover:border-[var(--gold)]/40">
+      {/* Header */}
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <h3 className="font-cinzel text-sm font-bold text-[var(--gold-light)] leading-snug flex-1">
+          {doa.judul}
+        </h3>
+        <div className="flex items-center gap-2 flex-wrap">
+          {doa.waktu_baca && (
+            <span className="font-cairo text-[10px] px-2 py-0.5 rounded-full border border-[var(--gold-border)]/40 text-[var(--text3)] bg-[var(--dark3)]">
+              🕐 {doa.waktu_baca}
+            </span>
+          )}
+          {derajatBadge(doa.derajat)}
+        </div>
+      </div>
+
+      {/* Arab */}
+      {doa.arab && (
+        <p className="font-amiri text-2xl leading-loose text-[var(--gold-light)] text-right" dir="rtl">
+          {doa.arab}
+        </p>
+      )}
+
+      {/* Latin */}
+      {doa.latin && (
+        <p className="font-cairo text-sm italic text-[var(--teal-200)] leading-relaxed">
+          {doa.latin}
+        </p>
+      )}
+
+      {/* Terjemah */}
+      {doa.terjemah && (
+        <p className="font-cairo text-sm text-[var(--text1)] leading-relaxed">
+          &ldquo;{doa.terjemah}&rdquo;
+        </p>
+      )}
+
+      {/* Referensi & Sumber */}
+      {(doa.referensi || doa.sumber_kitab) && (
+        <div className="flex items-center gap-3 flex-wrap pt-1 border-t border-[var(--gold-border)]/20">
+          {doa.referensi && (
+            <span className="font-cairo text-xs text-[var(--text3)]">📚 {doa.referensi}</span>
+          )}
+          {doa.sumber_kitab && (
+            <span className="font-cairo text-xs text-[var(--text3)]">— {doa.sumber_kitab}</span>
+          )}
+        </div>
+      )}
+
+      {/* Keutamaan (collapsible) */}
+      {doa.keutamaan && (
+        <div>
+          <button
+            type="button"
+            onClick={() => setExpanded(p => !p)}
+            className="font-cairo text-xs flex items-center gap-1.5 text-[var(--teal-200)] hover:text-[var(--teal-100)] transition-colors"
+          >
+            {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            ℹ️ {expanded ? 'Sembunyikan keutamaan' : 'Lihat keutamaan'}
+          </button>
+          {expanded && (
+            <div className="mt-2 px-3 py-2 rounded-lg bg-[var(--dark3)]/60 border border-[var(--gold-border)]/20">
+              <p className="font-cairo text-xs text-[var(--text2)] leading-relaxed">{doa.keutamaan}</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function DoaPage() {
   useRestoreScroll()
   const mustajabList = getMustajab()
-  // Use a stable random based on the current date, to avoid hydration mismatch
-  // However, in SSR nextjs, we can't reliably use Date.now() if it's rendered on server vs client.
-  // For simplicity, we just use a fixed seed based on today's date if we want it to change daily.
-  // Pilih doa pertama yang mustajab sebagai 'Doa Pilihan Hari Ini' (Bisa di-randomisasi jika diperlukan)
   const doaHariIni = mustajabList[0]
+
+  const [doaMaster, setDoaMaster] = useState<any[]>([])
+  const [loadingDoaMaster, setLoadingDoaMaster] = useState(false)
+
+  useEffect(() => {
+    const fetchDoaMaster = async () => {
+      setLoadingDoaMaster(true)
+      try {
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from('doa_master')
+          .select('id, judul, arab, latin, terjemah, referensi, sumber_kitab, keutamaan, waktu_baca, derajat, tema_kultum')
+          .order('id')
+        if (!error && data) setDoaMaster(data)
+      } catch (err) {
+        console.error('[DoaMaster] fetch error:', err)
+      } finally {
+        setLoadingDoaMaster(false)
+      }
+    }
+    fetchDoaMaster()
+  }, [])
 
   return (
     <div className="min-h-screen pb-24 font-cairo">
@@ -76,7 +184,6 @@ export default function DoaPage() {
             
             <Link href={`/doa/${doaHariIni.id}`} className="block group">
               <div className="glass-card p-6 md:p-8 rounded-3xl relative overflow-hidden transition-all duration-300 hover:shadow-[0_8px_32px_rgba(201,163,90,0.15)] hover:border-[var(--gold-light)]">
-                {/* Background glow */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/10 rounded-full blur-3xl -z-10 group-hover:bg-rose-500/20 transition-all duration-500"></div>
                 
                 <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
@@ -173,6 +280,43 @@ export default function DoaPage() {
             {/* Spacer agar chip terakhir tidak terpotong */}
             <div className="flex-shrink-0 w-6" />
           </div>
+        </section>
+
+        {/* ===== SECTION: Doa Hisnul Muslim ===== */}
+        <section className="pb-8">
+          <div className="flex items-center gap-2 mb-2">
+            <Shield className="w-5 h-5 text-emerald-400" />
+            <h2 className="font-cinzel text-xl font-bold text-[var(--text1)]">📖 Doa Hisnul Muslim (Shahih)</h2>
+          </div>
+          <p className="font-cairo text-sm text-[var(--text2)] mb-6">
+            Kumpulan doa shahih dari kitab Hisnul Muslim karya Sa&apos;id Al-Qahtani
+          </p>
+
+          {loadingDoaMaster ? (
+            /* Skeleton loader */
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="glass-card rounded-2xl border border-[var(--gold-border)]/30 p-5 flex flex-col gap-3 animate-pulse">
+                  <div className="h-4 bg-[var(--dark3)] rounded w-2/3" />
+                  <div className="h-10 bg-[var(--dark3)] rounded w-full" />
+                  <div className="h-3 bg-[var(--dark3)] rounded w-1/2" />
+                  <div className="h-3 bg-[var(--dark3)] rounded w-3/4" />
+                </div>
+              ))}
+            </div>
+          ) : doaMaster.length === 0 ? (
+            <div className="glass-card rounded-2xl border border-dashed border-[var(--gold-border)]/30 p-10 text-center">
+              <p className="font-cairo text-sm text-[var(--text3)] italic">
+                🌙 Segera hadir — koleksi doa sedang dikurasi
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {doaMaster.map(doa => (
+                <DoaMasterCard key={doa.id} doa={doa} />
+              ))}
+            </div>
+          )}
         </section>
 
       </div>

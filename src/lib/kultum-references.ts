@@ -257,7 +257,9 @@ export function cariDoaQurani(tema: string): KultumReferensi[] {
     if (!doa || !doa.judul) continue
 
     const haystack = [
-      doa.judul, doa.nabi, doa.konteks, doa.keutamaan
+      doa.judul, doa.nabi, doa.konteks, doa.keutamaan,
+      ...(doa.tema_hajat ?? []),
+      ...(doa.tags ?? [])
     ].filter(Boolean).join(' ').toLowerCase()
 
     // Cek relevansi
@@ -307,7 +309,7 @@ export async function cariSemuaReferensi(
   // Fetch paralel: hadits + dataset lokal
   const [haditsRefs] = await Promise.all([cariReferensiHadits(tema, semanticExpanded)])
   const datasetRefs = cariReferensiDataset(tema, keywords, options)
-  const doaRefs: KultumReferensi[] = [] // local doa no longer needed, it's inside haditsRefs
+  const doaRefs: KultumReferensi[] = cariDoaQurani(tema) // doa dari data lokal
 
   // Upgrade kisah kaum_lampau — fetch data lengkap dari Supabase
   const upgradedDatasetRefs = await Promise.all(

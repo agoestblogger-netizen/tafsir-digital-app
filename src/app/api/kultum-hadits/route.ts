@@ -113,12 +113,12 @@ export async function POST(req: Request) {
       match_count: 10
     }),
     
-    // Doa — text search, tidak perlu embedding
-    supabaseAdmin
-      .from('doa_qurani')
-      .select('*')
-      .or(`tema_hajat.cs.{"${queryText}"},judul.ilike.%${queryText}%,tags.cs.{"${queryText}"}`)
-      .limit(3)
+    // Doa — semantic search dari doa_master
+    supabaseAdmin.rpc('match_doa', {
+      query_embedding: embedding,
+      match_threshold: 0.35,
+      match_count: 3
+    })
   ])
 
   const ayatData = ayatResult.data ?? []
@@ -181,12 +181,25 @@ export async function POST(req: Request) {
 
   // Format Doa
   const doaFormatted = doaData.map((d: any) => ({
-    id: d.id,
+    id: d.id ?? `doa-${d.judul}`,
     type: 'doa_quran',
     judul: d.judul,
-    deskripsi_singkat: d.konteks ?? (d.terjemah ?? '').slice(0, 120) + '...',
-    relevansi_score: 85, // Default score for text match
-    data: d
+    deskripsi_singkat: d.keutamaan 
+      ? d.keutamaan.slice(0, 120) + '...'
+      : (d.terjemah ?? '').slice(0, 120) + '...',
+    relevansi_score: d.similarity ? Math.round(d.similarity * 100) : 80,
+    data: {
+      ...d,
+      arab: d.arab,
+      latin: d.latin,
+      terjemah: d.terjemah,
+      referensi: d.referensi,
+      sumber_kitab: d.sumber_kitab,
+      keutamaan: d.keutamaan,
+      waktu_baca: d.waktu_baca,
+      derajat: d.derajat,
+      tema_kultum: d.tema_kultum
+    }
   }))
 
   // Format Ayat

@@ -90,9 +90,9 @@ function KultumGeneratorInner() {
   const [loadingReferensi, setLoadingReferensi] = useState(false)
   const [referensiDipilih, setReferensiDipilih] = useState<KultumReferensi[]>([])
   const [expandedRef, setExpandedRef] = useState<string | null>(null)
-  const [showSemuaReferensi, setShowSemuaReferensi] = useState(false)
+  const [visibleCount, setVisibleCount] = useState(8)
   const [filterTipe, setFilterTipe] = useState<string>('semua')
-  const PER_TIPE_AWAL = 5
+  const LOAD_MORE_INCREMENT = 8
 
   const handleToggleExpand = (id: string) => {
     setExpandedRef(prev => {
@@ -258,8 +258,7 @@ function KultumGeneratorInner() {
       const referensiUnik = mergedRefs.filter((ref, index, self) =>
         index === self.findIndex(r => 
           (r.id && r.id === ref.id) || 
-          ((r.data as any)?.nama_doa && (r.data as any)?.nama_doa === (ref.data as any)?.nama_doa) ||
-          (r.judul && r.judul === ref.judul)
+          ((r.data as any)?.nama_doa && (r.data as any)?.nama_doa === (ref.data as any)?.nama_doa)
         )
       )
       
@@ -276,7 +275,7 @@ function KultumGeneratorInner() {
 
   // Watcher untuk input free text Topik Bahasan -> fetchReferensi
   useEffect(() => {
-    setShowSemuaReferensi(false)
+    setVisibleCount(8)
     setFilterTipe('semua')
 
     if (!topikBahasan || topikBahasan.length < 3) {
@@ -432,19 +431,14 @@ function KultumGeneratorInner() {
     }
   }
 
-  const getReferensiDefault = (list: any[]) => {
-    const tipeUrutan = ['ayat_quran_db', 'hadits', 'doa_quran', 'ayat_sains', 'tokoh_sains']
-    const hasil: any[] = []
-    tipeUrutan.forEach(tipe => {
-      const itemTipe = list.filter(r => r.type === tipe).slice(0, PER_TIPE_AWAL)
-      hasil.push(...itemTipe)
-    })
-    return hasil
-  }
+  const referensiFiltered = filterTipe === 'semua'
+    ? referensiSuggested
+    : referensiSuggested.filter(r => r.type === filterTipe)
 
-  const referensiTampil = showSemuaReferensi
-    ? filterTipe === 'semua' ? referensiSuggested : referensiSuggested.filter(r => r.type === filterTipe)
-    : getReferensiDefault(referensiSuggested)
+  const referensiTampil = referensiFiltered.slice(0, visibleCount)
+  const sisanya = referensiFiltered.length - visibleCount
+  const adaLagi = visibleCount < referensiFiltered.length
+  const sudahDiperluas = visibleCount > 8
 
   return (
     <div className="min-h-screen pb-24 font-cairo">
@@ -715,7 +709,7 @@ function KultumGeneratorInner() {
                   </div>
                 ) : referensiReady ? (
                   <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                    <div className="flex items-center justify-between">
+                    <div id="referensi-list-top" className="flex items-center justify-between">
                       <label className="font-cinzel flex items-center gap-2 text-xs font-bold text-[var(--gold)] uppercase tracking-widest">
                         📚 Referensi Terkait ({referensiSuggested.length})
                       </label>
@@ -742,8 +736,7 @@ function KultumGeneratorInner() {
                       </p>
                     ) : (
                       <div className="flex flex-col gap-3.5">
-                        {showSemuaReferensi && (
-                          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide mb-4">
+                        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide mb-4">
                             {[
                               { key: 'semua', label: 'Semua' },
                               { key: 'ayat_quran_db', label: 'Ayat' },
@@ -758,7 +751,7 @@ function KultumGeneratorInner() {
                                 ? referensiSuggested.length 
                                 : referensiSuggested.filter(r => r.type === tab.key).length
                               return (
-                                <button key={tab.key} onClick={() => setFilterTipe(tab.key)}
+                                <button key={tab.key} onClick={() => { setFilterTipe(tab.key); setVisibleCount(8) }}
                                   className={`flex-shrink-0 px-3 py-1.5 rounded-full font-cairo text-xs 
                                              border transition-colors flex items-center gap-1.5
                                              ${filterTipe === tab.key
@@ -773,7 +766,21 @@ function KultumGeneratorInner() {
                               )
                             })}
                           </div>
+
+                        {/* Disclaimer */}
+                        {referensiSuggested.length > 0 && (
+                          <div
+                            className="mb-3 px-4 py-3 rounded-md font-cairo text-sm font-medium shadow-sm"
+                            style={{
+                              background: 'rgba(201,163,90,0.10)',
+                              borderLeft: '3px solid rgba(201,163,90,0.70)',
+                              color: 'var(--text1)',
+                            }}
+                          >
+                            ⚠️ Referensi ditampilkan berdasarkan kemiripan makna dan tema secara semantik. Tidak semua referensi dijamin sesuai dengan topik yang dicari — silakan pilih yang paling relevan sesuai kebutuhan kultum Anda.
+                          </div>
                         )}
+
                         {referensiTampil.map((ref, index) => {
                           const isSelected = referensiDipilih.some(r => r.id === ref.id)
                           
@@ -1167,20 +1174,55 @@ function KultumGeneratorInner() {
                       </div>
                     )}
                     {referensiSuggested.length > 0 && (
-                      <button
-                        onClick={() => {
-                          setShowSemuaReferensi(prev => !prev)
-                          if (showSemuaReferensi) setFilterTipe('semua')
-                        }}
-                        className="w-full mt-3 py-3 rounded-xl font-cairo text-sm
-                                   border border-white/10 text-white/50
-                                   hover:border-white/20 hover:text-white/70
-                                   transition-colors flex items-center justify-center gap-2">
-                        {showSemuaReferensi
-                          ? <><ChevronUp className="w-4 h-4"/> Tampilkan ringkas</>
-                          : <><ChevronDown className="w-4 h-4"/> Lihat semua {referensiSuggested.length} referensi dengan filter</>
-                        }
-                      </button>
+                      <div className="mt-4 flex flex-col items-center gap-2">
+                        {/* Info counter */}
+                        <p className="font-cairo text-xs text-[var(--text3)]">
+                          Menampilkan{' '}
+                          <span className="text-[var(--text2)] font-semibold">{Math.min(visibleCount, referensiFiltered.length)}</span>
+                          {' '}dari{' '}
+                          <span className="text-[var(--text2)] font-semibold">{referensiFiltered.length}</span>
+                          {' '}referensi
+                        </p>
+
+                        {/* Tombol Load More */}
+                        {adaLagi && (
+                          <button
+                            type="button"
+                            onClick={() => setVisibleCount(prev => prev + 8)}
+                            className="w-full py-2 rounded-lg font-cairo text-sm
+                                       border border-[var(--gold-border)] text-[var(--gold)]
+                                       hover:bg-[var(--gold)]/10 transition-all
+                                       flex items-center justify-center gap-2"
+                          >
+                            <ChevronDown className="w-4 h-4" />
+                            Lihat {Math.min(8, sisanya)} referensi berikutnya
+                          </button>
+                        )}
+
+                        {/* Tombol Tampilkan lebih sedikit */}
+                        {!adaLagi && sudahDiperluas && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setVisibleCount(8)
+                              const el = document.getElementById('referensi-list-top')
+                              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                            }}
+                            className="w-full py-2 rounded-lg font-cairo text-sm
+                                       border border-[var(--gold-border)] text-[var(--gold)]
+                                       hover:bg-[var(--gold)]/10 transition-all
+                                       flex items-center justify-center gap-2"
+                          >
+                            <ChevronUp className="w-4 h-4" />
+                            Tampilkan lebih sedikit
+                          </button>
+                        )}
+
+                        {/* Semua sudah ditampilkan */}
+                        {!adaLagi && (
+                          <p className="font-cairo text-xs text-[var(--teal-300)] py-1">✓ Semua referensi telah ditampilkan</p>
+                        )}
+                      </div>
                     )}
                   </div>
                 ) : null}

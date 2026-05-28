@@ -29,13 +29,13 @@ export async function POST(req: Request) {
     const [ayatResult, haditsResult, externalHadits] = await Promise.all([
       supabaseAdmin.rpc('match_ayat_quran', {
         query_embedding: embedding,
-        match_threshold: 0.55,
-        match_count: 3
+        match_threshold: 0.50,
+        match_count: 20
       }),
       supabaseAdmin.rpc('match_hadits', {
         query_embedding: embedding,
-        match_threshold: 0.35,
-        match_count: 5
+        match_threshold: 0.30,
+        match_count: 20
       }),
       searchHaditsExternal(query.trim()).catch(err => {
         console.error('[Semantic Search] searchHaditsExternal error:', err)

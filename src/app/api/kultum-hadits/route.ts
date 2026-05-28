@@ -110,7 +110,7 @@ export async function POST(req: Request) {
     supabase.rpc('match_hadits', {
       query_embedding: embedding,
       match_threshold: 0.25,
-      match_count: 15
+      match_count: 10
     }),
     
     // Doa — text search, tidak perlu embedding
@@ -134,12 +134,22 @@ export async function POST(req: Request) {
   const haditsQ = supabaseAdmin
     .from('hadits_topik_index')
     .select('id, arab, matan, terjemah, perawi, nomor, topik_nama, tags, konteks_hadits')
-    .limit(15)
+    .limit(100)
   const temaVariants = Array.from(new Set([tema, temaMapped].filter(Boolean)))
   const { data: haditsTopikDirect } = temaVariants.length === 1
     ? await haditsQ.eq('topik_nama', temaVariants[0])
     : await haditsQ.in('topik_nama', temaVariants)
   const haditsData = haditsTopikDirect ?? []
+
+  // Random shuffle agar setiap pencarian dapat hadits berbeda
+  // Tapi tetap prioritaskan yang punya konteks_hadits (lebih informatif)
+  const haditsWithKonteks = haditsData.filter((h: any) => h.konteks_hadits?.ringkasan)
+  const haditsWithoutKonteks = haditsData.filter((h: any) => !h.konteks_hadits?.ringkasan)
+  const shuffled = [
+    ...haditsWithKonteks.sort(() => Math.random() - 0.5),
+    ...haditsWithoutKonteks.sort(() => Math.random() - 0.5)
+  ].slice(0, 20) // ambil max 20 setelah shuffle
+
   console.log('DEBUG tema:', JSON.stringify(tema))
   console.log('DEBUG temaMapped:', JSON.stringify(temaMapped))
   console.log('DEBUG temaVariants:', JSON.stringify(temaVariants))
@@ -147,7 +157,7 @@ export async function POST(req: Request) {
 
   // Format Hadits
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const haditsFormatted = haditsData.map((h: any) => ({
+  const haditsFormatted = shuffled.map((h: any) => ({
     id: h.id,
     type: 'hadits',
     judul: `Hadits ${h.perawi ? `(${h.perawi})` : ''} — ${h.topik_nama}`,

@@ -350,7 +350,7 @@ export async function cariSemuaReferensi(
     return (b.relevansi_score ?? 0) - (a.relevansi_score ?? 0)
   })
 
-  return referensiUrut.slice(0, 15)
+  return referensiUrut.slice(0, 30)
 }
 
 /**

@@ -65,6 +65,21 @@ function KultumGeneratorInner() {
   const searchParams = useSearchParams()
   
   const [format, setFormat] = useState('kultum')
+  const [karakterKultum, setKarakterKultum] = useState<'umum' | 'sains' | 'kisah'>('umum')
+  const [groupVisibleCounts, setGroupVisibleCounts] = useState<Record<string, number>>({
+    ayat: 8,
+    hadits: 8,
+    sains: 8,
+    kisah: 8,
+    doa: 8
+  })
+  const [groupExpanded, setGroupExpanded] = useState<Record<string, boolean>>({
+    ayat: true,
+    hadits: true,
+    sains: false,
+    kisah: false,
+    doa: false
+  })
   
   // Kisah Al-Qur'an specific states
   const [isKisahMode, setIsKisahMode] = useState(false)
@@ -735,42 +750,11 @@ function KultumGeneratorInner() {
                         Tidak ditemukan referensi khusus dari database untuk topik ini. AI akan menggunakan basis pengetahuan umumnya.
                       </p>
                     ) : (
-                      <div className="flex flex-col gap-3.5">
-                        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide mb-4">
-                            {[
-                              { key: 'semua', label: 'Semua' },
-                              { key: 'ayat_quran_db', label: 'Ayat' },
-                              { key: 'hadits', label: 'Hadits' },
-                              { key: 'doa_quran', label: 'Doa' },
-                              { key: 'ayat_sains', label: 'Sains' },
-                              { key: 'tokoh_sains', label: 'Tokoh' },
-                            ]
-                            .filter(tab => tab.key === 'semua' || referensiSuggested.some(r => r.type === tab.key))
-                            .map(tab => {
-                              const count = tab.key === 'semua' 
-                                ? referensiSuggested.length 
-                                : referensiSuggested.filter(r => r.type === tab.key).length
-                              return (
-                                <button key={tab.key} onClick={() => { setFilterTipe(tab.key); setVisibleCount(8) }}
-                                  className={`flex-shrink-0 px-3 py-1.5 rounded-full font-cairo text-xs 
-                                             border transition-colors flex items-center gap-1.5
-                                             ${filterTipe === tab.key
-                                               ? 'bg-[#C9A84C] text-black border-[#C9A84C] font-semibold'
-                                               : 'border-white/15 text-white/50 hover:border-white/30'}`}>
-                                  {tab.label}
-                                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full
-                                                   ${filterTipe === tab.key ? 'bg-black/20' : 'bg-[var(--dark3)]'}`}>
-                                    {count}
-                                  </span>
-                                </button>
-                              )
-                            })}
-                          </div>
-
+                      <div className="flex flex-col gap-4">
                         {/* Disclaimer */}
                         {referensiSuggested.length > 0 && (
                           <div
-                            className="mb-3 px-4 py-3 rounded-md font-cairo text-sm font-medium shadow-sm"
+                            className="mb-1 px-4 py-3 rounded-md font-cairo text-sm font-medium shadow-sm"
                             style={{
                               background: 'rgba(201,163,90,0.10)',
                               borderLeft: '3px solid rgba(201,163,90,0.70)',
@@ -781,389 +765,469 @@ function KultumGeneratorInner() {
                           </div>
                         )}
 
-                        {referensiTampil.map((ref, index) => {
-                          const isSelected = referensiDipilih.some(r => r.id === ref.id)
-                          
-                          const isSemantic = !!(ref as any).isSemanticSearch
-                          let badgeLabel = isSemantic ? '🔎 RELEVAN SEMANTIK' : 'REFERENSI'
-                          let badgeColor = isSemantic 
-                            ? 'text-cyan-400 border-cyan-500/30 bg-cyan-500/5'
-                            : 'text-[var(--gold-light)] border-[var(--gold-border)]/30 bg-[var(--gold)]/5'
-                          
-                          if (!isSemantic) {
-                            if (ref.type === 'ayat_sains' || ref.type === 'ayat_quran_db') {
-                              badgeLabel = "AYAT AL-QUR'AN"
-                              badgeColor = 'text-blue-400 border-blue-500/30 bg-blue-500/5'
-                            } else if (ref.type === 'hadits') {
-                              badgeLabel = 'HADITS SHAHIH'
-                              badgeColor = 'text-emerald-400 border-emerald-500/30 bg-emerald-500/5'
-                            } else if (ref.type === 'doa_quran') {
-                              badgeLabel = "DOA AL-QUR'AN"
-                              badgeColor = 'text-purple-400 border-purple-500/30 bg-purple-500/5'
-                            } else if (ref.type === 'kaum_lampau') {
-                              badgeLabel = 'KISAH KAUM LAMPAU'
-                              badgeColor = 'text-amber-400 border-amber-500/30 bg-amber-500/5'
-                            }
-                          } else {
-                            let prefix = ''
-                            if (ref.type === 'ayat_quran_db') prefix = 'AYAT - '
-                            else if (ref.type === 'hadits') prefix = 'HADITS - '
-                            badgeLabel = `${prefix}RELEVAN SEMANTIK`
-                            badgeColor = 'text-cyan-400 border-cyan-500/30 bg-cyan-500/5 shadow-[0_0_10px_rgba(34,211,238,0.1)]'
+                        {[
+                          {
+                            id: 'ayat',
+                            title: "Ayat Al-Qur'an",
+                            isWajib: true,
+                            icon: "📖",
+                            filterFn: (r: KultumReferensi) => r.type === 'ayat_quran_db'
+                          },
+                          {
+                            id: 'hadits',
+                            title: "Hadits",
+                            isWajib: true,
+                            icon: "💬",
+                            filterFn: (r: KultumReferensi) => r.type === 'hadits'
+                          },
+                          {
+                            id: 'sains',
+                            title: "Ayat & Tokoh Sains",
+                            isWajib: false,
+                            icon: "🔬",
+                            filterFn: (r: KultumReferensi) => r.type === 'ayat_sains' || r.type === 'tokoh_sains'
+                          },
+                          {
+                            id: 'kisah',
+                            title: "Kisah Kaum Lampau",
+                            isWajib: false,
+                            icon: "📜",
+                            filterFn: (r: KultumReferensi) => r.type === 'kaum_lampau'
+                          },
+                          {
+                            id: 'doa',
+                            title: "Doa Penutup",
+                            isWajib: false,
+                            icon: "🤲",
+                            filterFn: (r: KultumReferensi) => r.type === 'doa_quran'
                           }
-                          
-                          const d = ref.data as any
+                        ].map((g) => {
+                          const groupItems = referensiSuggested.filter(g.filterFn)
+                          if (groupItems.length === 0) return null
+
+                          const isExpanded = groupExpanded[g.id]
+                          const visibleCount = groupVisibleCounts[g.id] || 8
+                          const shownItems = groupItems.slice(0, visibleCount)
+                          const hasMore = groupItems.length > visibleCount
+                          const canCollapse = !hasMore && groupItems.length > 8
 
                           return (
-                            <div
-                              key={`${ref.id ?? d?.nama_doa ?? ref.judul}-${index}`}
-                              id={`ref-card-${ref.id}`}
-                              className={`p-5 rounded-2xl border transition-all flex flex-col ${
-                                isSelected
-                                  ? 'bg-[var(--dark2)] border-[var(--gold)] shadow-[0_0_15px_rgba(201,163,90,0.12)]'
-                                  : 'bg-[var(--dark2)] border-[var(--gold-border)]/40 hover:border-[var(--gold)]/40 hover:bg-[var(--dark3)]/30'
-                              }`}
-                            >
-                              <div className="flex items-start justify-between gap-3">
-                                {/* Area Kiri: Checkbox & Info (klik Info untuk expand) */}
-                                <div className="flex items-start gap-3 text-left flex-1 min-w-0">
-                                  {/* Checkbox */}
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      if (isSelected) {
-                                        setReferensiDipilih(referensiDipilih.filter(r => r.id !== ref.id))
-                                      } else {
-                                        setReferensiDipilih([...referensiDipilih, ref])
-                                      }
-                                    }}
-                                    className="pt-1 focus:outline-none shrink-0 cursor-pointer"
-                                  >
-                                    <div className={`w-5 h-5 rounded-lg border flex items-center justify-center transition-all ${
-                                      isSelected 
-                                        ? 'bg-[var(--gold)] border-[var(--gold)] text-[var(--dark)]' 
-                                        : 'border-[var(--gold-border)]/60'
-                                    }`}>
-                                      {isSelected && (
-                                        <svg className="w-3 h-3 stroke-current stroke-2" fill="none" viewBox="0 0 24 24">
-                                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                                        </svg>
-                                      )}
-                                    </div>
-                                  </button>
-
-                                  {/* Info (klik untuk expand) */}
-                                  <div
-                                    onClick={() => handleToggleExpand(ref.id)}
-                                    className="flex-1 cursor-pointer select-none min-w-0"
-                                  >
-                                    <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                                      <span className={`font-cairo text-[10px] font-bold px-2.5 py-0.5 rounded-full border uppercase tracking-widest ${badgeColor}`}>
-                                        {badgeLabel}
+                            <div key={g.id} className="border border-[var(--gold-border)]/15 rounded-2xl overflow-hidden bg-[var(--dark2)]/30">
+                              {/* Header Accordion */}
+                              <button
+                                type="button"
+                                onClick={() => setGroupExpanded(prev => ({ ...prev, [g.id]: !prev[g.id] }))}
+                                className="w-full flex items-center justify-between p-4 bg-[var(--dark3)]/60 hover:bg-[var(--dark3)] transition-all text-left"
+                              >
+                                <div className="flex items-center gap-3">
+                                  <span className="text-xl shrink-0">{g.icon}</span>
+                                  <div>
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      <span className="font-cinzel text-xs font-bold text-white tracking-wide uppercase">
+                                        {g.title}
                                       </span>
-                                      <span className="font-cairo text-[10px] text-[var(--text3)]">
-                                        Relevansi: {ref.relevansi_score}%
+                                      <span className={`text-[9px] font-bold px-2 py-0.25 rounded-full border uppercase tracking-wider ${
+                                        g.isWajib 
+                                          ? 'text-[var(--gold)] border-[var(--gold-border)]/50 bg-[var(--gold)]/10' 
+                                          : 'text-[var(--text3)] border-white/10 bg-white/5'
+                                      }`}>
+                                        {g.isWajib ? 'WAJIB' : 'OPSIONAL'}
                                       </span>
                                     </div>
-                                    <h4 className="font-cairo text-base font-bold text-[var(--text1)] leading-snug">{ref.judul}</h4>
-                                    
-                                    {ref.deskripsi_singkat && (
-                                      <div className="mt-2.5">
-                                        <p className="font-cairo text-[10px] uppercase tracking-widest text-white/35 mb-1 font-bold">
-                                          Makna & Konteks
-                                        </p>
-                                        <p className="font-cairo text-sm text-white/60 leading-relaxed line-clamp-2">
-                                          {ref.deskripsi_singkat}
-                                        </p>
-                                      </div>
-                                    )}
+                                    <span className="font-cairo text-[11px] text-[var(--text3)]">
+                                      {groupItems.length} referensi ditemukan
+                                    </span>
                                   </div>
                                 </div>
+                                <ChevronDown className={`w-5 h-5 text-[var(--text3)] transition-transform duration-300 ${isExpanded ? 'transform rotate-180 text-[var(--gold)]' : ''}`} />
+                              </button>
 
-                                {/* Tombol Chevron (klik untuk expand) */}
-                                <button
-                                  type="button"
-                                  onClick={() => handleToggleExpand(ref.id)}
-                                  className="p-1 text-[var(--text3)] hover:text-[var(--gold)] transition-colors shrink-0 cursor-pointer"
-                                >
-                                  <ChevronDown className={`w-5 h-5 transition-transform duration-200 ${expandedRef === ref.id ? 'transform rotate-180 text-[var(--gold)]' : ''}`} />
-                                </button>
-                              </div>
-
+                              {/* Content area */}
                               <AnimatePresence initial={false}>
-                                {expandedRef === ref.id && (
+                                {isExpanded && (
                                   <motion.div
                                     initial={{ opacity: 0, height: 0 }}
                                     animate={{ opacity: 1, height: 'auto' }}
                                     exit={{ opacity: 0, height: 0 }}
-                                    transition={{ duration: 0.2 }}
                                     className="overflow-hidden"
                                   >
-                                    <div className="mt-4 pt-4 border-t border-[var(--gold-border)]/30 space-y-3.5">
-                                      {/* Untuk AYAT AL-QUR'AN (ayat_quran_db) */}
-                                      {ref.type === 'ayat_quran_db' && (() => {
+                                    <div className="p-4 flex flex-col gap-4 border-t border-[var(--gold-border)]/10">
+                                      {shownItems.map((ref, idx) => {
+                                        const isSelected = referensiDipilih.some(r => r.id === ref.id)
+                                        const isSemantic = !!(ref as any).isSemanticSearch
+                                        let badgeLabel = isSemantic ? '🔎 RELEVAN SEMANTIK' : 'REFERENSI'
+                                        let badgeColor = isSemantic 
+                                          ? 'text-cyan-400 border-cyan-500/30 bg-cyan-500/5'
+                                          : 'text-[var(--gold-light)] border-[var(--gold-border)]/30 bg-[var(--gold)]/5'
+                                        
+                                        if (!isSemantic) {
+                                          if (ref.type === 'ayat_sains' || ref.type === 'ayat_quran_db') {
+                                            badgeLabel = "AYAT AL-QUR'AN"
+                                            badgeColor = 'text-blue-400 border-blue-500/30 bg-blue-500/5'
+                                          } else if (ref.type === 'hadits') {
+                                            badgeLabel = 'HADITS SHAHIH'
+                                            badgeColor = 'text-emerald-400 border-emerald-500/30 bg-emerald-500/5'
+                                          } else if (ref.type === 'doa_quran') {
+                                            badgeLabel = "DOA AL-QUR'AN"
+                                            badgeColor = 'text-purple-400 border-purple-500/30 bg-purple-500/5'
+                                          } else if (ref.type === 'kaum_lampau') {
+                                            badgeLabel = 'KISAH KAUM LAMPAU'
+                                            badgeColor = 'text-amber-400 border-amber-500/30 bg-amber-500/5'
+                                          }
+                                        } else {
+                                          let prefix = ''
+                                          if (ref.type === 'ayat_quran_db') prefix = 'AYAT - '
+                                          else if (ref.type === 'hadits') prefix = 'HADITS - '
+                                          badgeLabel = `${prefix}RELEVAN SEMANTIK`
+                                          badgeColor = 'text-cyan-400 border-cyan-500/30 bg-cyan-500/5 shadow-[0_0_10px_rgba(34,211,238,0.1)]'
+                                        }
+
+                                        const d = ref.data as any
+
                                         return (
-                                          <>
-                                            {/* Teks Arab lengkap */}
-                                            {d.teks_arab && (
-                                              <p className="font-amiri text-xl text-right leading-loose mb-3"
-                                                 dir="rtl" style={{ color: '#4a9eda' }}>
-                                                {d.teks_arab}
-                                              </p>
-                                            )}
-                                            
-                                            {/* Latin */}
-                                            {d.teks_latin && (
-                                              <p className="font-cairo text-[12px] italic text-center mb-3"
-                                                 style={{ color: '#4a9eda', opacity: 0.7 }}>
-                                                {d.teks_latin}
-                                              </p>
-                                            )}
-
-                                            {/* Terjemah */}
-                                            {d.terjemah && (
-                                              <p className="text-sm text-[var(--text1)] leading-relaxed text-justify mb-3">
-                                                "{d.terjemah}"
-                                              </p>
-                                            )}
-
-                                            {/* Makna & Konteks dari DB */}
-                                            {d.konteks && (
-                                              <div className="mb-3">
-                                                <p className="font-cairo text-[10px] uppercase tracking-widest text-white/40 mb-1">
-                                                  Makna & Konteks
-                                                </p>
-                                                <p className="font-cairo text-[13px] text-white/75 leading-relaxed">
-                                                  {d.konteks}
-                                                </p>
-                                              </div>
-                                            )}
-                                            
-                                            {/* Tags */}
-                                            {d.tags?.length > 0 && (
-                                              <div className="flex flex-wrap gap-1.5 mb-3">
-                                                {d.tags.map((tag: string, i: number) => (
-                                                  <span key={i} className="font-cairo text-[10px] px-2 py-0.5 rounded-full
-                                                               bg-white/5 border border-white/10 text-white/50">
-                                                    {tag}
-                                                  </span>
-                                                ))}
-                                              </div>
-                                            )}
-                                          </>
-                                        )
-                                      })()}
-
-                                      {/* Untuk AYAT SAINS */}
-                                      {ref.type === 'ayat_sains' && (() => {
-                                        return (
-                                          <div className="space-y-3">
-                                            {d.teks_arab && (
-                                              <div className="font-amiri text-xl text-center leading-loose text-[var(--gold-light)]" dir="rtl">
-                                                {d.teks_arab}
-                                              </div>
-                                            )}
-                                            {d.terjemahan && (
-                                              <p className="font-cairo text-xs text-center leading-relaxed text-[var(--text1)] italic">
-                                                "{d.terjemahan}"
-                                              </p>
-                                            )}
-                                            {d.penjelasan && (
-                                              <div className="bg-[var(--dark3)]/40 p-3 rounded-xl border border-[var(--gold-border)]/20">
-                                                <span className="font-cinzel text-[9px] font-bold text-[var(--gold)] uppercase tracking-wider block mb-1">🔬 Penjelasan Sains</span>
-                                                <p className="font-cairo text-xs text-[var(--text2)] leading-relaxed">{d.penjelasan}</p>
-                                              </div>
-                                            )}
-                                          </div>
-                                        )
-                                      })()}
-
-                                      {/* Untuk DOA AL-QUR'AN */}
-                                      {ref.type === 'doa_quran' && (() => {
-                                        return (
-                                          <>
-                                            {/* Arab */}
-                                            {d.arab && (
-                                              <p className="font-amiri text-lg text-right leading-loose mb-3"
-                                                 dir="rtl" style={{ color: '#7acc50' }}>
-                                                {d.arab}
-                                              </p>
-                                            )}
-                                            
-                                            {/* Latin */}
-                                            {d.latin && (
-                                              <p className="font-cairo text-[12px] italic text-center mb-3"
-                                                 style={{ color: '#7acc50', opacity: 0.7 }}>
-                                                {d.latin}
-                                              </p>
-                                            )}
-
-                                            {/* Terjemah */}
-                                            {d.terjemah && (
-                                              <p className="font-cairo text-[13px] text-white/75 italic leading-relaxed mb-3">
-                                                "{d.terjemah}"
-                                              </p>
-                                            )}
-                                            
-                                            {/* Konteks */}
-                                            {d.konteks && (
-                                              <div className="mb-3">
-                                                <p className="font-cairo text-[10px] uppercase tracking-widest text-white/40 mb-1">
-                                                  Konteks Doa
-                                                </p>
-                                                <p className="font-cairo text-[13px] text-white/75 leading-relaxed">
-                                                  {d.konteks}
-                                                </p>
-                                              </div>
-                                            )}
-                                            
-                                            {/* Keutamaan */}
-                                            {d.keutamaan && (
-                                              <div className="mb-3 p-3 rounded-lg bg-white/3 border border-white/8">
-                                                <p className="font-cairo text-[10px] uppercase tracking-widest text-white/40 mb-1">
-                                                  Keutamaan
-                                                </p>
-                                                <p className="font-cairo text-[12px] text-white/65 leading-relaxed italic">
-                                                  {d.keutamaan}
-                                                </p>
-                                              </div>
-                                            )}
-                                            
-                                            {/* Tafsir ulama */}
-                                            {d.tafsir_ulama?.length > 0 && (
-                                              <div className="border-t border-white/8 pt-3 mt-3">
-                                                <p className="font-cairo text-[10px] uppercase tracking-widest text-white/40 mb-2">
-                                                  Penjelasan Ulama
-                                                </p>
-                                                {d.tafsir_ulama.slice(0, 1).map((t: any, idx: number) => (
-                                                  <div key={idx}>
-                                                    <p className="font-cairo text-[12px] text-white/60 italic leading-relaxed">
-                                                      "{t.teks?.slice(0, 200)}..."
-                                                    </p>
-                                                    <p className="font-cairo text-[10px] text-white/35 mt-1">
-                                                      — {t.sumber}
-                                                    </p>
+                                          <div
+                                            key={`${ref.id ?? d?.nama_doa ?? ref.judul}-${idx}`}
+                                            id={`ref-card-${ref.id}`}
+                                            className={`p-4 rounded-xl border transition-all flex flex-col ${
+                                              isSelected
+                                                ? 'bg-[var(--dark2)] border-[var(--gold)] shadow-[0_0_12px_rgba(201,163,90,0.1)]'
+                                                : 'bg-[var(--dark2)]/50 border-[var(--gold-border)]/30 hover:border-[var(--gold)]/30'
+                                            }`}
+                                          >
+                                            <div className="flex items-start justify-between gap-3">
+                                              {/* Checkbox & Title area */}
+                                              <div className="flex items-start gap-3 text-left flex-1 min-w-0">
+                                                <button
+                                                  type="button"
+                                                  onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    if (isSelected) {
+                                                      setReferensiDipilih(referensiDipilih.filter(r => r.id !== ref.id))
+                                                    } else {
+                                                      setReferensiDipilih([...referensiDipilih, ref])
+                                                    }
+                                                  }}
+                                                  className="pt-1 focus:outline-none shrink-0 cursor-pointer"
+                                                >
+                                                  <div className={`w-5 h-5 rounded-lg border flex items-center justify-center transition-all ${
+                                                    isSelected 
+                                                      ? 'bg-[var(--gold)] border-[var(--gold)] text-[var(--dark)]' 
+                                                      : 'border-[var(--gold-border)]/60'
+                                                  }`}>
+                                                    {isSelected && (
+                                                      <svg className="w-3 h-3 stroke-current stroke-2" fill="none" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                                      </svg>
+                                                    )}
                                                   </div>
-                                                ))}
-                                              </div>
-                                            )}
-                                          </>
-                                        )
-                                      })()}
+                                                </button>
 
-                                      {/* Untuk HADITS */}
-                                      {ref.type === 'hadits' && (() => {
-                                        const konteks = d.konteks_hadits
-                                        return (
-                                          <>
-                                            {/* Arab hadits */}
-                                            {d.arab && (
-                                              <p className="font-amiri text-base text-right leading-loose mb-3"
-                                                 dir="rtl" style={{ color: '#C9A84C' }}>
-                                                {d.arab}
-                                              </p>
-                                            )}
-                                            
-                                            {/* Terjemah */}
-                                            {d.terjemah && (
-                                              <p className="font-cairo text-[13px] text-white/75 italic leading-relaxed mb-3">
-                                                "{d.terjemah}"
-                                              </p>
-                                            )}
-                                            
-                                            {/* Perawi */}
-                                            {d.perawi && (
-                                              <p className="font-cairo text-[11px] text-white/35 mb-3">
-                                                HR. {d.perawi} {d.number ? `No. ${d.number}` : ''}
-                                              </p>
-                                            )}
-                                            {/* Konteks dari konteks_hadits JSONB */}
-                                            {(() => {
-                                              const konteks = d.konteks_hadits
-                                              if (!konteks) return (
-                                                <p className="font-cairo text-[12px] text-white/35 italic">
-                                                  Konteks belum tersedia untuk hadits ini.
-                                                </p>
-                                              )
-                                              
-                                              return (
-                                                <div className="space-y-3">
-                                                  {konteks.ringkasan && (
-                                                    <div>
-                                                      <p className="font-cairo text-[10px] uppercase tracking-widest text-white/40 mb-1">
-                                                        Ringkasan
-                                                      </p>
-                                                      <p className="font-cairo text-[13px] text-white/75 leading-relaxed">
-                                                        {konteks.ringkasan}
-                                                      </p>
-                                                    </div>
-                                                  )}
+                                                <div
+                                                  onClick={() => handleToggleExpand(ref.id)}
+                                                  className="flex-1 cursor-pointer select-none min-w-0"
+                                                >
+                                                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                                    <span className={`font-cairo text-[9px] font-bold px-2 py-0.5 rounded-full border uppercase tracking-widest ${badgeColor}`}>
+                                                      {badgeLabel}
+                                                    </span>
+                                                    <span className="font-cairo text-[9px] text-[var(--text3)]">
+                                                      Relevansi: {ref.relevansi_score}%
+                                                    </span>
+                                                  </div>
+                                                  <h4 className="font-cairo text-sm font-bold text-[var(--text1)] leading-snug">{ref.judul}</h4>
                                                   
-                                                  {konteks.pelajaran && (
-                                                    <div>
-                                                      <p className="font-cairo text-[10px] uppercase tracking-widest text-white/40 mb-1">
-                                                        Pelajaran
+                                                  {ref.deskripsi_singkat && (
+                                                    <div className="mt-2">
+                                                      <p className="font-cairo text-[9px] uppercase tracking-widest text-white/35 mb-0.5 font-bold">
+                                                        Makna & Konteks
                                                       </p>
-                                                      <p className="font-cairo text-[13px] text-white/75 leading-relaxed">
-                                                        {konteks.pelajaran}
-                                                      </p>
-                                                    </div>
-                                                  )}
-                                                  
-                                                  {konteks.aplikasi && (
-                                                    <div className="p-3 rounded-lg bg-white/3 border border-white/8">
-                                                      <p className="font-cairo text-[10px] uppercase tracking-widest text-white/40 mb-1">
-                                                        Aplikasi dalam Kehidupan
-                                                      </p>
-                                                      <p className="font-cairo text-[12px] text-white/65 leading-relaxed">
-                                                        {konteks.aplikasi}
+                                                      <p className="font-cairo text-xs text-white/60 leading-relaxed line-clamp-2">
+                                                        {ref.deskripsi_singkat}
                                                       </p>
                                                     </div>
                                                   )}
                                                 </div>
-                                              )
-                                            })()}
-                                            
-                                            {/* Tags */}
-                                            {d.tags?.length > 0 && (
-                                              <div className="flex flex-wrap gap-1.5">
-                                                {d.tags.map((tag: string, idx: number) => (
-                                                  <span key={idx} className="font-cairo text-[10px] px-2 py-0.5 rounded-full
-                                                               bg-white/5 border border-white/10 text-white/50">
-                                                    {tag}
-                                                  </span>
-                                                ))}
                                               </div>
-                                            )}
-                                          </>
-                                        )
-                                      })()}
 
-                                      {/* Untuk KISAH KAUM LAMPAU (kaum_lampau) */}
-                                      {ref.type === 'kaum_lampau' && (() => {
-                                        return (
-                                          <div className="space-y-3">
-                                            <div className="grid grid-cols-2 gap-2 text-[10px] text-[var(--text2)] bg-[var(--dark3)]/35 p-2.5 rounded-xl border border-[var(--gold-border)]/20">
-                                              {d.periode && <div><span className="font-bold text-[var(--gold)]">Periode:</span> {d.periode}</div>}
-                                              {d.lokasi && <div><span className="font-bold text-[var(--gold)]">Lokasi:</span> {d.lokasi}</div>}
-                                              {d.nabi_diutus && <div className="col-span-2"><span className="font-bold text-[var(--gold)]">Nabi Diutus:</span> {d.nabi_diutus}</div>}
+                                              <button
+                                                type="button"
+                                                onClick={() => handleToggleExpand(ref.id)}
+                                                className="p-1 text-[var(--text3)] hover:text-[var(--gold)] transition-colors shrink-0 cursor-pointer"
+                                              >
+                                                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedRef === ref.id ? 'transform rotate-180 text-[var(--gold)]' : ''}`} />
+                                              </button>
                                             </div>
-                                            {d.pelajaran && (
-                                              <div className="bg-[var(--dark3)]/40 p-3 rounded-xl border border-[var(--gold-border)]/20">
-                                                <span className="font-cinzel text-[9px] font-bold text-[var(--gold)] uppercase tracking-wider block mb-1">📖 Pelajaran / Hikmah</span>
-                                                <p className="font-cairo text-xs text-[var(--text2)] leading-relaxed">{d.pelajaran}</p>
-                                              </div>
-                                            )}
-                                            {d.kisah_lengkap && (
-                                              <div className="bg-[var(--dark3)]/40 p-3 rounded-xl border border-[var(--gold-border)]/20">
-                                                <span className="font-cinzel text-[9px] font-bold text-[var(--gold)] uppercase tracking-wider block mb-1">📜 Ringkasan Kisah</span>
-                                                <p className="font-cairo text-xs text-[var(--text2)] leading-relaxed text-justify line-clamp-6">{d.kisah_lengkap}</p>
-                                              </div>
-                                            )}
+
+                                            <AnimatePresence initial={false}>
+                                              {expandedRef === ref.id && (
+                                                <motion.div
+                                                  initial={{ opacity: 0, height: 0 }}
+                                                  animate={{ opacity: 1, height: 'auto' }}
+                                                  exit={{ opacity: 0, height: 0 }}
+                                                  transition={{ duration: 0.2 }}
+                                                  className="overflow-hidden"
+                                                >
+                                                  <div className="mt-3 pt-3 border-t border-[var(--gold-border)]/20 space-y-3">
+                                                    {ref.type === 'ayat_quran_db' && (
+                                                      <>
+                                                        {d.teks_arab && (
+                                                          <p className="font-amiri text-lg text-right leading-loose mb-2"
+                                                             dir="rtl" style={{ color: '#4a9eda' }}>
+                                                            {d.teks_arab}
+                                                          </p>
+                                                        )}
+                                                        {d.teks_latin && (
+                                                          <p className="font-cairo text-[11px] italic text-center mb-2"
+                                                             style={{ color: '#4a9eda', opacity: 0.7 }}>
+                                                            {d.teks_latin}
+                                                          </p>
+                                                        )}
+                                                        {d.terjemah && (
+                                                          <p className="text-xs text-[var(--text1)] leading-relaxed text-justify mb-2">
+                                                            "{d.terjemah}"
+                                                          </p>
+                                                        )}
+                                                        {d.konteks && (
+                                                          <div className="mb-2">
+                                                            <p className="font-cairo text-[9px] uppercase tracking-widest text-white/40 mb-0.5">
+                                                              Makna & Konteks
+                                                            </p>
+                                                            <p className="font-cairo text-xs text-white/75 leading-relaxed">
+                                                              {d.konteks}
+                                                            </p>
+                                                          </div>
+                                                        )}
+                                                        {d.tags?.length > 0 && (
+                                                          <div className="flex flex-wrap gap-1 mb-2">
+                                                            {d.tags.map((tag: string, i: number) => (
+                                                              <span key={i} className="font-cairo text-[9px] px-2 py-0.5 rounded-full
+                                                                           bg-white/5 border border-white/10 text-white/50">
+                                                                {tag}
+                                                              </span>
+                                                            ))}
+                                                          </div>
+                                                        )}
+                                                      </>
+                                                    )}
+
+                                                    {ref.type === 'ayat_sains' && (
+                                                      <div className="space-y-2">
+                                                        {d.teks_arab && (
+                                                          <div className="font-amiri text-lg text-center leading-loose text-[var(--gold-light)]" dir="rtl">
+                                                            {d.teks_arab}
+                                                          </div>
+                                                        )}
+                                                        {d.terjemahan && (
+                                                          <p className="font-cairo text-xs text-center leading-relaxed text-[var(--text1)] italic">
+                                                            "{d.terjemahan}"
+                                                          </p>
+                                                        )}
+                                                        {d.penjelasan && (
+                                                          <div className="bg-[var(--dark3)]/40 p-3 rounded-xl border border-[var(--gold-border)]/20">
+                                                            <span className="font-cinzel text-[9px] font-bold text-[var(--gold)] uppercase tracking-wider block mb-1">🔬 Penjelasan Sains</span>
+                                                            <p className="font-cairo text-xs text-[var(--text2)] leading-relaxed">{d.penjelasan}</p>
+                                                          </div>
+                                                        )}
+                                                      </div>
+                                                    )}
+
+                                                    {ref.type === 'doa_quran' && (
+                                                      <>
+                                                        {d.arab && (
+                                                          <p className="font-amiri text-lg text-right leading-loose mb-2"
+                                                             dir="rtl" style={{ color: '#7acc50' }}>
+                                                            {d.arab}
+                                                          </p>
+                                                        )}
+                                                        {d.latin && (
+                                                          <p className="font-cairo text-[11px] italic text-center mb-2"
+                                                             style={{ color: '#7acc50', opacity: 0.7 }}>
+                                                            {d.latin}
+                                                          </p>
+                                                        )}
+                                                        {d.terjemah && (
+                                                          <p className="font-cairo text-xs text-white/75 italic leading-relaxed mb-2">
+                                                            "{d.terjemah}"
+                                                          </p>
+                                                        )}
+                                                        {d.konteks && (
+                                                          <div className="mb-2">
+                                                            <p className="font-cairo text-[9px] uppercase tracking-widest text-white/40 mb-0.5">
+                                                              Konteks Doa
+                                                            </p>
+                                                            <p className="font-cairo text-xs text-white/75 leading-relaxed">
+                                                              {d.konteks}
+                                                            </p>
+                                                          </div>
+                                                        )}
+                                                        {d.keutamaan && (
+                                                          <div className="mb-2 p-2.5 rounded-lg bg-white/3 border border-white/8">
+                                                            <p className="font-cairo text-[9px] uppercase tracking-widest text-white/40 mb-0.5">
+                                                              Keutamaan
+                                                            </p>
+                                                            <p className="font-cairo text-xs text-white/65 leading-relaxed italic">
+                                                              {d.keutamaan}
+                                                            </p>
+                                                          </div>
+                                                        )}
+                                                        {d.tafsir_ulama?.length > 0 && (
+                                                          <div className="border-t border-white/8 pt-2.5 mt-2.5">
+                                                            <p className="font-cairo text-[9px] uppercase tracking-widest text-white/40 mb-1.5">
+                                                              Penjelasan Ulama
+                                                            </p>
+                                                            {d.tafsir_ulama.slice(0, 1).map((t: any, idx: number) => (
+                                                              <div key={idx}>
+                                                                <p className="font-cairo text-xs text-white/60 italic leading-relaxed">
+                                                                  "{t.teks?.slice(0, 200)}..."
+                                                                </p>
+                                                                <p className="font-cairo text-[9px] text-white/35 mt-0.5">
+                                                                  — {t.sumber}
+                                                                </p>
+                                                              </div>
+                                                            ))}
+                                                          </div>
+                                                        )}
+                                                      </>
+                                                    )}
+
+                                                    {ref.type === 'hadits' && (
+                                                      <>
+                                                        {d.arab && (
+                                                          <p className="font-amiri text-lg text-right leading-loose mb-2"
+                                                             dir="rtl" style={{ color: '#C9A84C' }}>
+                                                            {d.arab}
+                                                          </p>
+                                                        )}
+                                                        {d.terjemah && (
+                                                          <p className="font-cairo text-xs text-white/75 italic leading-relaxed mb-2">
+                                                            "{d.terjemah}"
+                                                          </p>
+                                                        )}
+                                                        {d.perawi && (
+                                                          <p className="font-cairo text-[10px] text-white/35 mb-2">
+                                                            HR. {d.perawi} {d.number ? `No. ${d.number}` : ''}
+                                                          </p>
+                                                        )}
+                                                        {(() => {
+                                                          const konteks = d.konteks_hadits
+                                                          if (!konteks) return null
+                                                          return (
+                                                            <div className="space-y-2">
+                                                              {konteks.ringkasan && (
+                                                                <div>
+                                                                  <p className="font-cairo text-[9px] uppercase tracking-widest text-white/40 mb-0.5">
+                                                                    Ringkasan
+                                                                  </p>
+                                                                  <p className="font-cairo text-xs text-white/75 leading-relaxed">
+                                                                    {konteks.ringkasan}
+                                                                  </p>
+                                                                </div>
+                                                              )}
+                                                              {konteks.pelajaran && (
+                                                                <div>
+                                                                  <p className="font-cairo text-[9px] uppercase tracking-widest text-white/40 mb-0.5">
+                                                                    Pelajaran
+                                                                  </p>
+                                                                  <p className="font-cairo text-xs text-white/75 leading-relaxed">
+                                                                    {konteks.pelajaran}
+                                                                  </p>
+                                                                </div>
+                                                              )}
+                                                              {konteks.aplikasi && (
+                                                                <div className="p-2.5 rounded-lg bg-white/3 border border-white/8">
+                                                                  <p className="font-cairo text-[9px] uppercase tracking-widest text-white/40 mb-0.5">
+                                                                    Aplikasi dalam Kehidupan
+                                                                  </p>
+                                                                  <p className="font-cairo text-xs text-white/65 leading-relaxed">
+                                                                    {konteks.aplikasi}
+                                                                  </p>
+                                                                </div>
+                                                              )}
+                                                            </div>
+                                                          )
+                                                        })()}
+                                                        {d.tags?.length > 0 && (
+                                                          <div className="flex flex-wrap gap-1">
+                                                            {d.tags.map((tag: string, idx: number) => (
+                                                              <span key={idx} className="font-cairo text-[9px] px-2 py-0.5 rounded-full
+                                                                           bg-white/5 border border-white/10 text-white/50">
+                                                                {tag}
+                                                              </span>
+                                                            ))}
+                                                          </div>
+                                                        )}
+                                                      </>
+                                                    )}
+
+                                                    {ref.type === 'kaum_lampau' && (
+                                                      <div className="space-y-2">
+                                                        <div className="grid grid-cols-2 gap-2 text-[9px] text-[var(--text2)] bg-[var(--dark3)]/35 p-2.5 rounded-xl border border-[var(--gold-border)]/20">
+                                                          {d.periode && <div><span className="font-bold text-[var(--gold)]">Periode:</span> {d.periode}</div>}
+                                                          {d.lokasi && <div><span className="font-bold text-[var(--gold)]">Lokasi:</span> {d.lokasi}</div>}
+                                                          {d.nabi_diutus && <div className="col-span-2"><span className="font-bold text-[var(--gold)]">Nabi Diutus:</span> {d.nabi_diutus}</div>}
+                                                        </div>
+                                                        {d.pelajaran && (
+                                                          <div className="bg-[var(--dark3)]/40 p-3 rounded-xl border border-[var(--gold-border)]/20">
+                                                            <span className="font-cinzel text-[9px] font-bold text-[var(--gold)] uppercase tracking-wider block mb-1">📖 Pelajaran / Hikmah</span>
+                                                            <p className="font-cairo text-xs text-[var(--text2)] leading-relaxed">{d.pelajaran}</p>
+                                                          </div>
+                                                        )}
+                                                        {d.kisah_lengkap && (
+                                                          <div className="bg-[var(--dark3)]/40 p-3 rounded-xl border border-[var(--gold-border)]/20">
+                                                            <span className="font-cinzel text-[9px] font-bold text-[var(--gold)] uppercase tracking-wider block mb-1">📜 Ringkasan Kisah</span>
+                                                            <p className="font-cairo text-xs text-[var(--text2)] leading-relaxed text-justify line-clamp-6">{d.kisah_lengkap}</p>
+                                                          </div>
+                                                        )}
+                                                      </div>
+                                                    )}
+                                                  </div>
+                                                </motion.div>
+                                              )}
+                                            </AnimatePresence>
                                           </div>
                                         )
-                                      })()}
+                                      })}
+
+                                      {/* Per-group Pagination buttons */}
+                                      <div className="flex flex-col items-center gap-1.5 mt-1 border-t border-[var(--gold-border)]/10 pt-3">
+                                        <p className="font-cairo text-[10px] text-[var(--text3)]">
+                                          Menampilkan{' '}
+                                          <span className="text-[var(--text2)] font-semibold">{Math.min(visibleCount, groupItems.length)}</span>
+                                          {' '}dari{' '}
+                                          <span className="text-[var(--text2)] font-semibold">{groupItems.length}</span>
+                                          {' '}referensi
+                                        </p>
+
+                                        {hasMore && (
+                                          <button
+                                            type="button"
+                                            onClick={() => setGroupVisibleCounts(prev => ({ ...prev, [g.id]: prev[g.id] + 8 }))}
+                                            className="w-full py-1.5 rounded-lg font-cairo text-xs
+                                                       border border-[var(--gold-border)]/30 text-[var(--gold)]
+                                                       hover:bg-[var(--gold)]/5 transition-all
+                                                       flex items-center justify-center gap-1.5"
+                                          >
+                                            <ChevronDown className="w-3.5 h-3.5" />
+                                            Lihat {Math.min(8, groupItems.length - visibleCount)} referensi berikutnya
+                                          </button>
+                                        )}
+
+                                        {canCollapse && (
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              setGroupVisibleCounts(prev => ({ ...prev, [g.id]: 8 }))
+                                            }}
+                                            className="w-full py-1.5 rounded-lg font-cairo text-xs
+                                                       border border-[var(--gold-border)]/30 text-[var(--gold)]
+                                                       hover:bg-[var(--gold)]/5 transition-all
+                                                       flex items-center justify-center gap-1.5"
+                                          >
+                                            <ChevronUp className="w-3.5 h-3.5" />
+                                            Tampilkan lebih sedikit
+                                          </button>
+                                        )}
+                                      </div>
                                     </div>
                                   </motion.div>
                                 )}
@@ -1171,57 +1235,6 @@ function KultumGeneratorInner() {
                             </div>
                           )
                         })}
-                      </div>
-                    )}
-                    {referensiSuggested.length > 0 && (
-                      <div className="mt-4 flex flex-col items-center gap-2">
-                        {/* Info counter */}
-                        <p className="font-cairo text-xs text-[var(--text3)]">
-                          Menampilkan{' '}
-                          <span className="text-[var(--text2)] font-semibold">{Math.min(visibleCount, referensiFiltered.length)}</span>
-                          {' '}dari{' '}
-                          <span className="text-[var(--text2)] font-semibold">{referensiFiltered.length}</span>
-                          {' '}referensi
-                        </p>
-
-                        {/* Tombol Load More */}
-                        {adaLagi && (
-                          <button
-                            type="button"
-                            onClick={() => setVisibleCount(prev => prev + 8)}
-                            className="w-full py-2 rounded-lg font-cairo text-sm
-                                       border border-[var(--gold-border)] text-[var(--gold)]
-                                       hover:bg-[var(--gold)]/10 transition-all
-                                       flex items-center justify-center gap-2"
-                          >
-                            <ChevronDown className="w-4 h-4" />
-                            Lihat {Math.min(8, sisanya)} referensi berikutnya
-                          </button>
-                        )}
-
-                        {/* Tombol Tampilkan lebih sedikit */}
-                        {!adaLagi && sudahDiperluas && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setVisibleCount(8)
-                              const el = document.getElementById('referensi-list-top')
-                              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                            }}
-                            className="w-full py-2 rounded-lg font-cairo text-sm
-                                       border border-[var(--gold-border)] text-[var(--gold)]
-                                       hover:bg-[var(--gold)]/10 transition-all
-                                       flex items-center justify-center gap-2"
-                          >
-                            <ChevronUp className="w-4 h-4" />
-                            Tampilkan lebih sedikit
-                          </button>
-                        )}
-
-                        {/* Semua sudah ditampilkan */}
-                        {!adaLagi && (
-                          <p className="font-cairo text-xs text-[var(--teal-300)] py-1">✓ Semua referensi telah ditampilkan</p>
-                        )}
                       </div>
                     )}
                   </div>

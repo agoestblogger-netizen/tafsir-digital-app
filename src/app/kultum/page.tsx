@@ -648,6 +648,45 @@ function KultumGeneratorInner() {
   </div>
 </div>
 
+            {/* Karakter Kultum */}
+            <div className="space-y-3 mb-6">
+              <label className="font-cinzel flex items-center gap-2 text-xs font-bold text-[var(--gold)] uppercase tracking-widest">
+                🎭 Karakter Kultum
+              </label>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { id: 'umum' as const, icon: '📖', label: 'Umum', desc: 'Ayat, hadits & doa sehari-hari', contoh: 'Sabar, Sholat, Rezeki' },
+                  { id: 'sains' as const, icon: '🔬', label: 'Perspektif Sains', desc: 'Mukjizat ilmiah Al-Quran', contoh: 'Gerhana, Lebah, Air' },
+                  { id: 'kisah' as const, icon: '📜', label: 'Kisah Kaum Lampau', desc: 'Pelajaran dari kisah nabi terdahulu', contoh: 'Nabi Yunus, Ashabul Kahfi' },
+                ].map(k => (
+                  <button
+                    key={k.id}
+                    type="button"
+                    onClick={() => {
+                      setKarakterKultum(k.id)
+                      if (k.id === 'kisah') {
+                        setIsKisahMode(true)
+                        openKisahDropdown()
+                      } else {
+                        setIsKisahMode(false)
+                        setSelectedKisah(null)
+                      }
+                    }}
+                    className={`flex flex-col items-start p-3 rounded-xl border text-left transition-all ${
+                      karakterKultum === k.id
+                        ? 'border-[var(--gold)] bg-[var(--gold)]/8'
+                        : 'border-white/15 bg-[var(--dark2)]/30 hover:border-white/30'
+                    }`}
+                  >
+                    <span className="text-2xl mb-1">{k.icon}</span>
+                    <span className="font-cinzel text-xs font-bold text-[var(--gold)] uppercase tracking-wide leading-tight mb-1">{k.label}</span>
+                    <span className="font-cairo text-[10px] text-[var(--text3)] leading-tight">{k.desc}</span>
+                    <span className="font-cairo text-[9px] text-[var(--text3)]/60 mt-1 italic">{k.contoh}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Topik Bahasan */}
             <div className="space-y-4">
               <label className="font-cinzel flex items-center gap-2 text-xs font-bold text-[var(--gold)] uppercase tracking-widest mb-2">
@@ -655,7 +694,12 @@ function KultumGeneratorInner() {
               </label>
               
               <div className="flex flex-wrap gap-2 mb-4">
-                {TOPIK_POPULER.map(topik => (
+                {(karakterKultum === 'sains' 
+                  ? ['Gerhana Bulan', 'Lebah & Madu', 'Air & Kehidupan', 'Bintang & Galaksi', 'Embrio Manusia', 'Angin & Hujan']
+                  : karakterKultum === 'kisah'
+                  ? ['Nabi Yunus AS', 'Ashabul Kahfi', 'Nabi Musa & Firaun', 'Nabi Ibrahim AS', 'Kaum Luth', 'Nabi Yusuf AS']
+                  : TOPIK_POPULER
+                ).map(topik => (
                   <button
                     key={topik}
                     onClick={() => {
@@ -684,25 +728,7 @@ function KultumGeneratorInner() {
                   placeholder="Atau ketik topik lain..."
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 font-cairo text-sm text-white placeholder-white/30 focus:border-[#C9A84C]/50 outline-none disabled:opacity-40"
                 />
-                <button 
-                  type="button"
-                  onClick={() => {
-                    if (isKisahMode) {
-                      setIsKisahMode(false)
-                      setSelectedKisah(null)
-                    } else {
-                      setIsKisahMode(true)
-                      openKisahDropdown()
-                    }
-                  }}
-                  className={`flex-shrink-0 font-cairo text-sm px-4 py-3 rounded-xl border font-bold transition-colors ${
-                    isKisahMode
-                      ? 'bg-[#C9A84C] text-[var(--dark)] border-[#C9A84C]'
-                      : 'border-[#C9A84C] text-[#C9A84C] hover:bg-[#C9A84C]/10'
-                  }`}
-                >
-                  📖 Dari Kisah Al-Qur'an
-                </button>
+
               </div>
             </div>
 

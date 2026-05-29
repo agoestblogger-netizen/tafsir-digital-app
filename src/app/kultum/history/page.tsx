@@ -107,7 +107,7 @@ export default function KultumHistoryPage() {
   }, [filteredHistory])
 
   return (
-    <div className="min-h-screen pb-24 font-cairo">
+    <div className="min-h-screen pb-24 font-cairo overflow-x-hidden">
       {/* Header */}
       <section className="relative overflow-hidden bg-gradient-to-b from-[var(--dark3)] to-[var(--dark)] pt-16 pb-8 px-4 sm:px-6 lg:px-8 border-b border-[var(--gold-border)]">
         <div className="arabesque-bg opacity-30"></div>
@@ -193,24 +193,24 @@ export default function KultumHistoryPage() {
                 <div className="grid gap-4">
                   {items.map(item => (
                     <div key={item.id} className="group">
-                      <div className="glass-card p-5 rounded-2xl border-[var(--gold-border)] hover:border-[var(--teal-500)] transition-colors flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+                      <div className="glass-card p-5 rounded-2xl border-[var(--gold-border)] hover:border-[var(--teal-500)] transition-colors flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center overflow-hidden w-full">
                         {/* Area konten — diklik untuk buka */}
-                        <Link href={`/kultum/hasil/${item.id}`} className="flex-1 min-w-0 block">
-                          <div className="flex items-center gap-2 mb-2 flex-wrap">
-                            <span className="font-cairo px-2 py-0.5 bg-[var(--dark3)] border border-[var(--gold-border)] rounded text-[10px] uppercase tracking-widest font-bold text-[var(--gold)]">
+                        <Link href={`/kultum/hasil/${item.id}`} className="flex-1 min-w-0 block w-full">
+                          <div className="flex flex-wrap items-center gap-2 mb-2 max-w-full">
+                            <span className="font-cairo px-2 py-0.5 bg-[var(--dark3)] border border-[var(--gold-border)] rounded text-[10px] uppercase tracking-widest font-bold text-[var(--gold)] shrink-0">
                               {item.format}
                             </span>
-                            <span className="font-cairo px-2 py-0.5 bg-[var(--teal-900)]/30 border border-[var(--teal-500)]/30 rounded text-[10px] uppercase tracking-widest font-bold text-[var(--teal-200)] truncate max-w-[150px]">
+                            <span className="font-cairo px-2 py-0.5 bg-[var(--teal-900)]/30 border border-[var(--teal-500)]/30 rounded text-[10px] uppercase tracking-widest font-bold text-[var(--teal-200)] break-words max-w-full">
                               {item.tema}
                             </span>
                             {item.is_favorit && (
-                              <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                              <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400 shrink-0" />
                             )}
                             {item.sudah_digunakan && (
-                              <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+                              <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                             )}
                           </div>
-                          <h4 className="font-cinzel text-base font-bold text-[var(--text1)] mb-1 group-hover:text-[var(--teal-200)] transition-colors truncate">
+                          <h4 className="font-cinzel text-base font-bold text-[var(--text1)] mb-1 group-hover:text-[var(--teal-200)] transition-colors break-words whitespace-normal line-clamp-2">
                             {item.judul}
                           </h4>
                           <div className="font-cairo flex items-center gap-1 text-xs text-[var(--text3)]">
@@ -220,7 +220,7 @@ export default function KultumHistoryPage() {
                         </Link>
 
                         {/* Action buttons — di LUAR Link agar tidak conflict */}
-                        <div className="flex items-center gap-3 w-full sm:w-auto justify-end pt-3 sm:pt-0 border-t sm:border-0 border-[var(--dark3)]">
+                        <div className="flex items-center gap-3 w-full sm:w-auto justify-end pt-3 sm:pt-0 border-t sm:border-0 border-[var(--dark3)] shrink-0">
                           <button
                             type="button"
                             onClick={(e) => confirmDelete(e, item.id)}

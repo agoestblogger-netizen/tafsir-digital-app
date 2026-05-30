@@ -29,7 +29,8 @@ export const PERAWI_LIST = [
   { id: 'ibnu-majah', name: 'Sunan Ibnu Majah', arabName: 'سُنَنُ ابْنِ مَاجَه',  available: 4285,  level: 'Hasan'         },
   { id: 'ahmad',      name: 'Musnad Ahmad',     arabName: 'مُسْنَدُ أَحْمَد',     available: 4305,  level: 'Hasan Shahih'  },
   { id: 'malik',      name: "Muwatha' Malik",   arabName: 'مُوَطَّأُ مَالِك',     available: 1587,  level: 'Shahih'        },
-  { id: 'darimi',     name: 'Sunan Darimi',     arabName: 'سُنَنُ الدَّارِمِي',   available: 2949,  level: 'Hasan Shahih'  },
+  { id: 'darimi',       name: 'Sunan Darimi',       arabName: 'سُنَنُ الدَّارِمِي',       available: 2949,  level: 'Hasan Shahih'  },
+  { id: 'riyadhus-shalihin', name: 'Riyadhus Shalihin', arabName: 'رِيَاضُ الصَّالِحِينَ', available: 371,   level: 'Shahih'        },
 ];
 
 // ─── Pagination helper ──────────────────────────────────────────────────────

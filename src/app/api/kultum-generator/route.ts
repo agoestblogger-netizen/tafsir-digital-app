@@ -293,7 +293,7 @@ export async function POST(request: NextRequest) {
     console.log('referensi_dipilih[0]:', JSON.stringify(body.referensi_dipilih?.[0])?.slice(0, 200) ?? 'none')
     console.log('========================')
     
-    const { format, sub_format, tema, judul_override, kategori_tema, gaya_bahasa, user_id, durasi_menit, referensiDipilih, referensi_dipilih, semantic_expanded, kisah_id } = body
+    const { format, sub_format, tema, judul_override, kategori_tema, gaya_bahasa, user_id, durasi_menit, referensiDipilih, referensi_dipilih, semantic_expanded, kisah_id, karakter } = body
     const origin = request.nextUrl.origin
 
     console.log('=== GENERATOR FORMAT DEBUG ===')
@@ -938,6 +938,18 @@ Respond ONLY with valid JSON. No markdown, no code fences, no explanation.
 `
     } else {
       promptBase = originalPromptBase
+    }
+
+    if (karakter) {
+      let karakterText = ''
+      if (karakter === 'sains') {
+        karakterText = "\n\nATURAN KARAKTER KULTUM:\n- Buat kultum yang menghubungkan Al-Qur'an dengan fakta ilmiah sains modern.\n"
+      } else if (karakter === 'kisah') {
+        karakterText = '\n\nATURAN KARAKTER KULTUM:\n- Buat kultum yang mengambil pelajaran dari kisah umat dan nabi terdahulu.\n'
+      } else {
+        karakterText = '\n\nATURAN KARAKTER KULTUM:\n- Buat kultum dengan tema akhlak dan ibadah sehari-hari.\n'
+      }
+      promptBase += karakterText
     }
 
     if (isKisahMode) {

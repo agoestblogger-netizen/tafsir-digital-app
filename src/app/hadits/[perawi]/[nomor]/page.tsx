@@ -39,6 +39,18 @@ export default async function HaditsDetailPage({ params }: Props) {
     // Pakai dari cache
     hadits = { number: nomorNum, arab: cached.arab, id: cached.terjemah, grade: cached.grade };
   } else {
+    // Perawi yang tidak ada di API eksternal — ambil dari Supabase langsung
+    const NON_API_PERAWI = ['riyadhus-shalihin']
+    if (NON_API_PERAWI.includes(perawi)) {
+      const { data: supabaseHadits } = await supabase
+        .from('hadits_topik_index')
+        .select('arab, terjemah, topik_nama')
+        .eq('perawi', perawi)
+        .eq('nomor', nomorNum)
+        .single()
+      if (!supabaseHadits) notFound()
+      hadits = { number: nomorNum, arab: supabaseHadits.arab, id: supabaseHadits.terjemah, grade: 'Shahih' }
+    } else {
     // Fetch dari API
     hadits = await getHaditsDetail(perawi, nomorNum);
     if (!hadits) notFound();
@@ -52,6 +64,7 @@ export default async function HaditsDetailPage({ params }: Props) {
       grade: hadits.grade || perawiInfo.level,
       updated_at: new Date().toISOString(),
     }, { onConflict: 'perawi,nomor' });
+    } // end else non-api
   }
 
   return (

@@ -62,7 +62,7 @@ const openai = new OpenAI({
 
 export async function POST(req: Request) {
   try {
-    const { topik, referensi } = await req.json()
+    const { topik, referensi, karakter } = await req.json()
     const refs = Array.isArray(referensi) ? referensi : []
 
     // 1. Ekstrak detail lengkap referensi untuk pemahaman AI
@@ -88,8 +88,17 @@ export async function POST(req: Request) {
       .filter(Boolean)
       .join('\n\n')
 
-    const prompt = `Kamu adalah asisten AI yang ahli dalam menyusun judul kultum/ceramah Islam yang menarik, spesifik, dan tidak klise.
+    let toneKarakter = ""
+    if (karakter === 'sains') {
+      toneKarakter = "\n- Sesuaikan tone judul agar terasa ilmiah-religius, berfokus pada mukjizat Al-Qur'an & sains modern.\n"
+    } else if (karakter === 'kisah') {
+      toneKarakter = "\n- Sesuaikan tone judul agar terasa naratif, berfokus pada inspirasi kisah dan keteladanan kaum/nabi terdahulu.\n"
+    } else {
+      toneKarakter = "\n- Sesuaikan tone judul agar terasa religius dan praktis, berfokus pada akhlak & ibadah sehari-hari.\n"
+    }
 
+    const prompt = `Kamu adalah asisten AI yang ahli dalam menyusun judul kultum/ceramah Islam yang menarik, spesifik, dan tidak klise.
+${toneKarakter}
 TUGAS UTAMA:
 Generate 5 rekomendasi judul kultum berdasarkan referensi (ayat/hadits) yang dipilih oleh user.
 

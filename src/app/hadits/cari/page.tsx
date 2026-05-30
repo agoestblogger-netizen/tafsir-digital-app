@@ -4,7 +4,18 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { PERAWI_LIST, getHaditsList, type Hadits } from "@/lib/api/hadits";
+import { PERAWI_LIST } from "@/lib/api/hadits";
+
+// ─── Result type from /api/hadits-search ──────────────────────────
+type HaditsSearchResult = {
+  id: number;
+  perawi: string;
+  nomor: number;
+  topik_nama: string;
+  terjemah: string;
+  arab: string;
+  similarity: number;
+};
 
 // ── Inner component: reads searchParams ──────────────────────────
 function CariHaditsInner() {
@@ -18,9 +29,10 @@ function CariHaditsInner() {
   const [selectedPerawi, setSelectedPerawi] = React.useState<string[]>(
     initialPerawi ? [initialPerawi] : []
   );
-  const [results, setResults] = React.useState<(Hadits & { perawiId: string; perawiName: string })[]>([]);
+  const [results, setResults] = React.useState<HaditsSearchResult[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [searched, setSearched] = React.useState(false);
+  const [limited, setLimited] = React.useState(false);
 
   const togglePerawi = (id: string) => {
     setSelectedPerawi(prev =>
@@ -34,38 +46,16 @@ function CariHaditsInner() {
     setLoading(true);
     setSearched(true);
     setResults([]);
-
-    const targetPerawi = perawiIds.length > 0
-      ? PERAWI_LIST.filter(p => perawiIds.includes(p.id))
-      : PERAWI_LIST.slice(0, 3);
-
     try {
-      const allResults: (Hadits & { perawiId: string; perawiName: string })[] = [];
-      await Promise.all(
-        targetPerawi.map(async p => {
-          try {
-            const [page1, page2] = await Promise.all([
-              getHaditsList(p.id, 1, 20),
-              getHaditsList(p.id, 2, 20),
-            ]);
-            const combined = [...(page1.data ?? []), ...(page2.data ?? [])];
-            
-            const keywords = searchKw.toLowerCase().split(' ').filter(w => w.length > 3);
-            
-            const matched = combined
-              .filter(h => {
-                if (keywords.length === 0) return h.id.toLowerCase().includes(searchKw.toLowerCase());
-                const teksLower = h.id.toLowerCase();
-                // Cukup 1-2 kata kunci yang match
-                const matchCount = keywords.filter(kw => teksLower.includes(kw)).length;
-                return matchCount >= Math.min(2, keywords.length);
-              })
-              .map(h => ({ ...h, perawiId: p.id, perawiName: p.name }));
-            allResults.push(...matched);
-          } catch { /* skip failed perawi */ }
-        })
-      );
-      setResults(allResults);
+      const res = await fetch('/api/hadits-search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: searchKw, perawi: perawiIds })
+      });
+      const json = await res.json();
+      setResults(json.results ?? []);
+    } catch {
+      setResults([]);
     } finally {
       setLoading(false);
     }
@@ -80,6 +70,30 @@ function CariHaditsInner() {
   }, []); // mount only
 
   const handleSearch = () => doSearch(keyword, selectedPerawi);
+
+  // Lookup perawi display name from PERAWI_LIST using perawi field from result
+  const getPerawiName = (perawiSlug: string) => {
+    // match_hadits returns perawi as a display name like "Bukhari" or full name
+    // Try to find a matching entry in PERAWI_LIST by id similarity
+    const found = PERAWI_LIST.find(p =>
+      p.id === perawiSlug.toLowerCase() ||
+      p.name.toLowerCase().includes(perawiSlug.toLowerCase()) ||
+      perawiSlug.toLowerCase().includes(p.id.replace('-', ' '))
+    );
+    return found?.name ?? perawiSlug;
+  };
+
+  const getPerawiSlug = (perawiStr: string) => {
+    // Try to derive a URL-safe slug from the perawi string
+    const found = PERAWI_LIST.find(p =>
+      p.id === perawiStr.toLowerCase() ||
+      p.name.toLowerCase().includes(perawiStr.toLowerCase()) ||
+      perawiStr.toLowerCase().includes(p.id.replace('-', ' '))
+    );
+    return found?.id ?? perawiStr.toLowerCase().replace(/\s+/g, '-');
+  };
+
+  const similarityPercent = (sim: number) => Math.round(sim * 100);
 
   return (
     <main className="flex flex-col min-h-screen pb-28 font-cairo">
@@ -99,8 +113,11 @@ function CariHaditsInner() {
       >
         <div className="arabesque-bg opacity-20" />
         <div className="relative z-10 max-w-2xl mx-auto">
-          <p className="font-cinzel text-center text-sm font-bold mb-4" style={{ color: "var(--gold-light)" }}>
-            Cari dari 9 Kitab Hadits
+          <p className="font-cinzel text-center text-sm font-bold mb-1" style={{ color: "var(--gold-light)" }}>
+            Cari dari 10.851 Hadits Terindeks
+          </p>
+          <p className="font-cairo text-center text-xs mb-4" style={{ color: "var(--text3)" }}>
+            Pencarian semantik — menemukan makna, bukan sekadar kata kunci
           </p>
           <div className="flex gap-2">
             <input
@@ -108,7 +125,7 @@ function CariHaditsInner() {
               value={keyword}
               onChange={e => setKeyword(e.target.value)}
               onKeyDown={e => e.key === "Enter" && handleSearch()}
-              placeholder="Ketik kata kunci dalam bahasa Indonesia..."
+              placeholder="Ketik tema atau makna dalam bahasa Indonesia..."
               className="flex-1 px-4 py-3 rounded-xl text-sm outline-none"
               style={{ background: "rgba(10,21,32,0.9)", border: "1px solid rgba(201,163,90,0.2)", color: "var(--text1)" }}
             />
@@ -127,7 +144,7 @@ function CariHaditsInner() {
       {/* ── Filter Perawi Chips ──────────────────── */}
       <div className="px-4 py-3">
         <p className="text-xs mb-2" style={{ color: "var(--text3)" }}>
-          Filter perawi (kosong = cari dari Bukhari, Muslim, Abu Dawud):
+          Filter perawi (kosong = cari semua perawi):
         </p>
         <div className="flex flex-wrap gap-2">
           {PERAWI_LIST.map(p => (
@@ -155,50 +172,92 @@ function CariHaditsInner() {
       <div className="px-4 flex flex-col gap-3 max-w-3xl mx-auto w-full">
         {loading && (
           <div className="text-center py-8 font-cairo" style={{ color: "var(--text3)" }}>
-            🔍 Mencari hadits...
+            🔍 Mencari hadits secara semantik...
           </div>
         )}
+
         {!loading && searched && results.length === 0 && (
           <div className="text-center py-12">
             <p className="text-4xl mb-3">📜</p>
             <p className="font-bold mb-1" style={{ color: "var(--text1)" }}>Tidak ditemukan</p>
-            <p className="text-sm" style={{ color: "var(--text3)" }}>Coba kata kunci lain atau pilih lebih banyak perawi</p>
+            <p className="text-sm" style={{ color: "var(--text3)" }}>Coba kata kunci lain atau ubah pilihan perawi</p>
           </div>
         )}
+
+        {!loading && searched && limited && results.length > 0 && results.length < 3 && (
+          <div
+            className="px-4 py-3 rounded-xl text-sm font-cairo"
+            style={{ background: "rgba(201,163,90,0.08)", border: "1px solid rgba(201,163,90,0.2)", color: "var(--text2)" }}
+          >
+            ⚠️ Hasil terbatas — coba kata kunci lain
+          </div>
+        )}
+
         {!loading && results.length > 0 && (
           <>
             <p className="text-sm" style={{ color: "var(--text2)" }}>
-              Ditemukan <strong style={{ color: "var(--teal-200)" }}>{results.length}</strong> hadits
+              Ditemukan <strong style={{ color: "var(--teal-200)" }}>{results.length}</strong> hadits relevan
             </p>
             <AnimatePresence>
-              {results.map((h, i) => (
-                <motion.div
-                  key={`${h.perawiId}-${h.number}`}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.03 }}
-                >
-                  <Link
-                    href={`/hadits/${h.perawiId}/${h.number}`}
-                    className="flex flex-col gap-2 p-4 rounded-2xl block transition-all"
-                    style={{ background: "rgba(10,21,32,0.85)", border: "1px solid rgba(201,163,90,0.08)" }}
+              {results.map((h, i) => {
+                const perawiSlug = getPerawiSlug(h.perawi);
+                const perawiName = getPerawiName(h.perawi);
+                const detailHref = `/hadits/${perawiSlug}/${h.nomor}`;
+
+                return (
+                  <motion.div
+                    key={`${h.id}-${i}`}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.03 }}
                   >
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(13,79,60,0.2)", border: "1px solid rgba(13,143,101,0.2)", color: "var(--teal-200)" }}>
-                        {h.perawiName} #{h.number}
-                      </span>
+                    <div
+                      className="flex flex-col gap-2 p-4 rounded-2xl"
+                      style={{ background: "rgba(10,21,32,0.85)", border: "1px solid rgba(201,163,90,0.08)" }}
+                    >
+                      {/* Header badges */}
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(13,79,60,0.2)", border: "1px solid rgba(13,143,101,0.2)", color: "var(--teal-200)" }}>
+                          {perawiName} #{h.nomor}
+                        </span>
+                        {h.topik_nama && (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full truncate max-w-[180px]" style={{ background: "rgba(201,163,90,0.08)", border: "1px solid rgba(201,163,90,0.15)", color: "var(--gold-light)" }}>
+                            {h.topik_nama}
+                          </span>
+                        )}
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full ml-auto" style={{ background: "rgba(13,79,60,0.15)", color: "var(--teal-300)" }}>
+                          {similarityPercent(h.similarity)}% relevan
+                        </span>
+                      </div>
+
+                      {/* Arab text */}
+                      {h.arab && (
+                        <p className="font-amiri text-lg text-right leading-loose line-clamp-2" dir="rtl" style={{ color: "var(--gold-light)" }}>
+                          {h.arab}
+                        </p>
+                      )}
+
+                      <div className="h-px" style={{ background: "linear-gradient(to right, transparent, rgba(201,163,90,0.15), transparent)" }} />
+
+                      {/* Terjemah */}
+                      <p className="text-xs leading-relaxed line-clamp-3" style={{ color: "var(--text2)" }}>
+                        {h.terjemah}
+                      </p>
+
+                      {/* Link detail */}
+                      <div className="flex justify-end pt-1">
+                        <Link
+                          href={detailHref}
+                          className="text-xs font-bold flex items-center gap-1 transition-colors hover:opacity-80"
+                          style={{ color: "var(--teal-300)" }}
+                        >
+                          Lihat Detail →
+                        </Link>
+                      </div>
                     </div>
-                    <p className="font-amiri text-lg text-right leading-loose line-clamp-2" dir="rtl" style={{ color: "var(--gold-light)" }}>
-                      {h.arab}
-                    </p>
-                    <div className="h-px" style={{ background: "linear-gradient(to right, transparent, rgba(201,163,90,0.15), transparent)" }} />
-                    <p className="text-xs leading-relaxed line-clamp-2" style={{ color: "var(--text2)" }}>{h.id}</p>
-                    <div className="flex justify-end">
-                      <span className="text-xs font-bold" style={{ color: "var(--teal-300)" }}>Buka →</span>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
+                  </motion.div>
+                );
+              })}
             </AnimatePresence>
           </>
         )}

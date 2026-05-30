@@ -40,7 +40,7 @@ export default async function HaditsDetailPage({ params }: Props) {
     hadits = { number: nomorNum, arab: cached.arab, id: cached.terjemah, grade: cached.grade };
   } else {
     // Perawi yang tidak ada di API eksternal — ambil dari Supabase langsung
-    const NON_API_PERAWI = ['riyadhus-shalihin']
+    const NON_API_PERAWI = ['riyadhus-shalihin', 'ahmad']
     if (NON_API_PERAWI.includes(perawi)) {
       const { data: supabaseHadits } = await supabase
         .from('hadits_topik_index')

@@ -35,6 +35,7 @@ function getTodayDate() {
 
 // ── Ayat placeholder (ganti dengan fetch Supabase jika ada) ──────────────────
 const AYAT_HARI_INI = {
+  arab: "إِنَّ اللَّهَ مَعَ الصَّابِرِينَ",
   text: "Sesungguhnya Allah bersama orang-orang yang sabar.",
   source: "QS. Al-Baqarah: 153",
 };
@@ -231,6 +232,13 @@ export default function Home() {
               style={{ color: "rgba(201,163,90,0.6)" }}
             >
               ✨ Ayat Hari Ini
+            </p>
+            <p
+              className="text-right text-xl leading-loose mb-2"
+              dir="rtl"
+              style={{ fontFamily: "Amiri, Georgia, serif", color: "#C9A84C" }}
+            >
+              {AYAT_HARI_INI.arab}
             </p>
             <p className="text-sm italic leading-relaxed mb-1.5" style={{ color: "rgba(255,255,255,0.78)" }}>
               &ldquo;{AYAT_HARI_INI.text}&rdquo;

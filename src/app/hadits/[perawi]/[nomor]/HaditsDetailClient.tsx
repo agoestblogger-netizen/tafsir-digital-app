@@ -108,7 +108,12 @@ export default function HaditsDetailClient({
           className="flex items-center justify-between flex-wrap gap-2"
         >
           <div>
-            <p className="font-cinzel text-base md:text-lg font-bold text-[var(--text1)]">{perawiInfo.name} · No. {nomor}</p>
+            <p className="font-cinzel text-base md:text-lg font-bold text-[var(--text1)]">{perawiInfo.name} · {nomor > 5000 ? 'Referensi Tambahan' : `No. ${nomor}`}</p>
+            {nomor > 5000 && (
+              <p className="font-cairo text-xs text-[var(--gold)]/70 mt-1">
+                ⚠️ Nomor indeks internal — bukan nomor urut kitab resmi
+              </p>
+            )}
           </div>
           <div className="flex gap-2">
             <span

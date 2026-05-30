@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     const supabase = getSupabaseAdmin()
     const { data: rawHadits, error } = await supabase.rpc('match_hadits', {
       query_embedding: embedding,
-      match_threshold: 0.40,
+      match_threshold: 0.35,
       match_count: 20,
     })
 

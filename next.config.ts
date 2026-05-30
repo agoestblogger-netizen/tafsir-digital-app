@@ -15,6 +15,7 @@ const withPWA = withPWAInit({
 });
 
 const nextConfig: NextConfig = {
+  reactStrictMode: false,
   /* config options here */
   experimental: {
     // next-pwa can struggle with server components in React 19;

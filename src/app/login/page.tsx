@@ -5,12 +5,14 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { Loader2, Lock, Mail, AlertCircle } from "lucide-react";
+import { SplashScreen } from "@/components/specific/SplashScreen";
 
 export default function LoginPage() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [showSplash, setShowSplash] = React.useState(false);
   const router = useRouter();
   const supabase = createClient();
 
@@ -31,8 +33,11 @@ export default function LoginPage() {
         throw new Error("Kredensial tidak valid. Silakan periksa email dan kata sandi Anda.");
       }
 
-      router.push("/");
-      router.refresh();
+      setShowSplash(true);
+      setTimeout(() => {
+        router.push("/");
+        router.refresh();
+      }, 2800);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan saat login.");
     } finally {
@@ -41,7 +46,9 @@ export default function LoginPage() {
   };
 
   return (
-    <main
+    <>
+      {showSplash && <SplashScreen userName={email.split("@")[0]} />}
+      <main
       className="flex flex-col min-h-screen items-center justify-center p-6 relative overflow-hidden"
       style={{
         background: "linear-gradient(135deg, #030e0a 0%, #060d12 45%, #061510 100%)",
@@ -233,5 +240,6 @@ export default function LoginPage() {
         </div>
       </motion.div>
     </main>
+    </>
   );
 }

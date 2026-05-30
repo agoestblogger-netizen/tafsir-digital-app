@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Amiri, Cinzel, Cairo } from "next/font/google";
 import "./globals.css";
 import { ClientBottomNav } from "@/components/layout/ClientBottomNav";
+import { ThemeProvider } from "next-themes";
 
 const amiri = Amiri({
   variable: "--font-amiri",
@@ -55,8 +56,10 @@ export default function RootLayout({
       >
         <div className="min-h-screen pb-24 w-full relative">
           <ScrollSaver />
-          {children}
-          <ClientBottomNav />
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+            {children}
+            <ClientBottomNav />
+          </ThemeProvider>
         </div>
       </body>
     </html>

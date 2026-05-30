@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Clock, Search, Trash2, Mic, PlayCircle, Star, CheckCircle } from 'lucide-react'
+import { Clock, Search, Trash2, Mic, PlayCircle, Star, CheckCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { BackButton } from '@/components/ui/BackButton'
 import { useRestoreScroll } from '@/hooks/useScrollRestore'
@@ -128,7 +128,7 @@ export default function KultumHistoryPage() {
         </div>
       </section>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 overflow-x-hidden">
         
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">

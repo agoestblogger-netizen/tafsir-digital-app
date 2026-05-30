@@ -33,13 +33,6 @@ function getTodayDate() {
   return new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 }
 
-// ── Ayat placeholder (ganti dengan fetch Supabase jika ada) ──────────────────
-const AYAT_HARI_INI = {
-  arab: "إِنَّ اللَّهَ مَعَ الصَّابِرِينَ",
-  text: "Sesungguhnya Allah bersama orang-orang yang sabar.",
-  source: "QS. Al-Baqarah: 153",
-};
-
 // ── Edit Overlay ──────────────────────────────────────────────────────────────
 function EditOverlay({
   current,
@@ -131,6 +124,7 @@ export default function Home() {
   const [userName, setUserName] = React.useState("Hamba Allah");
   const [heroId, setHeroId] = React.useState("kultum");
   const [showEdit, setShowEdit] = React.useState(false);
+  const [ayatHariIni, setAyatHariIni] = React.useState<{arab: string, text: string, source: string} | null>(null);
 
   // Load saved hero preference
   React.useEffect(() => {
@@ -146,6 +140,20 @@ export default function Home() {
       if (user?.email) setUserName(user.email.split("@")[0]);
     };
     fetchUser();
+  }, []);
+
+  React.useEffect(() => {
+    const fetchAyat = async () => {
+      const res = await fetch("/api/ayat-random");
+      if (!res.ok) return;
+      const data = await res.json();
+      setAyatHariIni({
+        arab: data.teks_arab,
+        text: data.terjemah,
+        source: `QS. ${data.surah_nama_latin}: ${data.nomor_ayat}`,
+      });
+    };
+    fetchAyat();
   }, []);
 
   const handleSave = (id: string) => {
@@ -233,17 +241,30 @@ export default function Home() {
             >
               ✨ Ayat Hari Ini
             </p>
-            <p
-              className="text-right text-xl leading-loose mb-2"
-              dir="rtl"
-              style={{ fontFamily: "Amiri, Georgia, serif", color: "#C9A84C" }}
-            >
-              {AYAT_HARI_INI.arab}
-            </p>
-            <p className="text-sm italic leading-relaxed mb-1.5" style={{ color: "rgba(255,255,255,0.78)" }}>
-              &ldquo;{AYAT_HARI_INI.text}&rdquo;
-            </p>
-            <p className="text-[10px]" style={{ color: "rgba(201,163,90,0.55)" }}>{AYAT_HARI_INI.source}</p>
+            {ayatHariIni ? (
+              <>
+                <p className="text-right text-xl leading-loose mb-2" dir="rtl"
+                   style={{ fontFamily: "Amiri, Georgia, serif", color: "#C9A84C" }}>
+                  {ayatHariIni.arab}
+                </p>
+                <p className="text-sm italic leading-relaxed mb-1.5"
+                   style={{ color: "rgba(255,255,255,0.78)" }}>
+                  &ldquo;{ayatHariIni.text}&rdquo;
+                </p>
+                <p className="text-[10px]" style={{ color: "rgba(201,163,90,0.55)" }}>
+                  {ayatHariIni.source}
+                </p>
+              </>
+            ) : (
+              <div className="animate-pulse">
+                <div className="h-5 rounded w-2/3 ml-auto mb-2"
+                     style={{ background: "rgba(201,163,90,0.15)" }} />
+                <div className="h-3 rounded w-full mb-1"
+                     style={{ background: "rgba(255,255,255,0.05)" }} />
+                <div className="h-2 rounded w-1/3"
+                     style={{ background: "rgba(201,163,90,0.1)" }} />
+              </div>
+            )}
           </motion.div>
 
           {/* ── SECTION: FITUR UNGGULAN ───────────────────────────────────── */}

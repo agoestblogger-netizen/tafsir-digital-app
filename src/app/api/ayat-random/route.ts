@@ -18,7 +18,7 @@ export async function GET() {
 
     const { data } = await supabaseAdmin
       .from("ayat_quran_index")
-      .select("teks_arab, terjemah, surah_nama_latin, nomor_ayat")
+      .select("teks_arab, terjemah, teks_latin, surah_nama_latin, nomor_ayat")
       .range(randomIndex, randomIndex)
       .single();
 

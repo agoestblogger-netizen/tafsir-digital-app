@@ -124,7 +124,7 @@ export default function Home() {
   const [userName, setUserName] = React.useState("Hamba Allah");
   const [heroId, setHeroId] = React.useState("kultum");
   const [showEdit, setShowEdit] = React.useState(false);
-  const [ayatHariIni, setAyatHariIni] = React.useState<{arab: string, text: string, source: string} | null>(null);
+  const [ayatHariIni, setAyatHariIni] = React.useState<{arab: string, latin: string, text: string, source: string} | null>(null);
 
   // Load saved hero preference
   React.useEffect(() => {
@@ -149,6 +149,7 @@ export default function Home() {
       const data = await res.json();
       setAyatHariIni({
         arab: data.teks_arab,
+        latin: data.teks_latin,
         text: data.terjemah,
         source: `QS. ${data.surah_nama_latin}: ${data.nomor_ayat}`,
       });
@@ -246,6 +247,10 @@ export default function Home() {
                 <p className="text-right text-xl leading-loose mb-2" dir="rtl"
                    style={{ fontFamily: "Amiri, Georgia, serif", color: "#C9A84C" }}>
                   {ayatHariIni.arab}
+                </p>
+                <p className="text-center text-xs italic leading-relaxed mb-2"
+                   style={{ color: "#4ade80" }}>
+                  {ayatHariIni.latin}
                 </p>
                 <p className="text-sm italic leading-relaxed mb-1.5"
                    style={{ color: "rgba(255,255,255,0.78)" }}>

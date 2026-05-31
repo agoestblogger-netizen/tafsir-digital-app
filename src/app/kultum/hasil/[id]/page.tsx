@@ -40,13 +40,7 @@ function normalizeKonten(raw: any, meta?: { format?: string; tema?: string; judu
         muqaddimah: raw.pembuka?.teks || "",
         pengantar_tema: ""
       },
-      ayat_quran: (raw.ayat_pendukung ?? []).map((a: any) => ({
-        arab: a.teks_arab ?? "",
-        latin: a.latin ?? "",
-        terjemah: a.terjemah ?? "",
-        referensi: a.sumber ?? "",
-        tafsir_singkat: ""
-      })),
+      ayat_quran: [],
       penjabaran_tafsir: raw.penjabaran?.teks || "",
       penekanan_makna: raw.penekanan_makna?.teks || "",
       poin_utama: (raw.poin_utama ?? []).map((p: any) => ({
@@ -1041,6 +1035,10 @@ export default function KultumHasilPage() {
       }
 
       // 4. Final State
+      // ayat_quran selalu dari referensi user (ayatQuranDb) — tidak dari output AI
+      if (normalized.bagian && ayatQuranDb.length > 0) {
+        normalized.bagian.ayat_quran = ayatQuranDb
+      }
       console.log('Resolve done, updating view')
       setKonten({ ...normalized })
       setLoading(false)

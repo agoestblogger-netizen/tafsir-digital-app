@@ -61,6 +61,28 @@ function stripSanad(terjemah: string): string {
   return result.trim() || terjemah
 }
 
+function stripAyatPlaceholders(text: string): string {
+  return text.replace(/\[\[AYAT:\d+:\d+\]\]/g, '').replace(/\s{3,}/g, '\n\n').trim()
+}
+
+function parseInterleaved(text: string): Array<{ type: 'text' | 'ayat'; content: string; surahId?: number; nomorAyat?: number }> {
+  const parts: Array<{ type: 'text' | 'ayat'; content: string; surahId?: number; nomorAyat?: number }> = []
+  const regex = /\[\[AYAT:(\d+):(\d+)\]\]/g
+  let lastIndex = 0
+  let match
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push({ type: 'text', content: text.slice(lastIndex, match.index).trim() })
+    }
+    parts.push({ type: 'ayat', content: match[0], surahId: parseInt(match[1]), nomorAyat: parseInt(match[2]) })
+    lastIndex = regex.lastIndex
+  }
+  if (lastIndex < text.length) {
+    parts.push({ type: 'text', content: text.slice(lastIndex).trim() })
+  }
+  return parts.filter(p => p.content.length > 0)
+}
+
 const KATA_PER_MENIT = 140
 
 const hitungKataStr = (val: any): number => {
@@ -108,6 +130,7 @@ export function KultumResultView({
 }: KultumResultViewProps) {
   const router = useRouter()
   const [copied, setCopied] = useState(false)
+  const [interleavedAyat, setInterleavedAyat] = useState<Record<string, any>>({})
 
   const cleanText = (text: string | undefined | null) => text?.replace(/"""/g, '').trim() ?? ''
   
@@ -221,6 +244,47 @@ export function KultumResultView({
       window.removeEventListener('resize', updateHeights)
     }
   }, [konten, seksiList])
+
+  useEffect(() => {
+    const text = toStr(konten.bagian?.penjabaran_tafsir)
+    const regex = /\[\[AYAT:(\d+):(\d+)\]\]/g
+    
+    // Buat whitelist dari ayat yang sudah ada di konten.bagian.ayat_quran
+    const allowedKeys = new Set([
+      // Dari konten.bagian.ayat_quran (sudah resolved dengan surah_id)
+      ...(konten.bagian?.ayat_quran ?? []).map((a: any) => {
+        const surahId = a.surah_id
+        const nomorAyat = a.nomor_ayat
+        if (surahId && nomorAyat) return `${surahId}:${nomorAyat}`
+        return null
+      }),
+      // Fallback dari referensiDipilih
+      ...referensiDipilih
+        .filter((r: any) => r.type === 'ayat_quran_db')
+        .map((r: any) => {
+          const d = r.data ?? r
+          const surahId = d.surah_id ?? d.surahId
+          const nomorAyat = d.nomor_ayat ?? d.nomorAyat
+          if (surahId && nomorAyat) return `${surahId}:${nomorAyat}`
+          return null
+        }),
+    ].filter(Boolean))
+
+    let match
+    while ((match = regex.exec(text)) !== null) {
+      const surahId = parseInt(match[1])
+      const nomorAyat = parseInt(match[2])
+      const key = `${surahId}:${nomorAyat}`
+
+      // Hanya fetch jika ada di whitelist referensi yang dipilih
+      if (!allowedKeys.has(key)) continue
+
+      fetch(`/api/ayat-by-id?surah_id=${surahId}&nomor_ayat=${nomorAyat}`)
+        .then(r => r.json())
+        .then(data => setInterleavedAyat(prev => ({ ...prev, [key]: data })))
+        .catch(() => {})
+    }
+  }, [konten])
 
   const handleCopyAll = () => {
     let fullText = `${toStr(konten.judul)}\n(${toStr(konten.format)} - ${toStr(konten.durasi_estimasi)})\n\n`
@@ -455,8 +519,38 @@ export function KultumResultView({
                 <div className="text-xs font-bold uppercase tracking-widest text-[var(--gold)] mb-4 flex items-center gap-2">
                   <ScrollText className="w-4 h-4" /> Penjabaran & Tafsir
                 </div>
-                <div className="text-[var(--text1)] leading-relaxed space-y-4 whitespace-pre-wrap">
-                  {toStr(konten.bagian?.penjabaran_tafsir)}
+                <div className="space-y-6">
+                  {parseInterleaved(stripAyatPlaceholders(toStr(konten.bagian?.penjabaran_tafsir))).map((part, i) => {
+                    if (part.type === 'text') {
+                      return (
+                        <p key={i} className="text-[var(--text1)] leading-relaxed whitespace-pre-wrap">
+                          {part.content}
+                        </p>
+                      )
+                    }
+                    const key = `${part.surahId}:${part.nomorAyat}`
+                    const ayat = interleavedAyat[key]
+                    if (!ayat) return (
+                      <div key={i} className="h-24 rounded-xl animate-pulse bg-blue-500/10 border border-blue-500/20" />
+                    )
+                    return (
+                      <div key={i} className="bg-[var(--dark2)] border border-blue-500/30 rounded-2xl p-5">
+                        <div className="text-2xl leading-loose text-right text-[var(--gold-light)] font-amiri mb-2" dir="rtl">
+                          {ayat.teks_arab}
+                        </div>
+                        <div className="text-sm italic text-right text-[var(--teal-200)] mb-3">
+                          {ayat.teks_latin}
+                        </div>
+                        <div className="w-full h-px bg-gradient-to-r from-transparent via-[var(--gold-border)] to-transparent opacity-50 mb-3" />
+                        <div className="text-[var(--text1)] text-sm leading-relaxed">
+                          &quot;{ayat.terjemah}&quot;
+                        </div>
+                        <div className="mt-3 text-xs font-bold text-[var(--gold)]">
+                          QS. {ayat.surah_nama_latin}: {ayat.nomor_ayat}
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
               </section>
             </div>

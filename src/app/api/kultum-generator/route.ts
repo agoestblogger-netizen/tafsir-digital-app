@@ -736,10 +736,12 @@ ATURAN AYAT AL-QUR'AN:
 - CONTOH BENAR: [[AYAT:17:23]], [[AYAT:2:153]]
 - CONTOH SALAH: [[AYAT:17:2317]], [[AYAT:al_isra:23]]
 
-CARA MENYISIPKAN AYAT & TEKS ARAB YANG BENAR (WAJIB DIPATUHI):
-- Sebutkan referensi dalam narasi/paragraf/teks/isi/pembuka/penjabaran/penekanan_makna/kesimpulan: "Allah berfirman dalam QS. An-Nisa: 1 yang artinya '...'"
-- JANGAN PERNAH MENULIS HURUF/TEKS ARAB DI DALAM PARAGRAF ATAU NARASI APAPUN (pembuka, penjabaran, penekanan, kesimpulan, dll). Teks Arab dan terjemah card akan di-render otomatis oleh sistem.
-- Dalam field teks/paragraf/isi/pembuka/penjabaran/penekanan_makna/kesimpulan: cukup sebutkan "QS. Surah: ayat" dan artinya saja secara tekstual tanpa menulis huruf Arab.
+CARA MENYISIPKAN AYAT AL-QUR'AN (WAJIB DIPATUHI):
+- Di dalam field penjabaran_tafsir: WAJIB sisipkan placeholder [[AYAT:surah_id:nomor_ayat]] tepat setelah kalimat yang menyebut ayat tersebut. Contoh: "Allah berfirman tentang kesabaran [[AYAT:2:153]] dan ayat ini mengajarkan kita..."
+- HANYA gunakan surah_id dan nomor_ayat dari referensi yang diberikan — JANGAN tambah placeholder ayat lain di luar referensi yang ada.
+- JANGAN PERNAH MENULIS HURUF/TEKS ARAB DI DALAM PARAGRAF ATAU NARASI APAPUN. Teks Arab akan di-render otomatis oleh sistem via placeholder.
+- Di field lain (pembuka, penekanan_makna, kesimpulan): cukup sebutkan "QS. Surah: ayat" dan artinya secara tekstual tanpa placeholder.
+- WAJIB: setiap ayat yang disebut di penjabaran_tafsir HARUS punya placeholder [[AYAT:X:Y]] yang sesuai.
 
 ${isMultiTema ? `INSTRUKSI MULTI-TEMA (WAJIB DIPATUHI KETAT):
 Kultum ini membahas ${temaGroups.length} tema yang BERBEDA dan TERPISAH.
@@ -1444,8 +1446,7 @@ ATURAN PENGGUNAAN REFERENSI (WAJIB DIPATUHI):
    - Jika ada [SEJARAH AL-QURAN] → HANYA gunakan ayat dari 
      daftar "AYAT YANG BOLEH DIGUNAKAN" yang diberikan
    - DILARANG menambah ayat lain meskipun valid
-   - Jika tidak ada referensi kisah → gunakan ayat yang 
-     relevan dengan tema (boleh dari pengetahuan AI)
+   - Jika tidak ada referensi ayat → JANGAN tambah ayat lain dari pengetahuan AI
 
 3. REFERENSI DOA:
    - Jika ada [DOA AL-QURAN] → gunakan sebagai doa penutup 

@@ -77,16 +77,7 @@ export default function KultumPreviewPage() {
                 muqaddimah: parsed.pembuka?.teks || "",
                 pengantar_tema: ""
               },
-              ayat_quran: [
-                ...(parsed.ayat_pendukung ?? []).map((a: any) => ({
-                  arab: a.teks_arab ?? "",
-                  latin: a.latin ?? "",
-                  terjemah: a.terjemah ?? "",
-                  referensi: a.sumber ?? "",
-                  tafsir_singkat: ""
-                })),
-                ...ayatQuranDb
-              ],
+              ayat_quran: ayatQuranDb,
               penjabaran_tafsir: parsed.penjabaran?.teks || "",
               penekanan_makna: parsed.penekanan_makna?.teks || "",
               poin_utama: (parsed.poin_utama ?? []).map((p: any) => ({
@@ -153,8 +144,15 @@ export default function KultumPreviewPage() {
             }
           }
 
-          // Resolve sisa placeholder yang belum ter-resolve (fallback)
-          await resolveAyatPlaceholders(parsed)
+          // Resolve placeholder khotbah jumat saja, bukan bagian.ayat_quran
+          // bagian.ayat_quran sudah diisi dari referensi user (ayatQuranDb) — tidak perlu resolve
+          if (parsed.khotbah_pertama || parsed.khotbah_kedua) {
+            await resolveAyatPlaceholders(parsed)
+          }
+          // Pastikan ayat_quran tetap dari referensi user
+          if (parsed.bagian) {
+            parsed.bagian.ayat_quran = ayatQuranDb
+          }
           setKonten(parsed)
         } catch (e) {
           console.error('Failed to parse preview data', e)

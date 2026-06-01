@@ -568,7 +568,9 @@ export function KultumResultView({
                         // Normalize field names: ayat pakai teks_arab/teks_latin, hadits pakai arab
                         const arabText = toStr((ref as any).teks_arab ?? (ref as any).arab)
                         const latinText = toStr((ref as any).teks_latin ?? (ref as any).latin)
-                        const terjemahText = toStr((ref as any).terjemah)
+                        const terjemahText = isHadits
+                          ? toStr((ref as any).matan ?? (ref as any).terjemah)
+                          : toStr((ref as any).terjemah)
                         const referensiText = isHadits
                           ? `HR. ${(ref as any).perawi ?? ''} No. ${(ref as any).nomor ?? ''}`
                           : `QS. ${(ref as any).surah_nama_latin ?? (ref as any).surah_nama ?? ''}: ${(ref as any).nomor_ayat ?? ''}`

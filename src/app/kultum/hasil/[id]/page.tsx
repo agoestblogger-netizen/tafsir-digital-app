@@ -1039,6 +1039,19 @@ export default function KultumHasilPage() {
       if (normalized.bagian && ayatQuranDb.length > 0) {
         normalized.bagian.ayat_quran = ayatQuranDb
       }
+      // Inject penjabaran interleaved jika ada (via sessionStorage + URL flag)
+      const searchParams = new URLSearchParams(window.location.search)
+      const isInterleaved = searchParams.get('interleaved') === '1'
+      if (isInterleaved) {
+        const interleavedStr = sessionStorage.getItem('kultum_penjabaran_interleaved')
+        if (interleavedStr && normalized.bagian) {
+          normalized.bagian.penjabaran_tafsir = interleavedStr
+          sessionStorage.removeItem('kultum_penjabaran_interleaved')
+          console.log('[id] interleaved injected, length:', interleavedStr.length)
+        } else {
+          console.warn('[id] interleaved=1 tapi sessionStorage kosong')
+        }
+      }
       console.log('Resolve done, updating view')
       setKonten({ ...normalized })
       setLoading(false)

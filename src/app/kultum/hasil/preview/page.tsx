@@ -17,6 +17,9 @@ export default function KultumPreviewPage() {
 
   useEffect(() => {
     const load = async () => {
+      console.log('[preview] sessionStorage keys:', Object.keys(sessionStorage))
+      console.log('[preview] kultum_result:', sessionStorage.getItem('kultum_result')?.slice(0, 50))
+      console.log('[preview] kultum_penjabaran_interleaved:', sessionStorage.getItem('kultum_penjabaran_interleaved')?.slice(0, 100))
       const dataStr = sessionStorage.getItem('kultum_result')
       const refStr = sessionStorage.getItem('kultum_referensi_dipilih')
       if (refStr) {
@@ -145,13 +148,17 @@ export default function KultumPreviewPage() {
           }
 
           // Resolve placeholder khotbah jumat saja, bukan bagian.ayat_quran
-          // bagian.ayat_quran sudah diisi dari referensi user (ayatQuranDb) — tidak perlu resolve
           if (parsed.khotbah_pertama || parsed.khotbah_kedua) {
             await resolveAyatPlaceholders(parsed)
           }
           // Pastikan ayat_quran tetap dari referensi user
           if (parsed.bagian) {
             parsed.bagian.ayat_quran = ayatQuranDb
+          }
+          // Inject penjabaran interleaved jika ada (disimpan dalam kultum_result.__penjabaran_interleaved)
+          if (parsed.__penjabaran_interleaved && parsed.bagian) {
+            parsed.bagian.penjabaran_tafsir = parsed.__penjabaran_interleaved
+            delete parsed.__penjabaran_interleaved
           }
           setKonten(parsed)
         } catch (e) {

@@ -293,7 +293,7 @@ export async function POST(request: NextRequest) {
     console.log('referensi_dipilih[0]:', JSON.stringify(body.referensi_dipilih?.[0])?.slice(0, 200) ?? 'none')
     console.log('========================')
     
-    const { format, sub_format, tema, judul_override, kategori_tema, gaya_bahasa, user_id, durasi_menit, referensiDipilih, referensi_dipilih, semantic_expanded, kisah_id, karakter } = body
+    const { format, sub_format, tema, judul_override, kategori_tema, gaya_bahasa, user_id, durasi_menit, referensiDipilih, referensi_dipilih, semantic_expanded, kisah_id, karakter, is_interleaved } = body
     const origin = request.nextUrl.origin
 
     console.log('=== GENERATOR FORMAT DEBUG ===')
@@ -514,13 +514,13 @@ Kultum ini membahas ${topikUnik.length} tema yang BERBEDA dan TIDAK HARUS BERKAI
       // Poin untuk Aplikasi Kehidupan
       isiPoinInstructions.push(`    {
       "judul": "Judul poin tentang Aplikasi Praktis Sehari-hari (buat judul spesifik dan menarik)",
-      "paragraf": "Hubungkan seluruh dalil di atas (baik ayat maupun hadits) dengan penerapan praktis, contoh konkret, dan solusi dalam kehidupan nyata sehari-hari kita. Minimal 4 kalimat."
+      "paragraf": "Hubungkan seluruh dalil di atas (baik ayat maupun hadits) dengan penerapan praktis, contoh konkret, dan solusi dalam kehidupan nyata sehari-hari kita. Minimal 4 kalimat. DILARANG KERAS menyebut atau mengutip ayat/hadits baru yang tidak ada di daftar referensi — hanya boleh merujuk ulang dalil yang sudah disebutkan sebelumnya."
     }`)
       
       // Poin untuk Penutup
       isiPoinInstructions.push(`    {
       "judul": "Judul poin penutup (buat judul spesifik yang menginspirasi)",
-      "paragraf": "Kesimpulan penutup kultum yang menyentuh hati, memotivasi jamaah untuk beramal shalih, dan ditutup dengan doa ringkas/ajakan introspeksi. Minimal 4 kalimat."
+      "paragraf": "Kesimpulan penutup kultum yang menyentuh hati, memotivasi jamaah untuk beramal shalih, dan ditutup dengan doa ringkas/ajakan introspeksi. Minimal 4 kalimat. DILARANG KERAS menyebut atau mengutip ayat/hadits baru yang tidak ada di daftar referensi — hanya boleh merujuk ulang dalil yang sudah disebutkan sebelumnya."
     }`)
       
       isiStructurePrompt = `[\n${isiPoinInstructions.join(',\n')}\n  ]`
@@ -740,7 +740,7 @@ CARA MENYISIPKAN AYAT AL-QUR'AN (WAJIB DIPATUHI):
 - Di dalam field penjabaran_tafsir: WAJIB sisipkan placeholder [[AYAT:surah_id:nomor_ayat]] tepat setelah kalimat yang menyebut ayat tersebut. Contoh: "Allah berfirman tentang kesabaran [[AYAT:2:153]] dan ayat ini mengajarkan kita..."
 - HANYA gunakan surah_id dan nomor_ayat dari referensi yang diberikan — JANGAN tambah placeholder ayat lain di luar referensi yang ada.
 - JANGAN PERNAH MENULIS HURUF/TEKS ARAB DI DALAM PARAGRAF ATAU NARASI APAPUN. Teks Arab akan di-render otomatis oleh sistem via placeholder.
-- Di field lain (pembuka, penekanan_makna, kesimpulan): cukup sebutkan "QS. Surah: ayat" dan artinya secara tekstual tanpa placeholder.
+- Di field lain (pembuka, penekanan_makna, kesimpulan): HANYA boleh merujuk ulang ayat yang sudah ada di daftar referensi — DILARANG KERAS menyebut atau mengutip ayat baru yang tidak ada di daftar referensi.
 - WAJIB: setiap ayat yang disebut di penjabaran_tafsir HARUS punya placeholder [[AYAT:X:Y]] yang sesuai.
 
 ${isMultiTema ? `INSTRUKSI MULTI-TEMA (WAJIB DIPATUHI KETAT):
@@ -838,6 +838,14 @@ ATURAN WAJIB:
   * 30 menit = 7-9 poin, tiap poin non-tengah/pembuka/penutup minimal 6 kalimat, sedangkan poin_utama (poin tengah) wajib 2-3 kalimat saja
   * 45 menit = 9-12 poin, tiap poin non-tengah/pembuka/penutup minimal 7 kalimat, sedangkan poin_utama (poin tengah) wajib 2-3 kalimat saja
 - Field "pengantar_tema" (paragraf pertama) minimal 100 kata
+${is_interleaved ? `INSTRUKSI PENJABARAN INTERLEAVED (WAJIB):
+Field "penjabaran_tafsir" harus ditulis sebagai satu narasi mengalir yang menyisipkan referensi secara alami. Struktur wajib:
+1. Narasi pembuka (2-3 kalimat) sebelum referensi pertama
+2. Setelah setiap referensi, tulis NARASI JEMBATAN yang menghubungkan ke referensi berikutnya. Contoh jembatan: "Dan hal ini diperkuat oleh sabda Rasulullah SAW yang diriwayatkan Imam Bukhari..." atau "Allah SWT juga menegaskan hal ini dalam firman-Nya..." atau "Dari sinilah kita memahami mengapa Nabi SAW juga mengajarkan..."
+3. Gunakan marker [[REF:0]], [[REF:1]], [[REF:2]] dst untuk menandai posisi card referensi — sistem akan render card otomatis di posisi tersebut
+4. Narasi penutup (2-3 kalimat) setelah referensi terakhir yang merangkum semua referensi
+CONTOH FORMAT:
+"Dalam kehidupan sehari-hari... [[REF:0]] Ayat ini mengajarkan bahwa... Dan hal ini diperkuat oleh hadits Nabi SAW... [[REF:1]] Dari sabda beliau ini kita memahami... Ketiga dalil ini menyatu dalam satu pesan..."` : ''}
 - Field "penjabaran_tafsir" (paragraf tengah) minimal 200 kata
 - Field "kesimpulan" minimal 100 kata
 - Setiap item "isi" WAJIB punya "judul" yang spesifik (dan paragraf panjang sesuai target, KECUALI poin_utama/tengah yang harus RINGKAS 2-3 kalimat)

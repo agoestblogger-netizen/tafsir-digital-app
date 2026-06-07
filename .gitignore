@@ -44,3 +44,8 @@ next-env.d.ts
 /public/sw.js
 /public/workbox-*.js
 /public/worker-*.js
+
+# PDF files - too large for git
+scripts/hadits-pdf/
+scripts/tafsir-pdf/
+scripts/output-*.json

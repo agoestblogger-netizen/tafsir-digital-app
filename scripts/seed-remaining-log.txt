@@ -41,3 +41,8 @@ Seeding ahmad: 4305...
   ahmad: 1500/4305 ok=1500 fail=0
   ahmad: 2000/4305 ok=1998 fail=2
   ahmad: 4000/4305 ok=2530 fail=1470
+  ahmad DONE ok=2835 fail=1470
+Seeding darimi: 2949...
+  darimi: 500/2949 ok=498 fail=2
+  darimi: 1000/2949 ok=997 fail=3
+  darimi: 1500/2949 ok=1493 fail=7

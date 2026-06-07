@@ -39,37 +39,23 @@ export default async function HaditsDetailPage({ params }: Props) {
     // Pakai dari cache
     hadits = { number: nomorNum, arab: cached.arab, id: cached.terjemah, grade: cached.grade };
   } else {
-    // Perawi yang tidak ada di API eksternal — ambil dari Supabase langsung
-    const NON_API_PERAWI = ['riyadhus-shalihin', 'ahmad']
-    // Bukhari — ambil dari tabel hadits_bukhari (lebih kaya: kitab, bab, matan)
-    console.log('[hadits detail] perawi:', perawi, 'nomor:', nomorNum)
     const MASTER_PERAWI = ['bukhari', 'muslim', 'abu-dawud', 'tirmidzi', 'nasai', 'ibnu-majah', 'malik', 'ahmad', 'darimi', 'riyadhus-shalihin', 'arbain-nawawi', 'bulughul-maram']
     if (MASTER_PERAWI.includes(perawi)) {
-      console.log('[hadits detail] masuk bukhari branch')
-      const { data: bukhariHadits } = await supabase
+      const { data: masterHadits } = await supabase
         .from('hadits_master')
         .select('arab, terjemah, matan, kitab, bab')
-        .eq('perawi', 'bukhari')
-        .eq('nomor', nomorNum)
-        .maybeSingle()
-      if (!bukhariHadits) notFound()
-      hadits = { 
-        number: nomorNum, 
-        arab: bukhariHadits.arab ?? '', 
-        id: bukhariHadits.matan ?? bukhariHadits.terjemah, 
-        grade: 'Shahih',
-      } as any
-      ;(hadits as any).kitab = bukhariHadits.kitab
-      ;(hadits as any).bab = bukhariHadits.bab
-    } else if (NON_API_PERAWI.includes(perawi)) {
-      const { data: supabaseHadits } = await supabase
-        .from('hadits_topik_index')
-        .select('arab, terjemah, topik_nama')
         .eq('perawi', perawi)
         .eq('nomor', nomorNum)
-        .single()
-      if (!supabaseHadits) notFound()
-      hadits = { number: nomorNum, arab: supabaseHadits.arab, id: supabaseHadits.terjemah, grade: 'Shahih' }
+        .maybeSingle()
+      if (!masterHadits) notFound()
+      hadits = { 
+        number: nomorNum, 
+        arab: masterHadits.arab ?? '', 
+        id: (masterHadits.matan && masterHadits.matan.length > 0) ? masterHadits.matan : (masterHadits.terjemah ?? ''),
+        grade: 'Shahih',
+      } as any
+      ;(hadits as any).kitab = masterHadits.kitab
+      ;(hadits as any).bab = masterHadits.bab
     } else {
     // Fetch dari API
     hadits = await getHaditsDetail(perawi, nomorNum);

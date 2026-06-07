@@ -18,3 +18,6 @@ Seeding abu-dawud: 3919...
   abu-dawud: 2000/3919 ok=1998 fail=2
   abu-dawud: 2500/3919 ok=2498 fail=2
   abu-dawud: 3000/3919 ok=2994 fail=6
+  abu-dawud: 3500/3919 ok=3494 fail=6
+  abu-dawud DONE ok=3913 fail=6
+SELESAI!

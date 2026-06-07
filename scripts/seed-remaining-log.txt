@@ -17,3 +17,27 @@ Seeding nasai: 5761...
   nasai: 2500/5761 ok=2496 fail=4
   nasai: 3000/5761 ok=2994 fail=6
   nasai: 3500/5761 ok=3491 fail=9
+  nasai: 4000/5761 ok=3991 fail=9
+  nasai: 4500/5761 ok=4491 fail=9
+  nasai: 5000/5761 ok=4991 fail=9
+  nasai DONE ok=5355 fail=406
+Seeding ibnu-majah: 4285...
+  ibnu-majah: 500/4285 ok=500 fail=0
+  ibnu-majah: 1000/4285 ok=1000 fail=0
+  ibnu-majah: 1500/4285 ok=1500 fail=0
+  ibnu-majah: 2000/4285 ok=1999 fail=1
+  ibnu-majah: 2500/4285 ok=2498 fail=2
+  ibnu-majah: 3000/4285 ok=2998 fail=2
+  ibnu-majah: 3500/4285 ok=3498 fail=2
+  ibnu-majah: 4000/4285 ok=3997 fail=3
+  ibnu-majah DONE ok=4282 fail=3
+Seeding malik: 1087...
+  malik: 500/1087 ok=499 fail=1
+  malik: 1000/1087 ok=999 fail=1
+  malik DONE ok=1086 fail=1
+Seeding ahmad: 4305...
+  ahmad: 500/4305 ok=500 fail=0
+  ahmad: 1000/4305 ok=1000 fail=0
+  ahmad: 1500/4305 ok=1500 fail=0
+  ahmad: 2000/4305 ok=1998 fail=2
+  ahmad: 4000/4305 ok=2530 fail=1470

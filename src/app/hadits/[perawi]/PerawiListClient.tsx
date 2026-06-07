@@ -93,10 +93,17 @@ export default function PerawiListClient() {
           type="search"
           value={search}
           onChange={e => { setSearch(e.target.value); }}
-          placeholder="Cari dalam halaman ini (Arab / terjemahan)..."
+          placeholder="Cari di seluruh database hadits..."
           className="w-full px-4 py-2.5 rounded-xl text-sm outline-none font-cairo"
           style={{ background: "rgba(10,21,32,0.8)", border: "1px solid rgba(201,163,90,0.12)", color: "var(--text1)" }}
         />
+        <Link
+          href={`/hadits/cari?q=${encodeURIComponent(search)}&perawi=${perawiId}`}
+          className="mt-2 flex items-center justify-center gap-2 w-full py-2 rounded-xl font-cairo text-xs font-bold"
+          style={{ background: "rgba(201,163,90,0.1)", border: "1px solid rgba(201,163,90,0.2)", color: "var(--gold-light)" }}
+        >
+          🔍 Cari di Seluruh Database Hadits
+        </Link>
       </div>
 
       {/* ── Hadits List ─────────────────────────── */}

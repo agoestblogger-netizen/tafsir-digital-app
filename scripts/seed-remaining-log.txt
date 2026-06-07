@@ -12,3 +12,8 @@ Seeding tirmidzi: 3625...
 Seeding nasai: 5761...
   nasai: 500/5761 ok=498 fail=2
   nasai: 1000/5761 ok=998 fail=2
+  nasai: 1500/5761 ok=1498 fail=2
+  nasai: 2000/5761 ok=1996 fail=4
+  nasai: 2500/5761 ok=2496 fail=4
+  nasai: 3000/5761 ok=2994 fail=6
+  nasai: 3500/5761 ok=3491 fail=9

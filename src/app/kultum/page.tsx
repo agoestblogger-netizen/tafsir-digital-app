@@ -976,7 +976,8 @@ function KultumGeneratorInner() {
                                             badgeLabel = "AYAT AL-QUR'AN"
                                             badgeColor = 'text-blue-400 border-blue-500/30 bg-blue-500/5'
                                           } else if (ref.type === 'hadits') {
-                                            badgeLabel = 'HADITS SHAHIH'
+                                            const perawiName = (ref.data as any)?.perawi ? `HR. ${((ref.data as any).perawi as string).toUpperCase()}` : 'HADITS'
+                                            badgeLabel = perawiName
                                             badgeColor = 'text-emerald-400 border-emerald-500/30 bg-emerald-500/5'
                                           } else if (ref.type === 'doa_quran') {
                                             badgeLabel = "DOA AL-QUR'AN"

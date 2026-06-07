@@ -86,7 +86,7 @@ export async function getHaditsList(
   const end = Math.min(page * limit, total);
 
   // Perawi lokal dari hadits_master (lebih cepat)
-  const LOCAL_PERAWI = ['bukhari', 'arbain-nawawi', 'bulughul-maram', 'riyadhus-shalihin', 'ahmad', 'darimi', 'malik']
+  const LOCAL_PERAWI = ['bukhari', 'muslim', 'abu-dawud', 'tirmidzi', 'nasai', 'ibnu-majah', 'malik', 'ahmad', 'darimi', 'riyadhus-shalihin', 'arbain-nawawi', 'bulughul-maram']
   if (LOCAL_PERAWI.includes(perawi)) {
     const { createClient } = await import('@/lib/supabase/client')
     const supabase = createClient()

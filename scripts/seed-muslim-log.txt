@@ -14,3 +14,7 @@ Seeding muslim: 4930...
 Seeding abu-dawud: 3919...
   abu-dawud: 500/3919 ok=499 fail=1
   abu-dawud: 1000/3919 ok=999 fail=1
+  abu-dawud: 1500/3919 ok=1499 fail=1
+  abu-dawud: 2000/3919 ok=1998 fail=2
+  abu-dawud: 2500/3919 ok=2498 fail=2
+  abu-dawud: 3000/3919 ok=2994 fail=6

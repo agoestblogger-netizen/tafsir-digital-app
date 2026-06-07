@@ -31,6 +31,8 @@ export const PERAWI_LIST = [
   { id: 'malik',      name: "Muwatha' Malik",   arabName: 'مُوَطَّأُ مَالِك',     available: 1587,  level: 'Shahih'        },
   { id: 'darimi',       name: 'Sunan Darimi',       arabName: 'سُنَنُ الدَّارِمِي',       available: 2949,  level: 'Hasan Shahih'  },
   { id: 'riyadhus-shalihin', name: 'Riyadhus Shalihin', arabName: 'رِيَاضُ الصَّالِحِينَ', available: 371,   level: 'Shahih'        },
+  { id: 'arbain-nawawi',    name: 'Arbain Nawawi',    arabName: 'الْأَرْبَعُونَ النَّوَوِيَّة', available: 42,    level: 'Shahih'        },
+  { id: 'bulughul-maram',   name: 'Bulughul Maram',   arabName: 'بُلُوغُ الْمَرَام',           available: 1554,  level: 'Shahih'        },
 ];
 
 // ─── Pagination helper ──────────────────────────────────────────────────────
@@ -84,7 +86,7 @@ export async function getHaditsList(
   const end = Math.min(page * limit, total);
 
   // Perawi lokal dari hadits_master (lebih cepat)
-  const LOCAL_PERAWI = ['bukhari']
+  const LOCAL_PERAWI = ['bukhari', 'arbain-nawawi', 'bulughul-maram', 'riyadhus-shalihin', 'ahmad', 'darimi', 'malik']
   if (LOCAL_PERAWI.includes(perawi)) {
     const { createClient } = await import('@/lib/supabase/client')
     const supabase = createClient()

@@ -43,7 +43,8 @@ export default async function HaditsDetailPage({ params }: Props) {
     const NON_API_PERAWI = ['riyadhus-shalihin', 'ahmad']
     // Bukhari — ambil dari tabel hadits_bukhari (lebih kaya: kitab, bab, matan)
     console.log('[hadits detail] perawi:', perawi, 'nomor:', nomorNum)
-    if (perawi === 'bukhari') {
+    const MASTER_PERAWI = ['bukhari', 'arbain-nawawi', 'bulughul-maram', 'riyadhus-shalihin', 'ahmad', 'darimi', 'malik']
+    if (MASTER_PERAWI.includes(perawi)) {
       console.log('[hadits detail] masuk bukhari branch')
       const { data: bukhariHadits } = await supabase
         .from('hadits_master')

@@ -32,7 +32,7 @@ export default async function HaditsDetailPage({ params }: Props) {
     .select('arab, terjemah, grade')
     .eq('perawi', perawi)
     .eq('nomor', nomorNum)
-    .single();
+    .maybeSingle();
 
   let hadits;
   if (cached?.arab && cached?.terjemah) {
@@ -41,7 +41,25 @@ export default async function HaditsDetailPage({ params }: Props) {
   } else {
     // Perawi yang tidak ada di API eksternal — ambil dari Supabase langsung
     const NON_API_PERAWI = ['riyadhus-shalihin', 'ahmad']
-    if (NON_API_PERAWI.includes(perawi)) {
+    // Bukhari — ambil dari tabel hadits_bukhari (lebih kaya: kitab, bab, matan)
+    console.log('[hadits detail] perawi:', perawi, 'nomor:', nomorNum)
+    if (perawi === 'bukhari') {
+      console.log('[hadits detail] masuk bukhari branch')
+      const { data: bukhariHadits } = await supabase
+        .from('hadits_bukhari')
+        .select('terjemah, matan, kitab, bab')
+        .eq('nomor', nomorNum)
+        .maybeSingle()
+      if (!bukhariHadits) notFound()
+      hadits = { 
+        number: nomorNum, 
+        arab: '', 
+        id: bukhariHadits.matan ?? bukhariHadits.terjemah, 
+        grade: 'Shahih',
+      } as any
+      ;(hadits as any).kitab = bukhariHadits.kitab
+      ;(hadits as any).bab = bukhariHadits.bab
+    } else if (NON_API_PERAWI.includes(perawi)) {
       const { data: supabaseHadits } = await supabase
         .from('hadits_topik_index')
         .select('arab, terjemah, topik_nama')
@@ -69,7 +87,7 @@ export default async function HaditsDetailPage({ params }: Props) {
 
   return (
     <ErrorBoundary>
-      <HaditsDetailClient hadits={hadits} perawiInfo={perawiInfo} nomor={nomorNum} />
+      <HaditsDetailClient hadits={hadits} perawiInfo={perawiInfo} nomor={nomorNum} kitab={(hadits as any).kitab} bab={(hadits as any).bab} />
     </ErrorBoundary>
   );
 }

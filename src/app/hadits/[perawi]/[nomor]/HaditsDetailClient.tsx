@@ -19,10 +19,14 @@ export default function HaditsDetailClient({
   hadits,
   perawiInfo,
   nomor,
+  kitab,
+  bab,
 }: {
   hadits: Hadits;
   perawiInfo: PerawiInfo;
   nomor: number;
+  kitab?: string;
+  bab?: string;
 }) {
   const router = useRouter();
   const [copied, setCopied] = React.useState(false);
@@ -317,6 +321,8 @@ export default function HaditsDetailClient({
             { label: "Nomor", value: nomor > 5000 ? '-' : `#${nomor}` },
             { label: "Derajat", value: perawiInfo.level, green: true },
             { label: "Total Kitab", value: `${perawiInfo.available.toLocaleString('id-ID')} hadits` },
+            ...(kitab ? [{ label: "Kitab", value: kitab }] : []),
+            ...(bab ? [{ label: "Bab", value: bab }] : []),
           ].map(item => (
             <div
               key={item.label}

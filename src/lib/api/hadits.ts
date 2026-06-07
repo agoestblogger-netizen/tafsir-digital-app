@@ -83,15 +83,33 @@ export async function getHaditsList(
   const start = (page - 1) * limit + 1;
   const end = Math.min(page * limit, total);
 
-  // Fetch semua hadits di halaman ini secara paralel
+  // Perawi lokal dari hadits_master (lebih cepat)
+  const LOCAL_PERAWI = ['bukhari']
+  if (LOCAL_PERAWI.includes(perawi)) {
+    const { createClient } = await import('@/lib/supabase/client')
+    const supabase = createClient()
+    const { data: rows } = await supabase
+      .from('hadits_master')
+      .select('nomor, arab, matan, terjemah')
+      .eq('perawi', perawi)
+      .order('nomor')
+      .range(start - 1, end - 1)
+    const data: Hadits[] = (rows ?? []).map(h => ({
+      number: h.nomor,
+      arab: h.arab ?? '',
+      id: h.matan ?? h.terjemah ?? '',
+      grade: 'Shahih'
+    }))
+    return { data, total, total_pages, current_page: page }
+  }
+
+  // Perawi lain — API eksternal
   const promises = [];
   for (let n = start; n <= end; n++) {
     promises.push(getHaditsDetail(perawi, n));
   }
-
   const results = await Promise.all(promises);
   const data = results.filter((h): h is Hadits => h !== null);
-
   return { data, total, total_pages, current_page: page };
 }
 

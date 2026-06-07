@@ -99,7 +99,7 @@ export async function getHaditsList(
     const data: Hadits[] = (rows ?? []).map(h => ({
       number: h.nomor,
       arab: h.arab ?? '',
-      id: h.matan ?? h.terjemah ?? '',
+      id: (h.matan && h.matan.length > 0) ? h.matan : (h.terjemah ?? ''),
       grade: 'Shahih'
     }))
     return { data, total, total_pages, current_page: page }

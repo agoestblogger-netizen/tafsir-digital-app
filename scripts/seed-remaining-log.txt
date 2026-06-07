@@ -1,0 +1,14 @@
+/Users/macbook/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+Seeding tirmidzi: 3625...
+  tirmidzi: 500/3625 ok=500 fail=0
+  tirmidzi: 1000/3625 ok=1000 fail=0
+  tirmidzi: 1500/3625 ok=1500 fail=0
+  tirmidzi: 2000/3625 ok=1997 fail=3
+  tirmidzi: 2500/3625 ok=2497 fail=3
+  tirmidzi: 3000/3625 ok=2997 fail=3
+  tirmidzi: 3500/3625 ok=3490 fail=10
+  tirmidzi DONE ok=3615 fail=10
+Seeding nasai: 5761...
+  nasai: 500/5761 ok=498 fail=2
+  nasai: 1000/5761 ok=998 fail=2

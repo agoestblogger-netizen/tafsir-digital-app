@@ -46,14 +46,15 @@ export default async function HaditsDetailPage({ params }: Props) {
     if (perawi === 'bukhari') {
       console.log('[hadits detail] masuk bukhari branch')
       const { data: bukhariHadits } = await supabase
-        .from('hadits_bukhari')
-        .select('terjemah, matan, kitab, bab')
+        .from('hadits_master')
+        .select('arab, terjemah, matan, kitab, bab')
+        .eq('perawi', 'bukhari')
         .eq('nomor', nomorNum)
         .maybeSingle()
       if (!bukhariHadits) notFound()
       hadits = { 
         number: nomorNum, 
-        arab: '', 
+        arab: bukhariHadits.arab ?? '', 
         id: bukhariHadits.matan ?? bukhariHadits.terjemah, 
         grade: 'Shahih',
       } as any

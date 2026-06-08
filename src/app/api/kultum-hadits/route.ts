@@ -85,6 +85,7 @@ async function fetchAyatQuranCard(
 
 export async function POST(req: Request) {
   const { tema, semanticExpanded, judul, kisah_id, kisahData, topik, judulKultum } = await req.json()
+  const haditsRelevanFromExpand = (semanticExpanded?.hadits_relevan ?? []) as any[]
   const supabase = await createClient()
   const supabaseAdmin = getSupabaseAdmin()
 
@@ -141,14 +142,19 @@ export async function POST(req: Request) {
     : await haditsQ.in('topik_nama', temaVariants)
   const haditsData = haditsTopikDirect ?? []
 
-  // Random shuffle agar setiap pencarian dapat hadits berbeda
-  // Tapi tetap prioritaskan yang punya konteks_hadits (lebih informatif)
-  const haditsWithKonteks = haditsData.filter((h: any) => h.konteks_hadits?.ringkasan)
-  const haditsWithoutKonteks = haditsData.filter((h: any) => !h.konteks_hadits?.ringkasan)
-  const shuffled = [
-    ...haditsWithKonteks.sort(() => Math.random() - 0.5),
-    ...haditsWithoutKonteks.sort(() => Math.random() - 0.5)
-  ].slice(0, 20) // ambil max 20 setelah shuffle
+  let finalHadits: any[] = []
+  if (haditsRelevanFromExpand.length > 0) {
+    finalHadits = haditsRelevanFromExpand.slice(0, 8)
+    console.log('[kultum-hadits] pakai hadits_relevan dari semantic-expand:', finalHadits.length)
+  } else {
+    const haditsWithKonteks = haditsData.filter((h: any) => h.konteks_hadits?.ringkasan)
+    const haditsWithoutKonteks = haditsData.filter((h: any) => !h.konteks_hadits?.ringkasan)
+    finalHadits = [
+      ...haditsWithKonteks.sort(() => Math.random() - 0.5),
+      ...haditsWithoutKonteks.sort(() => Math.random() - 0.5)
+    ].slice(0, 20)
+    console.log('[kultum-hadits] fallback ke hadits_topik_index:', finalHadits.length)
+  }
 
   console.log('DEBUG tema:', JSON.stringify(tema))
   console.log('DEBUG temaMapped:', JSON.stringify(temaMapped))
@@ -157,11 +163,11 @@ export async function POST(req: Request) {
 
   // Format Hadits
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const haditsFormatted = shuffled.map((h: any) => ({
+  const haditsFormatted = finalHadits.map((h: any) => ({
     id: h.id,
     type: 'hadits',
     judul: `Hadits ${h.perawi ? `(${h.perawi})` : ''} — ${h.topik_nama}`,
-    deskripsi_singkat: h.konteks_hadits?.ringkasan ?? (h.terjemah ?? h.matan ?? '').slice(0, 120) + '...',
+    deskripsi_singkat: h.intisari ?? h.konteks_hadits?.ringkasan ?? (h.terjemah ?? '').slice(0, 120) + '...',
     relevansi_score: typeof h.similarity === 'number' ? Math.round(h.similarity * 100) : 70,
     data: {
       id: h.id,

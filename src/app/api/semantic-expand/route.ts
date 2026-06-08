@@ -166,13 +166,36 @@ export async function POST(req: NextRequest) {
         topik_hadits: cached.topik_hadits,
         ayat_relevan: cached.ayat_relevan,
         konteks: cached.konteks,
-        judul_suggestions: cached.judul_suggestions ?? []
+        judul_suggestions: cached.judul_suggestions ?? [],
+        hadits_relevan: cached.hadits_relevan ?? []
       })
     }
 
     // ── 2. Cache MISS → expand dengan AI ─────────────────────
     console.log('[semantic-expand] Cache MISS, calling AI:', tema)
     const expanded = await expandTemaWithAI(tema)
+
+    // ── 2b. Embed tema → semantic search hadits ──────────────
+    let haditsRelevan: unknown[] = []
+    let queryEmbedding: number[] = []
+    try {
+      const embeddingResp = await openai.embeddings.create({
+        model: 'text-embedding-3-small',
+        input: tema
+      })
+      queryEmbedding = embeddingResp.data[0].embedding
+
+      const { data: semHadits } = await supabaseAdmin
+        .rpc('match_hadits_master', {
+          query_embedding: queryEmbedding,
+          match_threshold: 0.45,
+          match_count: 8
+        })
+      haditsRelevan = semHadits ?? []
+      console.log('[semantic-expand] hadits relevan:', haditsRelevan.length)
+    } catch (e) {
+      console.error('[semantic-expand] embedding/search error:', e)
+    }
 
     // ── 3. Query judul suggestions sekalian ──────────────────
     // Gabungkan semua sumber lalu pecah compound keywords
@@ -262,7 +285,9 @@ Kriteria judul yang baik:
         topik_hadits: expanded.topik_hadits,
         ayat_relevan: expanded.ayat_relevan,
         konteks: expanded.konteks,
-        judul_suggestions: judulSuggestions
+        judul_suggestions: judulSuggestions,
+        hadits_relevan: haditsRelevan,
+        query_embedding: queryEmbedding
       })
 
     if (insertError) {
@@ -279,7 +304,8 @@ Kriteria judul yang baik:
       topik_hadits: expanded.topik_hadits,
       ayat_relevan: expanded.ayat_relevan,
       konteks: expanded.konteks,
-      judul_suggestions: judulSuggestions
+      judul_suggestions: judulSuggestions,
+      hadits_relevan: haditsRelevan
     })
 
   } catch (e) {

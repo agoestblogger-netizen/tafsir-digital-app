@@ -21,12 +21,14 @@ export default function HaditsDetailClient({
   nomor,
   kitab,
   bab,
+  intisari,
 }: {
   hadits: Hadits;
   perawiInfo: PerawiInfo;
   nomor: number;
   kitab?: string;
   bab?: string;
+  intisari?: string;
 }) {
   const router = useRouter();
   const [copied, setCopied] = React.useState(false);
@@ -56,6 +58,13 @@ export default function HaditsDetailClient({
   };
 
   React.useEffect(() => {
+    // Kalau intisari sudah ada dari DB, pakai langsung (instant, tanpa loading AI)
+    if (intisari && intisari.trim().length > 0) {
+      setResume(intisari)
+      setLoadingResume(false)
+      return
+    }
+    // Fallback: generate via AI untuk hadits yang belum punya intisari
     setLoadingResume(true)
     fetch('/api/hadits-ai', {
       method: 'POST',
@@ -77,12 +86,11 @@ export default function HaditsDetailClient({
         return r.json()
       })
       .then(json => {
-        console.log('hadits-ai response:', json)
         if (json?.result) setResume(json.result)
       })
       .catch(err => console.error('fetch error:', err))
       .finally(() => setLoadingResume(false))
-  }, [perawiInfo.id, nomor, hadits.arab, hadits.id])
+  }, [perawiInfo.id, nomor, hadits.arab, hadits.id, intisari])
 
 
 

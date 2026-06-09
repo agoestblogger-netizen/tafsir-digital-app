@@ -43,7 +43,7 @@ export default async function HaditsDetailPage({ params }: Props) {
     if (MASTER_PERAWI.includes(perawi)) {
       const { data: masterHadits } = await supabase
         .from('hadits_master')
-        .select('arab, terjemah, matan, kitab, bab')
+        .select('arab, terjemah, matan, kitab, bab, intisari')
         .eq('perawi', perawi)
         .eq('nomor', nomorNum)
         .maybeSingle()
@@ -56,6 +56,7 @@ export default async function HaditsDetailPage({ params }: Props) {
       } as any
       ;(hadits as any).kitab = masterHadits.kitab
       ;(hadits as any).bab = masterHadits.bab
+      ;(hadits as any).intisari = masterHadits.intisari
     } else {
     // Fetch dari API
     hadits = await getHaditsDetail(perawi, nomorNum);
@@ -75,7 +76,7 @@ export default async function HaditsDetailPage({ params }: Props) {
 
   return (
     <ErrorBoundary>
-      <HaditsDetailClient hadits={hadits} perawiInfo={perawiInfo} nomor={nomorNum} kitab={(hadits as any).kitab} bab={(hadits as any).bab} />
+      <HaditsDetailClient hadits={hadits} perawiInfo={perawiInfo} nomor={nomorNum} kitab={(hadits as any).kitab} bab={(hadits as any).bab} intisari={(hadits as any).intisari} />
     </ErrorBoundary>
   );
 }

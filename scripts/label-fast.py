@@ -87,7 +87,7 @@ def label_batch(batch):
         + "\n".join(texts)
         + '\n\nWAJIB jawab untuk SEMUA index 0 sampai '
         + str(len(batch) - 1)
-        + '. Jawab HANYA JSON array: [{"index": 0, "topik": "Topik", "tags": ["tag1"]}]'
+        + '. Jawab HANYA JSON array: [{"index": 0, "topik": "Sabar & Syukur", "tags": ["Doa & Dzikir"]}]'
     )
     try:
         resp = client.chat.completions.create(

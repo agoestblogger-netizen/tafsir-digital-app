@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { createClient as createAdminClient } from '@supabase/supabase-js'
+import { createClient as createAdminClient, SupabaseClient } from '@supabase/supabase-js'
 import OpenAI from 'openai'
 import * as crypto from 'crypto'
 
@@ -133,6 +133,117 @@ function splitCompoundKeywords(keywords: string[]): string[] {
   return Array.from(result)
 }
 
+async function embedBlock(
+  expanded: ExpandedTema,
+  tema: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabaseAdmin: SupabaseClient<any>
+): Promise<{ haditsRelevan: unknown[]; queryEmbedding: number[] }> {
+  let haditsRelevan: unknown[] = []
+  let queryEmbedding: number[] = []
+  try {
+    const enrichedQuery = [
+      tema,
+      expanded.konteks ?? '',
+      ...(expanded.keywords ?? []),
+      ...(expanded.konsep_terkait ?? [])
+    ].filter(Boolean).join(', ')
+
+    const embeddingResp = await openai.embeddings.create({
+      model: 'text-embedding-3-small',
+      input: enrichedQuery
+    })
+    queryEmbedding = embeddingResp.data[0].embedding
+
+    const { data: semHadits } = await supabaseAdmin
+      .rpc('match_hadits_master', {
+        query_embedding: queryEmbedding,
+        match_threshold: 0.3,
+        match_count: 8
+      })
+    haditsRelevan = semHadits ?? []
+  } catch (e) {
+    console.error('[semantic-expand] embedding/search error:', e)
+  }
+  return { haditsRelevan, queryEmbedding }
+}
+
+async function judulBlock(
+  expanded: ExpandedTema,
+  tema: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabaseAdmin: SupabaseClient<any>
+): Promise<{ judulSuggestions: string[] }> {
+  const allKeywords = splitCompoundKeywords([
+    ...(expanded.keywords ?? []),
+    ...(expanded.konsep_terkait ?? []),
+    ...(expanded.sinonim ?? []),
+    ...(expanded.topik_hadits ?? [])
+  ]).slice(0, 12)
+
+  let judulSuggestions: string[] = []
+
+  if (allKeywords.length > 0) {
+    const primaryKeywords = splitCompoundKeywords([
+      ...(expanded.keywords ?? []),
+      ...(expanded.topik_hadits ?? [])
+    ]).slice(0, 6)
+
+    const perKeywordResults = await Promise.all(
+      primaryKeywords.map((kw: string) =>
+        supabaseAdmin
+          .from('kultum_judul_bank')
+          .select('judul, topik')
+          .or(`topik.ilike.%${kw}%,judul.ilike.%${kw}%`)
+          .limit(3)
+      )
+    )
+    const allRows = perKeywordResults.flatMap(r => r.data ?? [])
+
+    const scored = allRows.map((r: { judul: string; topik: string }) => {
+      const haystack = (r.judul + ' ' + r.topik).toLowerCase()
+      const score = allKeywords.filter((kw: string) => haystack.includes(kw.toLowerCase())).length
+      return { judul: r.judul, score }
+    })
+
+    judulSuggestions = scored
+      .sort((a: { score: number }, b: { score: number }) => b.score - a.score)
+      .map((r: { judul: string }) => r.judul)
+      .filter((judul: string, idx: number, self: string[]) => self.indexOf(judul) === idx)
+      .slice(0, 5)
+  }
+
+  if (judulSuggestions.length === 0) {
+    const judulResponse = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      max_tokens: 300,
+      temperature: 0.7,
+      messages: [{
+        role: 'system',
+        content: 'Kamu adalah penulis judul kultum Islam yang kreatif. Respond ONLY dengan valid JSON array of strings, tanpa markdown.'
+      }, {
+        role: 'user',
+        content: `Buat 5 judul kultum yang menarik, spesifik, dan relevan untuk tema: "${tema}"
+
+Format: ["Judul 1", "Judul 2", "Judul 3", "Judul 4", "Judul 5"]
+
+Kriteria judul yang baik:
+- Spesifik dan tidak terlalu umum
+- Mengandung kata kunci tema
+- Menarik dan inspiratif
+- Cocok untuk kultum Islam Indonesia
+- Panjang 5-12 kata`
+      }]
+    })
+
+    const judulText = judulResponse.choices[0].message.content ?? '[]'
+    const judulClean = judulText.replace(/```json|```/g, '').trim()
+    judulSuggestions = JSON.parse(judulClean)
+  }
+
+  return { judulSuggestions }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { tema } = await req.json()
@@ -175,111 +286,11 @@ export async function POST(req: NextRequest) {
     console.log('[semantic-expand] Cache MISS, calling AI:', tema)
     const expanded = await expandTemaWithAI(tema)
 
-    // ── 2b. Embed tema → semantic search hadits ──────────────
-    let haditsRelevan: unknown[] = []
-    let queryEmbedding: number[] = []
-    try {
-      // Perkaya tema dengan hasil AI expansion untuk embedding yang lebih presisi
-      const enrichedQuery = [
-        tema,
-        expanded.konteks ?? '',
-        ...(expanded.keywords ?? []),
-        ...(expanded.konsep_terkait ?? [])
-      ].filter(Boolean).join(', ')
-
-      const embeddingResp = await openai.embeddings.create({
-        model: 'text-embedding-3-small',
-        input: enrichedQuery
-      })
-      queryEmbedding = embeddingResp.data[0].embedding
-
-      const { data: semHadits } = await supabaseAdmin
-        .rpc('match_hadits_master', {
-          query_embedding: queryEmbedding,
-          match_threshold: 0.3,
-          match_count: 8
-        })
-      haditsRelevan = semHadits ?? []
-      console.log('[semantic-expand] hadits relevan:', haditsRelevan.length)
-    } catch (e) {
-      console.error('[semantic-expand] embedding/search error:', e)
-    }
-
-    // ── 3. Query judul suggestions sekalian ──────────────────
-    // Gabungkan semua sumber lalu pecah compound keywords
-    const allKeywords = splitCompoundKeywords([
-      ...(expanded.keywords ?? []),
-      ...(expanded.konsep_terkait ?? []),
-      ...(expanded.sinonim ?? []),
-      ...(expanded.topik_hadits ?? [])
-    ]).slice(0, 12)
-
-    let judulSuggestions: string[] = []
-
-    if (allKeywords.length > 0) {
-      // Ambil kata kunci primer untuk fetch (max 6) agar distribusi topik merata
-      const primaryKeywords = splitCompoundKeywords([
-        ...(expanded.keywords ?? []),
-        ...(expanded.topik_hadits ?? [])
-      ]).slice(0, 6)
-
-      // Fetch 3 baris per keyword secara parallel → hindari dominasi satu topik
-      const perKeywordResults = await Promise.all(
-        primaryKeywords.map((kw: string) =>
-          supabaseAdmin
-            .from('kultum_judul_bank')
-            .select('judul, topik')
-            .or(`topik.ilike.%${kw}%,judul.ilike.%${kw}%`)
-            .limit(3)
-        )
-      )
-      const allRows = perKeywordResults.flatMap(r => r.data ?? [])
-
-      console.log('[semantic-expand] primaryKeywords:', primaryKeywords, '| rows:', allRows.length)
-
-      // Scoring: lebih banyak keyword match = skor lebih tinggi
-      const scored = allRows.map((r: { judul: string; topik: string }) => {
-        const haystack = (r.judul + ' ' + r.topik).toLowerCase()
-        const score = allKeywords.filter((kw: string) => haystack.includes(kw.toLowerCase())).length
-        return { judul: r.judul, score }
-      })
-
-      judulSuggestions = scored
-        .sort((a: { score: number }, b: { score: number }) => b.score - a.score)
-        .map((r: { judul: string }) => r.judul)
-        .filter((judul: string, idx: number, self: string[]) => self.indexOf(judul) === idx) // dedupe
-        .slice(0, 5)
-    }
-
-    // Setelah query kultum_judul_bank
-    if (judulSuggestions.length === 0) {
-      // AI generate judul on-the-fly
-      const judulResponse = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
-        max_tokens: 300,
-        temperature: 0.7,
-        messages: [{
-          role: 'system',
-          content: 'Kamu adalah penulis judul kultum Islam yang kreatif. Respond ONLY dengan valid JSON array of strings, tanpa markdown.'
-        }, {
-          role: 'user',
-          content: `Buat 5 judul kultum yang menarik, spesifik, dan relevan untuk tema: "${tema}"
-          
-Format: ["Judul 1", "Judul 2", "Judul 3", "Judul 4", "Judul 5"]
-
-Kriteria judul yang baik:
-- Spesifik dan tidak terlalu umum
-- Mengandung kata kunci tema
-- Menarik dan inspiratif
-- Cocok untuk kultum Islam Indonesia
-- Panjang 5-12 kata`
-        }]
-      })
-      
-      const judulText = judulResponse.choices[0].message.content ?? '[]'
-      const judulClean = judulText.replace(/```json|```/g, '').trim()
-      judulSuggestions = JSON.parse(judulClean)
-    }
+    // ── 3. Embed + judul search paralel ──────────────────────
+    const [{ haditsRelevan, queryEmbedding }, { judulSuggestions }] = await Promise.all([
+      embedBlock(expanded, tema, supabaseAdmin),
+      judulBlock(expanded, tema, supabaseAdmin)
+    ])
 
     // ── 4. Simpan ke cache (pakai admin untuk bypass RLS) ────
     const { error: insertError } = await supabaseAdmin

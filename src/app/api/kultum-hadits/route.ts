@@ -98,23 +98,13 @@ export async function POST(req: Request) {
   // 1. Generate embedding sekali
   const embedding = await generateQueryEmbedding(queryText)
 
-  // 2. Jalankan SEMUA query secara paralel dengan Promise.all
-  const [ayatResult, haditsResult, doaResult] = await Promise.all([
-    // Ayat Al-Qur'an
+  // 2. Jalankan query ayat & doa paralel (hadits sudah dari semantic-expand)
+  const [ayatResult, doaResult] = await Promise.all([
     supabaseAdmin.rpc('match_ayat_quran', {
       query_embedding: embedding,
       match_threshold: 0.55,
       match_count: 3
     }),
-    
-    // Hadits
-    supabase.rpc('match_hadits', {
-      query_embedding: embedding,
-      match_threshold: 0.25,
-      match_count: 10
-    }),
-    
-    // Doa — semantic search dari doa_master
     supabaseAdmin.rpc('match_doa', {
       query_embedding: embedding,
       match_threshold: 0.35,
@@ -125,21 +115,21 @@ export async function POST(req: Request) {
   const ayatData = ayatResult.data ?? []
   if (ayatResult.error) console.error('Ayat vector search error:', ayatResult.error)
 
-  const haditsVectorData: any[] = haditsResult.data ?? []
-  if (haditsResult.error) console.error('Hadits vector search error:', haditsResult.error)
-
   const doaData = doaResult.data ?? []
 
-  // 3. Hadits via topik_nama langsung (akurat, tidak pakai vector)
+  // 3. Hadits via topik_nama langsung — HANYA jika hadits_relevan kosong (fallback)
   const temaMapped = (TEMA_TAG_MAPPING[tema] ?? [tema])[0]
+  const skipTopikQuery = haditsRelevanFromExpand.length > 0
   const haditsQ = supabaseAdmin
     .from('hadits_topik_index')
     .select('id, arab, matan, terjemah, perawi, nomor, topik_nama, tags, konteks_hadits')
     .limit(100)
   const temaVariants = Array.from(new Set([tema, temaMapped].filter(Boolean)))
-  const { data: haditsTopikDirect } = temaVariants.length === 1
-    ? await haditsQ.eq('topik_nama', temaVariants[0])
-    : await haditsQ.in('topik_nama', temaVariants)
+  const { data: haditsTopikDirect } = skipTopikQuery
+    ? { data: [] }
+    : (temaVariants.length === 1
+        ? await haditsQ.eq('topik_nama', temaVariants[0])
+        : await haditsQ.in('topik_nama', temaVariants))
   const haditsData = haditsTopikDirect ?? []
 
   let finalHadits: any[] = []

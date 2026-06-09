@@ -179,16 +179,24 @@ export async function POST(req: NextRequest) {
     let haditsRelevan: unknown[] = []
     let queryEmbedding: number[] = []
     try {
+      // Perkaya tema dengan hasil AI expansion untuk embedding yang lebih presisi
+      const enrichedQuery = [
+        tema,
+        expanded.konteks ?? '',
+        ...(expanded.keywords ?? []),
+        ...(expanded.konsep_terkait ?? [])
+      ].filter(Boolean).join(', ')
+
       const embeddingResp = await openai.embeddings.create({
         model: 'text-embedding-3-small',
-        input: tema
+        input: enrichedQuery
       })
       queryEmbedding = embeddingResp.data[0].embedding
 
       const { data: semHadits } = await supabaseAdmin
         .rpc('match_hadits_master', {
           query_embedding: queryEmbedding,
-          match_threshold: 0.45,
+          match_threshold: 0.3,
           match_count: 8
         })
       haditsRelevan = semHadits ?? []

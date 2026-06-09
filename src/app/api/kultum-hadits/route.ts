@@ -178,6 +178,7 @@ export async function POST(req: Request) {
       nomor: h.nomor,
       topik_nama: h.topik_nama,
       tags: h.tags,
+      intisari: h.intisari,
       konteks_hadits: h.konteks_hadits,
       similarity: h.similarity,
     }

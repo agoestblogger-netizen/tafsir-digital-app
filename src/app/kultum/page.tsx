@@ -1204,6 +1204,16 @@ function KultumGeneratorInner() {
 
                                                     {ref.type === 'hadits' && (
                                                       <>
+                                                        {d.intisari && (
+                                                          <div className="mb-3 p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/15">
+                                                            <p className="font-cinzel text-[9px] font-bold uppercase tracking-wider mb-1.5 text-emerald-400/80">
+                                                              ✦ Intisari Hadits
+                                                            </p>
+                                                            <p className="font-cairo text-xs text-white/80 leading-relaxed">
+                                                              {d.intisari}
+                                                            </p>
+                                                          </div>
+                                                        )}
                                                         {d.arab && (
                                                           <p className="font-amiri text-lg text-right leading-loose mb-2"
                                                              dir="rtl" style={{ color: '#C9A84C' }}>
@@ -1217,7 +1227,7 @@ function KultumGeneratorInner() {
                                                         )}
                                                         {d.perawi && (
                                                           <p className="font-cairo text-[10px] text-white/35 mb-2">
-                                                            HR. {d.perawi} {d.number ? `No. ${d.number}` : ''}
+                                                            HR. {d.perawi} {d.nomor ? `No. ${d.nomor}` : ''}
                                                           </p>
                                                         )}
                                                         {(() => {

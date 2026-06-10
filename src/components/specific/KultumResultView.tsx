@@ -569,7 +569,7 @@ export function KultumResultView({
                         const arabText = toStr((ref as any).teks_arab ?? (ref as any).arab)
                         const latinText = toStr((ref as any).teks_latin ?? (ref as any).latin)
                         const terjemahText = isHadits
-                          ? toStr((ref as any).matan ?? (ref as any).terjemah)
+                          ? toStr((ref as any).intisari ?? (ref as any).terjemah ?? (ref as any).matan)
                           : toStr((ref as any).terjemah)
                         const referensiText = isHadits
                           ? `HR. ${(ref as any).perawi ?? ''} No. ${(ref as any).nomor ?? ''}`
@@ -580,7 +580,7 @@ export function KultumResultView({
                             <div className="text-xl leading-loose text-right text-[var(--gold-light)] font-amiri mb-2" dir="rtl">{arabText}</div>
                             <div className="text-sm italic text-right text-[var(--teal-200)] mb-3">{latinText}</div>
                             <div className="w-full h-px bg-gradient-to-r from-transparent via-[var(--gold-border)] to-transparent opacity-50 mb-3" />
-                            <div className="text-[var(--text1)] text-sm leading-relaxed">&quot;{stripSanad(terjemahText)}&quot;</div>
+                            <div className="text-[var(--text1)] text-sm leading-relaxed">&quot;{terjemahText}&quot;</div>
                             <div className="mt-3 text-xs font-bold text-[var(--gold)]">{referensiText}</div>
                           </div>
                         ) : (

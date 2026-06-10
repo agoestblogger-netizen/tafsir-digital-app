@@ -388,6 +388,7 @@ function KultumGeneratorInner() {
               referensi_dipilih: referensiDipilih,
               tema: temaFinal,
               gaya_bahasa: gayaBahasa,
+              durasi_menit: durasi,
             }),
           })
           if (interleavedRes.ok) {

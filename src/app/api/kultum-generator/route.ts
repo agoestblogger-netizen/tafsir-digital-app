@@ -424,13 +424,12 @@ Sumber: ${d.referensi ?? ''}`
       : `\n\nINSTRUKSI JUDUL:\nJANGAN gunakan label topik mentah sebagai judul.\nBaca referensi di bawah, pahami pesan utamanya, lalu buat judul yang spesifik dan inline dengan isi referensi tersebut.`
 
     const instruksiMultiTema = isMultiTema ? `
-INSTRUKSI KHUSUS MULTI-TEMA:
-Kultum ini membahas ${topikUnik.length} tema yang BERBEDA dan TIDAK HARUS BERKAITAN.
-- Setiap tema WAJIB dibahas secara TERPISAH dan BERDIRI SENDIRI
-- DILARANG menghubungkan atau mencari kaitan antar tema yang berbeda
-- DILARANG menggunakan kalimat transisi yang memaksakan keterkaitan seperti 'Berkaitan dengan tema sebelumnya...', 'Selain itu juga berkaitan...'
-- Setiap tema dibuka dengan tegas: 'Tema berikutnya yang akan kita bahas adalah...'
-- Pastikan semua referensi dari setiap tema muncul dalam pembahasannya masing-masing
+INSTRUKSI REFERENSI MULTI-TOPIK:
+Kultum ini menggunakan referensi dari beberapa topik yang berbeda. Semua referensi sudah dijalin secara mengalir di field penjabaran_tafsir (narasi interleaved).
+- JANGAN buat poin terpisah per tema
+- JANGAN gunakan kalimat 'Tema berikutnya yang akan kita bahas adalah...' atau 'Beralih ke tema kedua...'
+- Perlakukan semua referensi sebagai satu kesatuan narasi yang koheren — temukan benang merah atau sampaikan sebagai hikmah yang saling melengkapi
+- Pastikan semua referensi muncul dalam narasi penjabaran_tafsir
 ` : ''
     
     // Separate references for dynamic prompt blueprint mapping
@@ -445,107 +444,37 @@ Kultum ini membahas ${topikUnik.length} tema yang BERBEDA dan TIDAK HARUS BERKAI
     
     let isiStructurePrompt = ''
     if (isMultiTema) {
-      const multiTemaIsiPrompt = `[
+      isiStructurePrompt = `[
     {
-      "judul": "Pembukaan",
-      "paragraf": "Salam, hamdalah, shalawat. Sampaikan bahwa kultum ini akan membahas ${temaGroups.length} tema penting secara terpisah: ${temaGroups.map((t, i) => `(${i+1}) ${t}`).join(', ')}. Setiap tema membawa pelajaran tersendiri yang berharga. JANGAN sebut bahwa tema-tema ini saling berkaitan jika memang tidak berkaitan. Minimal 3 kalimat."
-    },
-    ${temaGroups.map((topik, idx) => {
-      const refsForTopik = refAktif.filter((r: any) => 
-        (r.data?.topik_utama ?? r.data?.topik_nama ?? '') === topik
-      )
-      const refDetail = refsForTopik.map((r: any) => {
-        const d = r.data ?? r
-        if (r.type === 'ayat_quran_db') {
-          return `- ${r.judul}: "${d.terjemah ?? ''}" (Konteks: ${d.konteks ?? d.topik_utama ?? ''})`
-        }
-        if (r.type === 'hadits') {
-          return `- ${r.judul}: "${d.matan ?? d.terjemah ?? ''}" (Topik: ${d.topik_nama ?? ''})`
-        }
-        return `- ${r.judul}`
-      }).join('\n') || topik
-      return `{
-      "judul": "Tema ${idx+1}: ${topik}",
-      "paragraf": "Referensi untuk tema ini:\n${refDetail}\n\nLANGKAH 1 — BACA setiap referensi di atas secara utuh. Untuk hadits: pahami siapa yang bertanya/bercerita, situasinya, dan apa jawaban Rasulullah SAW secara lengkap — jangan hanya ambil satu penggalan. Untuk ayat: pahami konteks dan pesan utamanya. LANGKAH 2 — TULIS PARAGRAF: Jelaskan setiap referensi secara jujur sesuai konteks aslinya, lalu tarik hikmah yang relevan. AWALI dengan menyebut referensi dan maknanya secara spesifik. Tutup dengan aplikasi praktis dalam kehidupan sehari-hari. Minimal 4 kalimat. JANGAN sambungkan dengan tema lain di poin ini. JANGAN karang sendiri tanpa merujuk referensi di atas."
-    }`
-    }).join(',\n    ')},
-    {
-      "judul": "Kaitan Antar Tema dan Refleksi",
-      "paragraf": "Ringkas poin penting dari masing-masing tema: (1) ${temaGroups[0]}: [ringkasan], (2) ${temaGroups[1]}: [ringkasan]${temaGroups[2] ? `, (3) ${temaGroups[2]}: [ringkasan]` : ''}. Sampaikan bahwa setiap tema membawa pelajaran berharga tersendiri bagi seorang Muslim. JANGAN paksa mencari keterkaitan jika memang tidak ada."
+      "judul": "Judul pembuka yang menarik dan menggambarkan esensi tema",
+      "paragraf": "Paragraf pembukaan: hamdalah, shalawat, lalu pengantar tema yang mengalir dan menyentuh hati. JANGAN tulis salam pembuka (Assalamu'alaikum) karena salam sudah ada di field terpisah. DILARANG KERAS menyebut daftar tema, poin, atau dalil yang akan dibahas — cukup antar jamaah masuk ke suasana tema secara naratif dan mengajak merenung. Minimal 3 kalimat."
     },
     {
-      "judul": "Penutup",
-      "paragraf": "Kesimpulan yang merangkum semua tema, ajakan amal nyata. Minimal 2 kalimat."
+      "judul": "Judul penutup yang menginspirasi",
+      "paragraf": "Kesimpulan penutup kultum yang menyentuh hati, merangkum hikmah dari tema, memotivasi jamaah untuk beramal shalih, dan ditutup dengan ajakan introspeksi. Minimal 4 kalimat. DILARANG KERAS menyebut atau mengutip ayat/hadits baru yang tidak ada di daftar referensi."
     }
   ]`
-      isiStructurePrompt = multiTemaIsiPrompt
     } else if (refAktif.length > 0) {
-      const isiPoinInstructions: string[] = []
-      
-      // Poin 1: Pembukaan
-      isiPoinInstructions.push(`    {
-      "judul": "Judul poin pembuka yang menarik (misalnya tentang esensi tema)",
-      "paragraf": "Isi paragraf pembukaan: hamdalah, shalawat, pengantar tema. JANGAN tulis salam pembuka (Assalamu'alaikum) karena salam sudah ada di field terpisah sebelum paragraf ini. Rujuk secara umum tema hari ini."
-    }`)
-      
-      // Poin untuk Ayat
-      ayatList.forEach((r: any, idx: number) => {
-        const d = r.data ?? r
-        const surahNama = d.surah_nama_latin ?? d.surah_nama ?? ''
-        const nomorAyat = d.nomor_ayat ?? ''
-        isiPoinInstructions.push(`    {
-      "judul": "Judul poin tentang QS. ${surahNama}: ${nomorAyat} (buat judul spesifik yang sesuai dengan pesan ayat ini)",
-      "paragraf": "Bahas dan kupas secara mendalam QS. ${surahNama}: ${nomorAyat} yang berbunyi '${d.terjemah ?? ''}'. Masukkan placeholder [[AYAT:${d.surah_id}:${nomorAyat}]] di dalam teks paragraf ini agar card ayat ter-render. Minimal 4 kalimat penjelasan tafsir/maknanya."
-    }`)
-      })
-      
-      // Poin untuk Hadits
-      haditsList.forEach((r: any, idx: number) => {
-        const d = r.data ?? r
-        const noHadits = d.nomor ?? d.no_hadits ?? d.nomor_hadits ?? d.id ?? ''
-        const perawi = d.perawi ?? ''
-        const atribusi = `HR. ${perawi} No. ${noHadits}`
-        isiPoinInstructions.push(`    {
-      "judul": "Judul poin tentang Hadits Riwayat ${perawi} (buat judul spesifik yang sesuai dengan pesan hadits ini)",
-      "paragraf": "LANGKAH 1 — BACA DAN PAHAMI seluruh terjemah hadits ini secara utuh: '${d.terjemah ?? ''}' (${atribusi}). LANGKAH 2 — IDENTIFIKASI konteks hadits: (a) Siapa yang bertanya atau bercerita? (b) Apa situasi yang melatarbelakangi? (c) Apa isi jawaban atau sabda Rasulullah SAW? (d) Apa pesan utama hadits ini secara keseluruhan — bukan hanya satu kalimat saja. LANGKAH 3 — TULIS PARAGRAF berdasarkan pemahaman di atas: Jelaskan hadits ini secara JUJUR sesuai konteks aslinya. Jika hadits berisi percakapan, situasi, atau kisah, ceritakan seluruh konteks tersebut baru tarik hikmahnya — JANGAN cherry-pick hanya satu penggalan kalimat dari hadits. Kalimat pembuka: 'Dalam hadits riwayat ${perawi} nomor ${noHadits}...' Kamu WAJIB menyertakan atribusi '${atribusi}' secara eksak. DILARANG menulis rantai sanad perawi (Telah menceritakan kepada kami..., dari..., dll). DILARANG KERAS menyebut atau membahas hadits lain selain hadits ini dalam poin ini — setiap hadits punya poin TERPISAH sendiri. Poin ini HANYA untuk HR. ${perawi} No. ${noHadits}. Minimal 4 kalimat."
-    }`)
-      })
-      
-      // Poin untuk Aplikasi Kehidupan
-      isiPoinInstructions.push(`    {
-      "judul": "Judul poin tentang Aplikasi Praktis Sehari-hari (buat judul spesifik dan menarik)",
-      "paragraf": "Hubungkan seluruh dalil di atas (baik ayat maupun hadits) dengan penerapan praktis, contoh konkret, dan solusi dalam kehidupan nyata sehari-hari kita. Minimal 4 kalimat. DILARANG KERAS menyebut atau mengutip ayat/hadits baru yang tidak ada di daftar referensi — hanya boleh merujuk ulang dalil yang sudah disebutkan sebelumnya."
-    }`)
-      
-      // Poin untuk Penutup
-      isiPoinInstructions.push(`    {
-      "judul": "Judul poin penutup (buat judul spesifik yang menginspirasi)",
-      "paragraf": "Kesimpulan penutup kultum yang menyentuh hati, memotivasi jamaah untuk beramal shalih, dan ditutup dengan doa ringkas/ajakan introspeksi. Minimal 4 kalimat. DILARANG KERAS menyebut atau mengutip ayat/hadits baru yang tidak ada di daftar referensi — hanya boleh merujuk ulang dalil yang sudah disebutkan sebelumnya."
-    }`)
-      
-      isiStructurePrompt = `[\n${isiPoinInstructions.join(',\n')}\n  ]`
-    } else {
-      // Default structure
       isiStructurePrompt = `[
-     {
-       "judul": "Judul poin spesifik sesuai konten (bukan 'Poin 1')",
-       "paragraf": "Isi paragraf pembukaan: hamdalah, shalawat, pengantar tema. JANGAN tulis salam pembuka (Assalamu'alaikum) karena salam sudah ada di field terpisah sebelum paragraf ini. Sebut referensi QS/HR secara tekstual dalam narasi."
-     },
     {
-      "judul": "Judul poin spesifik tentang dalil utama",
-      "paragraf": "Penjabaran tema dengan menyebut dalil: 'Allah berfirman dalam QS. X:Y bahwa...' dan [[AYAT:X:Y]] untuk card. Minimal 3 kalimat."
+      "judul": "Judul pembuka yang menarik dan menggambarkan esensi tema",
+      "paragraf": "Paragraf pembukaan: hamdalah, shalawat, lalu pengantar tema yang mengalir dan menyentuh hati. JANGAN tulis salam pembuka (Assalamu'alaikum) karena salam sudah ada di field terpisah. DILARANG KERAS menyebut daftar dalil, poin, atau referensi yang akan dibahas — cukup antar jamaah masuk ke suasana tema secara naratif, dengan pertanyaan retoris atau kisah singkat yang relevan, mengajak jamaah merenung. Minimal 3 kalimat."
     },
     {
-      "judul": "Judul poin spesifik tentang hadits",
-      "paragraf": "Hadits pendukung: 'Rasulullah SAW bersabda dalam HR. Kitab No. X...' Minimal 3 kalimat."
+      "judul": "Judul penutup yang menginspirasi",
+      "paragraf": "Kesimpulan penutup kultum yang menyentuh hati, merangkum hikmah dari tema dan referensi yang sudah dibahas, memotivasi jamaah untuk beramal shalih, dan ditutup dengan ajakan introspeksi. Minimal 4 kalimat. DILARANG KERAS menyebut atau mengutip ayat/hadits baru yang tidak ada di daftar referensi — hanya boleh merujuk ulang dalil yang sudah disebutkan sebelumnya."
+    }
+  ]`
+    } else {
+      // Default structure (no ref)
+      isiStructurePrompt = `[
+    {
+      "judul": "Judul pembuka yang menarik dan menggambarkan esensi tema",
+      "paragraf": "Paragraf pembukaan: hamdalah, shalawat, lalu pengantar tema yang mengalir dan menyentuh hati. JANGAN tulis salam pembuka (Assalamu'alaikum) karena salam sudah ada di field terpisah. DILARANG KERAS menyebut daftar poin yang akan dibahas — cukup antar jamaah masuk ke suasana tema secara naratif dan mengajak merenung. Minimal 3 kalimat."
     },
     {
-      "judul": "Judul poin spesifik tentang aplikasi",
-      "paragraf": "Aplikasi dalam kehidupan sehari-hari. Minimal 3 kalimat."
-    },
-    {
-      "judul": "Judul poin penutup yang spesifik",
-      "paragraf": "Kesimpulan dan penutup. Minimal 3 kalimat."
+      "judul": "Judul penutup yang menginspirasi",
+      "paragraf": "Kesimpulan penutup kultum yang menyentuh hati, merangkum hikmah dari tema, memotivasi jamaah untuk beramal shalih, dan ditutup dengan ajakan introspeksi. Minimal 4 kalimat."
     }
   ]`
     }
@@ -743,15 +672,11 @@ CARA MENYISIPKAN AYAT AL-QUR'AN (WAJIB DIPATUHI):
 - Di field lain (pembuka, penekanan_makna, kesimpulan): HANYA boleh merujuk ulang ayat yang sudah ada di daftar referensi — DILARANG KERAS menyebut atau mengutip ayat baru yang tidak ada di daftar referensi.
 - WAJIB: setiap ayat yang disebut di penjabaran_tafsir HARUS punya placeholder [[AYAT:X:Y]] yang sesuai.
 
-${isMultiTema ? `INSTRUKSI MULTI-TEMA (WAJIB DIPATUHI KETAT):
-Kultum ini membahas ${temaGroups.length} tema yang BERBEDA dan TERPISAH.
-
-ATURAN KERAS:
-1. Setiap tema WAJIB dibahas di poin tersendiri — DILARANG MUTLAK mencampur atau menghubungkan antar tema dalam 1 poin
-2. Setiap poin tema harus dibuka dengan kalimat tegas seperti: "Tema berikutnya yang akan kita bahas adalah..." atau "Beralih ke tema kedua..."
-3. DILARANG menggunakan kalimat transisi yang menghubungkan tema berbeda seperti "Berkaitan dengan tema sebelumnya..." atau "Selain itu, tema ini juga berkaitan dengan..."
-4. Di bagian KESIMPULAN: cukup sebutkan poin penting dari masing-masing tema secara terpisah — DILARANG menarik kesimpulan gabungan yang memaksakan keterkaitan antar tema
-5. Jika tema memang tidak berkaitan, JANGAN dipaksakan berkaitan — biarkan setiap tema berdiri sendiri\n\n` : ''}Output JSON dengan struktur PERSIS berikut (WAJIB ikuti nama field):
+${isMultiTema ? `CATATAN REFERENSI MULTI-TOPIK:
+Kultum ini menggunakan referensi dari beberapa topik berbeda. Semua referensi sudah dijalin sebagai satu narasi mengalir di field penjabaran_tafsir.
+- JANGAN buat poin terpisah per tema — tulis sebagai satu kesatuan narasi koheren
+- JANGAN gunakan kalimat "Tema berikutnya yang akan kita bahas adalah..." atau "Beralih ke tema kedua..."
+- Temukan benang merah antar referensi, atau sampaikan sebagai hikmah yang saling melengkapi dalam satu kultum\n\n` : ''}Output JSON dengan struktur PERSIS berikut (WAJIB ikuti nama field):
 {
   "judul": "Judul ${format} yang menarik dan spesifik",
   "format": "${format.toLowerCase()}",
@@ -760,7 +685,7 @@ ATURAN KERAS:
   "gaya_bahasa": "${gaya_bahasa || 'Semi-Formal'}",
   "isi": ${isiStructurePrompt},
   "penekanan_makna": "Satu paragraf penekanan inti pesan — kalimat kuat yang merangkum esensi tema, bukan ringkasan biasa",
-  "kesimpulan": "Tulis kesimpulan dengan struktur berikut: (1) Sebutkan poin utama dari SETIAP referensi secara TERPISAH satu per satu — jangan campur jadi satu narasi. (2) Tutup dengan 1 kalimat ajakan amal yang spesifik dan menyentuh hati. DILARANG membuat narasi panjang yang mencampur semua tema sekaligus.",
+  "kesimpulan": "Tulis 1 paragraf naratif yang mengalir (3-5 kalimat): rangkum hikmah utama dari tema yang sudah dibahas, tutup dengan ajakan amal yang menyentuh hati. Boleh menyatukan pelajaran dari semua referensi secara koheren. DILARANG menyebut ayat/hadits baru yang tidak ada di daftar referensi. DILARANG format daftar 'Pertama... Kedua... Ketiga...'.",
   "ajakan_penutup": "Satu kalimat ajakan kuat dan inspiratif yang menjadi pesan utama kultum ini — akan ditampilkan sebagai quote highlight",
   "doa_quran_penutup": [
     {
@@ -808,13 +733,7 @@ ATURAN KETAT TENTANG HADITS (WAJIB DIPATUHI):
    hadits. Lebih baik kultum tanpa hadits daripada hadits yang 
    diragukan keasliannya.
 
-6. ATURAN POIN UTAMA (poin-poin di dalam "isi" setelah Pembukaan dan sebelum Penutup):
-   poin_utama → MAX 3 poin. Setiap poin:
-   - Judul: singkat dan spesifik (max 7 kata), tidak boleh mengandung kata "hadits" / "hadis" kecuali AI yakin akan menyertakan atribusi lengkap (HR. xxx No. xxx) di dalam paragrafnya. Jika ragu, gunakan judul yang lebih netral seperti "Refleksi tentang [topik]", "Pelajaran dari [konteks]", "Makna [konsep]", atau "Aplikasi dalam Kehidupan".
-   - Paragraf: RINGKAS 2-3 kalimat saja — fokus pada APLIKASI PRAKTIS dalam kehidupan sehari-hari.
-   - DILARANG mengulang atau mengutip ulang narasi dari bagian penjabaran/tafsir.
-   - DILARANG panjang lebar — ini bukan tempat menjelaskan dalil lagi.
-   - Isi harus berbeda dari penjabaran dan penekanan_makna.
+6. STRUKTUR ARRAY "isi": SELALU tepat 2 item — [Pembukaan, Penutup]. Narasi inti dan penjabaran referensi sudah ada di field "penjabaran_tafsir". JANGAN tambahkan poin tengah apapun.
 
 7. DILARANG KERAS menyebut nama perawi DAN nomor hadits dalam format
    APAPUN jika tidak ada [HADITS SHAHIH] di referensi yang diberikan.
@@ -831,12 +750,8 @@ ATURAN KETAT TENTANG HADITS (WAJIB DIPATUHI):
    - Cara mengutip yang SALAH (Jangan lakukan ini): "Dalam hadits riwayat Tirmidzi nomor 1099, disebutkan: 'Telah menceritakan kepada kami Muhammad bin Basyar, telah menceritakan kepada kami Abdurrahman...'"
 
 ATURAN WAJIB:
-- Jumlah item "isi" WAJIB sesuai durasi:
-  * 5 menit  = 3-4 poin, tiap poin non-tengah/pembuka/penutup minimal 3 kalimat, sedangkan poin_utama (poin tengah) wajib 2-3 kalimat saja
-  * 10 menit = 4-5 poin, tiap poin non-tengah/pembuka/penutup minimal 4 kalimat, sedangkan poin_utama (poin tengah) wajib 2-3 kalimat saja
-  * 15 menit = 5-6 poin, tiap poin non-tengah/pembuka/penutup minimal 5 kalimat, sedangkan poin_utama (poin tengah) wajib 2-3 kalimat saja
-  * 30 menit = 7-9 poin, tiap poin non-tengah/pembuka/penutup minimal 6 kalimat, sedangkan poin_utama (poin tengah) wajib 2-3 kalimat saja
-  * 45 menit = 9-12 poin, tiap poin non-tengah/pembuka/penutup minimal 7 kalimat, sedangkan poin_utama (poin tengah) wajib 2-3 kalimat saja
+- Array "isi" SELALU tepat 2 item: [Pembukaan, Penutup] — tidak bergantung durasi. JANGAN tambah item lain.
+- Durasi ceramah dikontrol oleh panjang narasi "penjabaran_tafsir" dan kedalaman tiap paragraf, bukan jumlah poin.
 - Field "pengantar_tema" (paragraf pertama) minimal 100 kata
 ${is_interleaved ? `INSTRUKSI PENJABARAN INTERLEAVED (WAJIB):
 Field "penjabaran_tafsir" harus ditulis sebagai satu narasi mengalir yang menyisipkan referensi secara alami. Struktur wajib:

@@ -603,7 +603,7 @@ export default function KultumHasilPage() {
           const isiAll = rawParsed.isi
           
           // Item pertama = pembuka, item terakhir = penutup — skip dari poin_utama
-          const isiTengah = isiAll.length > 2 ? isiAll.slice(1, -1) : isiAll
+          const isiTengah = isiAll.length > 2 ? isiAll.slice(1, -1) : []
           
           normalized.bagian.poin_utama = isiTengah
             .map((item: any) => ({

@@ -25,16 +25,22 @@ function getRingkasanRef(ref: RefItem): string {
   return `[${label}] "${teks.slice(0, 200)}" — ${sumber}`;
 }
 
-async function generatePenjabaran(ref: RefItem, tema: string, gaya: string): Promise<string> {
+async function generatePenjabaran(
+  ref: RefItem,
+  tema: string,
+  gaya: string,
+  kataPerRef: number,
+  maxTokens: number
+): Promise<string> {
   const ringkasan = getRingkasanRef(ref);
   const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini",
-    max_tokens: 300,
+    max_tokens: maxTokens,
     temperature: 0.7,
     messages: [
       {
         role: "system",
-        content: `Kamu adalah ustadz yang sedang berceramah. Tulis penjabaran (3-4 kalimat, ${gaya}) yang SPESIFIK menjelaskan ISI referensi berikut dalam konteks tema "${tema}".
+        content: `Kamu adalah ustadz yang sedang berceramah. Tulis penjabaran sekitar ${kataPerRef} kata (gaya: ${gaya}) yang SPESIFIK menjelaskan ISI referensi berikut dalam konteks tema "${tema}".
 PENTING:
 - Penjabaran HARUS membahas isi spesifik dari referensi tersebut — tokoh, peristiwa, atau pesan utama yang disebutkan
 - Jangan bicara tema secara umum — gali makna dari KONTEN referensi itu sendiri
@@ -87,7 +93,7 @@ PENTING:
 
 export async function POST(req: NextRequest) {
   try {
-    const { referensi_dipilih, tema, gaya_bahasa } = await req.json();
+    const { referensi_dipilih, tema, gaya_bahasa, durasi_menit } = await req.json();
 
     if (!referensi_dipilih || referensi_dipilih.length < 2) {
       return NextResponse.json({ error: "Minimal 2 referensi" }, { status: 400 });
@@ -104,12 +110,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Tidak ada ayat/hadits untuk interleaved" }, { status: 400 });
     }
 
+    // Hitung panjang penjabaran per referensi berdasarkan durasi
+    const durasiMenit = (durasi_menit as number) ?? 7;
+    const kataPerRef = Math.round((durasiMenit * 150 * 0.65) / refs.length);
+    const maxTokensPenjabaran = Math.min(1500, Math.max(300, kataPerRef * 2));
+
     // Sequential chained generation
     const bagian: string[] = [];
 
     for (let i = 0; i < refs.length; i++) {
       // Generate penjabaran untuk referensi ini
-      const penjabaran = await generatePenjabaran(refs[i], tema, gaya);
+      const penjabaran = await generatePenjabaran(refs[i], tema, gaya, kataPerRef, maxTokensPenjabaran);
       bagian.push(penjabaran);
 
       // Generate narasi jembatan ke referensi berikutnya (kecuali yang terakhir)

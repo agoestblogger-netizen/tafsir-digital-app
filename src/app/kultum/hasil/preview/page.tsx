@@ -126,7 +126,7 @@ export default function KultumPreviewPage() {
             parsed.tema = parsed.tema ?? ''
 
             const isiAll = parsed.isi
-            const isiTengah = isiAll.length > 2 ? isiAll.slice(1, -1) : isiAll
+            const isiTengah = isiAll.length > 2 ? isiAll.slice(1, -1) : []
             parsed.bagian.poin_utama = isiTengah
               .map((item: any) => ({
                 judul: item.judul ?? '',

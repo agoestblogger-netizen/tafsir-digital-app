@@ -12,7 +12,7 @@ interface RefItem {
 function getRingkasanRef(ref: RefItem): string {
   const d = ref.data ?? ref;
   const teks = ref.type === "hadits"
-    ? (d.matan ?? d.terjemah ?? "")
+    ? (d.intisari ?? d.terjemah ?? d.matan ?? "")
     : (d.terjemah ?? d.matan_indo ?? d.teks ?? "");
   const label = ref.type === "ayat_quran_db" ? "Ayat Al-Qur'an" :
                 ref.type === "hadits" ? "Hadits" :
@@ -22,7 +22,7 @@ function getRingkasanRef(ref: RefItem): string {
     : ref.type === "hadits"
     ? `HR. ${d.perawi ?? ""} No. ${d.nomor ?? ""}`
     : ref.judul ?? "";
-  return `[${label}] "${teks.slice(0, 200)}" — ${sumber}`;
+  return `[${label}] "${teks.slice(0, ref.type === "hadits" ? 300 : 200)}" — ${sumber}`;
 }
 
 async function generatePenjabaran(
@@ -47,6 +47,8 @@ PENTING:
 - Tulis dalam gaya ceramah lisan yang mengalir dan menyentuh hati
 - JANGAN menulis teks Arab atau transliterasi
 - JANGAN sebut "referensi" atau "dalil" — langsung jelaskan maknanya
+- DILARANG KERAS menyebut, mengutip, atau menambahkan hadits/ayat LAIN yang tidak diberikan dalam referensi ini. JANGAN mengarang nomor hadits, nama perawi, atau sabda Nabi. Cukup jelaskan MAKNA dari referensi yang diberikan.
+- JANGAN menulis "dalam hadits lain...", "sebagaimana sabda Nabi...", atau frasa apapun yang memperkenalkan dalil baru.
 - Output hanya teks penjabaran saja, tanpa label apapun`
       },
       {
@@ -79,6 +81,7 @@ PENTING:
   "Imam besar kita pun menasehatkan...", "Perhatikanlah pula firman Allah berikut ini...",
   "Dan untuk memperkuat keyakinan kita, Rasulullah SAW bersabda..."
 - JANGAN selalu gunakan frasa yang sama — variasikan setiap kali"
+- Jembatan hanya transisi naratif. DILARANG menyebut atau mengarang hadits/ayat/nomor riwayat baru. Cukup hubungkan secara tematik tanpa menambah dalil.
 - Gaya bahasa: ${gaya}
 - Output hanya kalimat jembatan saja, tanpa label`
       },

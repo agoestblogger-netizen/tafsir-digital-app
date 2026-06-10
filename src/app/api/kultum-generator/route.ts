@@ -396,7 +396,13 @@ Sumber: ${d.referensi ?? ''}`
 
     const refAktif = referensi_dipilih ?? referensiDipilih ?? []
     console.log('referensi_dipilih full:', JSON.stringify(refAktif, null, 2).slice(0, 1000))
-    const referensiFormatted = formatReferensiUntukPrompt(refAktif)
+
+    // Mode interleaved: generator hanya butuh DOA — ayat & hadits sudah dibahas di penjabaran_tafsir (build-interleaved)
+    const modeInterleaved = is_interleaved === true && !isKisahMode
+    const refUntukGenerator = modeInterleaved
+      ? refAktif.filter((r: any) => r.type === 'doa_quran')
+      : refAktif
+    const referensiFormatted = formatReferensiUntukPrompt(refUntukGenerator)
     
     // Deteksi multi-tema berdasarkan topik_nama referensi
     const topikList: string[] = refAktif
@@ -705,32 +711,39 @@ ATURAN BAHASA YANG WAJIB DIIKUTI:
 - Contoh BENAR: "Beliau bersabda...", "Beliau mengajarkan...", "Beliau mencontohkan..."
 - Contoh SALAH: "Dia bersabda...", "Ia mengajarkan...", "Dia mencontohkan..."
 
-ATURAN KETAT TENTANG HADITS (WAJIB DIPATUHI):
+${modeInterleaved ? `INSTRUKSI MODE INTERLEAVED:
+Naskah inti (penjabaran ayat & hadits) sudah dibuat terpisah di field penjabaran_tafsir oleh sistem lain.
+TUGASMU HANYA: pembuka tematik + kesimpulan tematik + doa penutup dari referensi yang diberikan.
+DILARANG KERAS menyebut, mengutip, atau membahas ayat/hadits apapun di field pembuka maupun kesimpulan.
+JANGAN menulis "HR.", "Rasulullah bersabda", nomor hadits, nama perawi, atau kutipan dalil apapun.
+Pembuka & kesimpulan harus murni tematik, naratif, dan motivasional — tanpa dalil.
 
-1. Setiap kali menyebut sabda Nabi atau hadits, WAJIB menyertakan 
+6. STRUKTUR ARRAY "isi": SELALU tepat 2 item — [Pembukaan, Penutup]. JANGAN tambahkan poin tengah apapun.` : `ATURAN KETAT TENTANG HADITS (WAJIB DIPATUHI):
+
+1. Setiap kali menyebut sabda Nabi atau hadits, WAJIB menyertakan
    atribusi LENGKAP dalam format:
    "HR. {Perawi} No. {nomor}"
    Contoh: "HR. Bukhari No. 6406", "HR. Muslim No. 906"
 
-2. DILARANG KERAS menyebut sabda Nabi/hadits tanpa atribusi 
+2. DILARANG KERAS menyebut sabda Nabi/hadits tanpa atribusi
    nomor riwayat yang spesifik. Frasa berikut DILARANG:
    - "Rasulullah SAW bersabda" (tanpa HR. xxx No. xxx)
    - "Nabi pernah bersabda" (tanpa atribusi)
    - "Dalam sebuah hadits disebutkan" (tanpa atribusi)
    - "Hadits Nabi mengatakan" (tanpa atribusi)
 
-3. Jika TIDAK YAKIN tentang nomor atau perawi hadits, 
+3. Jika TIDAK YAKIN tentang nomor atau perawi hadits,
    JANGAN sebut hadits sama sekali. Lebih baik:
    - Fokus pada ayat Al-Qur'an (yang ada di referensi)
    - Pakai pelajaran/ibrah dari kisah (yang ada di referensi)
    - Berikan refleksi/aplikasi praktis
    DARIPADA mengarang hadits yang tidak jelas sumbernya.
 
-4. Jika SUDAH ADA [HADITS SHAHIH] atau [HADITS X - WAJIB DISEBUT] di referensi yang diberikan, 
+4. Jika SUDAH ADA [HADITS SHAHIH] atau [HADITS X - WAJIB DISEBUT] di referensi yang diberikan,
    GUNAKAN itu sebagai sumber utama. Sebut Atribusi Wajib (misal: "HR. Bukhari No. X") persis seperti yang diberikan di referensi.
 
-5. PENTING: Hadits palsu/dhaif lebih berbahaya daripada tidak ada 
-   hadits. Lebih baik kultum tanpa hadits daripada hadits yang 
+5. PENTING: Hadits palsu/dhaif lebih berbahaya daripada tidak ada
+   hadits. Lebih baik kultum tanpa hadits daripada hadits yang
    diragukan keasliannya.
 
 6. STRUKTUR ARRAY "isi": SELALU tepat 2 item — [Pembukaan, Penutup]. Narasi inti dan penjabaran referensi sudah ada di field "penjabaran_tafsir". JANGAN tambahkan poin tengah apapun.
@@ -748,6 +761,7 @@ ATURAN KETAT TENTANG HADITS (WAJIB DIPATUHI):
 8. DILARANG KERAS MENULISKAN/MENYALIN RANTAI SANAD NARRATOR LENGKAP ke dalam paragraf/narasi (seperti: "Telah menceritakan kepada kami [Nama] dari [Nama]... berkata: '...'"). Pembicara ceramah/kultum tidak membaca silsilah perawi panjang ini secara lisan.
    - Cara mengutip yang BENAR: Cukup buat kalimat pembuka halus, contoh: "Dalam hadits riwayat [Perawi] nomor [Nomor], diriwayatkan dari [Sahabat] bahwa Rasulullah SAW bersabda..." atau "...bahwa Beliau bersabda..." kemudian langsung sambung ke inti sabda/matan hadits tersebut.
    - Cara mengutip yang SALAH (Jangan lakukan ini): "Dalam hadits riwayat Tirmidzi nomor 1099, disebutkan: 'Telah menceritakan kepada kami Muhammad bin Basyar, telah menceritakan kepada kami Abdurrahman...'"
+`}
 
 ATURAN WAJIB:
 - Array "isi" SELALU tepat 2 item: [Pembukaan, Penutup] — tidak bergantung durasi. JANGAN tambah item lain.

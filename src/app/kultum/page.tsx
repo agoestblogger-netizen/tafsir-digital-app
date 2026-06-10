@@ -375,28 +375,11 @@ function KultumGeneratorInner() {
       console.log('format akan dikirim:', format)
       console.log('selectedKisah.id:', (selectedKisah as any)?.id || selectedKisah?.slug)
 
-      // Analisa keterkaitan referensi sebelum generate
+      // Interleaved selalu aktif untuk format non-kisah
       let isInterleaved = false
-      if (!isKisahMode && referensiDipilih.length >= 2) {
-        try {
-          const analisaRes = await fetch('/api/analisa-referensi', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ referensi_dipilih: referensiDipilih }),
-          })
-          if (analisaRes.ok) {
-            const analisaData = await analisaRes.json()
-            isInterleaved = analisaData.is_related === true
-            console.log('[analisa-referensi] is_related:', isInterleaved, '|', analisaData.reason)
-          }
-        } catch (e) {
-          console.warn('[analisa-referensi] gagal, fallback ke format biasa:', e)
-        }
-      }
-
-      // Jika interleaved, build penjabaran chained sebelum generate kultum
       let penjabaranInterleaved: string | null = null
-      if (isInterleaved) {
+      if (!isKisahMode) {
+        isInterleaved = true
         try {
           const interleavedRes = await fetch('/api/build-interleaved', {
             method: 'POST',

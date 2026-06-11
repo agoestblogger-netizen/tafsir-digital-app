@@ -453,7 +453,7 @@ Kultum ini menggunakan referensi dari beberapa topik yang berbeda. Semua referen
       isiStructurePrompt = `[
     {
       "judul": "Judul pembuka yang menarik dan menggambarkan esensi tema",
-      "paragraf": "Paragraf pembukaan: hamdalah, shalawat, lalu pengantar tema yang mengalir dan menyentuh hati. JANGAN tulis salam pembuka (Assalamu'alaikum) karena salam sudah ada di field terpisah. DILARANG KERAS menyebut daftar tema, poin, atau dalil yang akan dibahas — cukup antar jamaah masuk ke suasana tema secara naratif dan mengajak merenung. Minimal 3 kalimat."
+      "paragraf": "Paragraf pembukaan: hamdalah, shalawat, lalu pengantar tema yang mengalir dan menyentuh hati. JANGAN tulis salam pembuka (Assalamu'alaikum) karena salam sudah ada di field terpisah. DILARANG KERAS menyebut daftar tema, poin, atau dalil yang akan dibahas — cukup antar jamaah masuk ke suasana tema secara naratif dan mengajak merenung. DILARANG KERAS menyebut nama surah, nomor ayat, kutipan ayat, nama perawi, nomor hadits, atau kutipan hadits APAPUN di pembuka — termasuk menyebutnya sebagai bagian narasi (contoh terlarang: 'Dalam QS. X: Y, Allah berfirman...' atau 'Rasulullah bersabda...'). Semua dalil akan dibahas di bagian penjabaran, BUKAN di pembuka. Pembuka murni membangun suasana tema secara emosional dan reflektif tanpa menyentuh dalil spesifik. Minimal 3 kalimat."
     },
     {
       "judul": "Judul penutup yang menginspirasi",
@@ -464,7 +464,7 @@ Kultum ini menggunakan referensi dari beberapa topik yang berbeda. Semua referen
       isiStructurePrompt = `[
     {
       "judul": "Judul pembuka yang menarik dan menggambarkan esensi tema",
-      "paragraf": "Paragraf pembukaan: hamdalah, shalawat, lalu pengantar tema yang mengalir dan menyentuh hati. JANGAN tulis salam pembuka (Assalamu'alaikum) karena salam sudah ada di field terpisah. DILARANG KERAS menyebut daftar dalil, poin, atau referensi yang akan dibahas — cukup antar jamaah masuk ke suasana tema secara naratif, dengan pertanyaan retoris atau kisah singkat yang relevan, mengajak jamaah merenung. Minimal 3 kalimat."
+      "paragraf": "Paragraf pembukaan: hamdalah, shalawat, lalu pengantar tema yang mengalir dan menyentuh hati. JANGAN tulis salam pembuka (Assalamu'alaikum) karena salam sudah ada di field terpisah. DILARANG KERAS menyebut daftar dalil, poin, atau referensi yang akan dibahas — cukup antar jamaah masuk ke suasana tema secara naratif, dengan pertanyaan retoris atau kisah singkat yang relevan, mengajak jamaah merenung. DILARANG KERAS menyebut nama surah, nomor ayat, kutipan ayat, nama perawi, nomor hadits, atau kutipan hadits APAPUN di pembuka — termasuk menyebutnya sebagai bagian narasi (contoh terlarang: 'Dalam QS. X: Y, Allah berfirman...' atau 'Rasulullah bersabda...'). Semua dalil akan dibahas di bagian penjabaran, BUKAN di pembuka. Pembuka murni membangun suasana tema secara emosional dan reflektif tanpa menyentuh dalil spesifik. Minimal 3 kalimat."
     },
     {
       "judul": "Judul penutup yang menginspirasi",
@@ -476,7 +476,7 @@ Kultum ini menggunakan referensi dari beberapa topik yang berbeda. Semua referen
       isiStructurePrompt = `[
     {
       "judul": "Judul pembuka yang menarik dan menggambarkan esensi tema",
-      "paragraf": "Paragraf pembukaan: hamdalah, shalawat, lalu pengantar tema yang mengalir dan menyentuh hati. JANGAN tulis salam pembuka (Assalamu'alaikum) karena salam sudah ada di field terpisah. DILARANG KERAS menyebut daftar poin yang akan dibahas — cukup antar jamaah masuk ke suasana tema secara naratif dan mengajak merenung. Minimal 3 kalimat."
+      "paragraf": "Paragraf pembukaan: hamdalah, shalawat, lalu pengantar tema yang mengalir dan menyentuh hati. JANGAN tulis salam pembuka (Assalamu'alaikum) karena salam sudah ada di field terpisah. DILARANG KERAS menyebut daftar poin yang akan dibahas — cukup antar jamaah masuk ke suasana tema secara naratif dan mengajak merenung. DILARANG KERAS menyebut nama surah, nomor ayat, kutipan ayat, nama perawi, nomor hadits, atau kutipan hadits APAPUN di pembuka — termasuk menyebutnya sebagai bagian narasi (contoh terlarang: 'Dalam QS. X: Y, Allah berfirman...' atau 'Rasulullah bersabda...'). Semua dalil akan dibahas di bagian penjabaran, BUKAN di pembuka. Pembuka murni membangun suasana tema secara emosional dan reflektif tanpa menyentuh dalil spesifik. Minimal 3 kalimat."
     },
     {
       "judul": "Judul penutup yang menginspirasi",
